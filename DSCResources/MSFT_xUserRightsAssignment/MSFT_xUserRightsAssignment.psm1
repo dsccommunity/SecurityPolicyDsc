@@ -12,32 +12,15 @@ function Get-TargetResource
 		[parameter(Mandatory = $true)]
         [AllowNull()]
 		[System.String[]]
-		$Identity,
-
-		[parameter(Mandatory = $true)]
-		[ValidateSet("Present","Absent")]
-		[System.String]
-		$Ensure
+		$Identity
 	)
     
     $usrResult = Get-USRPolicy -Policy $Policy -Areas USER_RIGHTS
 
-    $testResult = Test-TargetResource -Identity $Identity -Policy $Policy -Ensure $Ensure -Verbose:0
-    
-    If($testResult)
-    {
-        $ensureResult = 'Present'
-    }
-    Else
-    {
-        $ensureResult = 'Absent'
-    }
-
     $returnValue = @{
 
-		Policy = $usrResult.PolicyFriendlyName
-		Identity = $Identity
-        Ensure = $ensureResult
+		Policy         = $usrResult.PolicyFriendlyName
+		Identity       = $Identity
         ActualIdentity = $usrResult.Identity
 	}
 
@@ -60,83 +43,33 @@ function Set-TargetResource
 		[System.String[]]
 		$Identity,
 
-		[parameter(Mandatory = $true)]
-		[ValidateSet("Present","Absent")]
-		[System.String]
-		$Ensure,
-
         [Switch]$PassThru
 	)
     
     $policyList = Get-AssignmentFriendlyNames
     $policyName = $policyList[$Policy]
     $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
+    $userRightsToAddInf = "$env:TEMP\userRightsToAdd.inf" 
+     $idsToAdd = $Identity -join ","
 
-    #secedit.exe overwrites the current identities that have rights. So we need to store the current identities in an array then remove and add as needed
-    
-    $getResults = Get-TargetResource -Policy $Policy -Identity $Identity -Ensure $Ensure -Verbose:0    
-    $IdList = New-Object System.Collections.ArrayList
-
-    #Convert all strings to lower case because the Remove() method is case sensitive
-    If($getResults.ActualIdentity)
-    {
-        [System.Collections.ArrayList]$idList += $getResults.ActualIdentity | % {$_.ToLower()}
-    }
-
-    If($Identity -ne 'NULL' -and $Identity)
-    {
-        $Identity = $Identity | % {$_.ToLower()}
-
-        Foreach($desiredId in $Identity)
-        {
-            If($Ensure -eq 'Present')
-            {
-                If($idList -notcontains $desiredId)
-                {
-                    [void]$idList.Add($desiredId)
-                }
-            }
-            Else
-            {
-                If($idList -contains $desiredId)
-                {
-                    [void]$idList.Remove($desiredId)
-                }
-            }
-        }    
-    }
-    Else
+    If($Identity -eq 'NULL')
     {
         Write-Verbose "Identity is NULL. Removing all Identities from $Policy"
         $idList = $null
-    }    
-
-    #Create INF to configure desired permissions
-    $userRightsToAddInf = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')    
-    $idsToAdd = $idList -join ","
-    Out-UserRightsInf -InfPolicy $policyName -UserList $idsToAdd -FilePath $userRightsToAddInf
-    Write-Debug "Temp inf $userRightsToAddInf"
-
-    If($Identity -ne 'NULL')
-    {
-        If($Ensure -eq 'Present')
-        {
-            Write-Verbose "Granting rights to $idsToAdd on $Policy"
-        }
-        Else
-        {
-            Write-Verbose "Removing rights from $identity on $Policy"
-        }
     }
     Else
     {
-        Write-Verbose "Remvoing all rights granted on $Policy"
+        Write-Verbose "Granting $Policy rights to $idsToAdd"
     }
+    
+   
+    Out-UserRightsInf -InfPolicy $policyName -UserList $idsToAdd -FilePath $userRightsToAddInf
+    Write-Debug "Temp inf $userRightsToAddInf"
 
     Invoke-Secedit -UserRightsToAddInf $userRightsToAddInf -SecEditOutput $seceditOutput
 
     #Verify secedit command was successful
-    $testSuccuess = Test-TargetResource -Identity $Identity -Policy $Policy -Ensure $Ensure -Verbose:0
+    $testSuccuess = Test-TargetResource -Identity $Identity -Policy $Policy -Verbose:0
 
     If($testSuccuess -eq $true)
     {
@@ -173,12 +106,7 @@ function Test-TargetResource
 		[parameter(Mandatory = $true)]
         [AllowNull()]
 		[System.String[]]
-		$Identity,
-
-		[parameter(Mandatory = $true)]
-		[ValidateSet("Present","Absent")]
-		[System.String]
-		$Ensure
+		$Identity
 	)
     
     $attendance = @{}
@@ -188,38 +116,18 @@ function Test-TargetResource
     #Create a hashtable to reference if an identity is Absent or Present
     If($Identity -ne 'NULL')
     {
-        Write-Verbose "Testing $($Identity -join",") is $Ensure on policy $Policy"
+        Write-Verbose "Testing $($Identity -join",") is present on policy $Policy"
         Foreach($id in $Identity)
         {
-            If($userRights.Identity -contains $id)
+            If($userRights.Identity -notcontains $id)
             {
-                $attendance.Add($id,'Present')
-            }
-            Else
-            {
-               $attendance.Add($id,'Absent')         
-            }       
-        }
-
-        Foreach($name in $attendance.keys)
-        {
-            If($attendance[$name] -ne $Ensure)
-            {
+                Write-Verbose "$id not found on $Policy"
                 return $false
-            }
+            }      
         }
     }
-    Else
-    {
-        Write-Verbose "Testing policy $Policy for NULL Identity"
-        If($userRights.Identity)
-        {
-            Write-Verbose "$Policy has $($userRights.Identity.count) identities assigned. Expected NULL"
-            return $false
-        }
-    }
-    #If the code made it this far all identities have the desired user rights
 
+    #If the code made it this far all identities have the desired user rights
     return $true
 }
 
