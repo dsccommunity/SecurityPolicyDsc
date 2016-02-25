@@ -17,11 +17,21 @@ function Get-TargetResource
     
     $usrResult = Get-USRPolicy -Policy $Policy -Areas USER_RIGHTS
 
+    If($($usrResult.Identity) -eq $null)
+    {
+        
+        $ActualIdentity = 'NULL'
+    }
+    Else
+    {
+        $ActualIdentity = $usrResult.Identity
+    }
+
     $returnValue = @{
 
 		Policy         = $usrResult.PolicyFriendlyName
 		Identity       = $Identity
-        ActualIdentity = $usrResult.Identity
+        ActualIdentity = $ActualIdentity
 	}
 
 	$returnValue
@@ -41,28 +51,25 @@ function Set-TargetResource
 		[parameter(Mandatory = $true)]
         [AllowNull()]
 		[System.String[]]
-		$Identity,
-
-        [Switch]$PassThru
+		$Identity
 	)
     
     $policyList = Get-AssignmentFriendlyNames
     $policyName = $policyList[$Policy]
     $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
     $userRightsToAddInf = "$env:TEMP\userRightsToAdd.inf" 
-     $idsToAdd = $Identity -join ","
+    $idsToAdd = $Identity -join ","
 
     If($Identity -eq 'NULL')
     {
         Write-Verbose "Identity is NULL. Removing all Identities from $Policy"
-        $idList = $null
+        $idsToAdd = $null
     }
     Else
     {
         Write-Verbose "Granting $Policy rights to $idsToAdd"
     }
-    
-   
+       
     Out-UserRightsInf -InfPolicy $policyName -UserList $idsToAdd -FilePath $userRightsToAddInf
     Write-Debug "Temp inf $userRightsToAddInf"
 
@@ -79,15 +86,7 @@ function Set-TargetResource
     {
         $seceditResult = Get-Content $script:seceditOutput
         Write-Verbose "The task did not complete successfully."
-        Write-Verbose "$($seceditResult[-1])"
-    }
-
-    If($PassThru)
-    {
-        [pscustomobject]@{
-            Policy = $Policy
-            Identity = $idsToAdd
-        }
+        throw "$($seceditResult[-1])"
     }
 }
 
@@ -108,24 +107,29 @@ function Test-TargetResource
 		[System.String[]]
 		$Identity
 	)
-    
-    $attendance = @{}
-    
+        
     $userRights = Get-USRPolicy -Policy $Policy -Areas USER_Rights
 
-    #Create a hashtable to reference if an identity is Absent or Present
-    If($Identity -ne 'NULL')
+    Write-Verbose "Testing $($Identity -join",") is present on policy $Policy"
+
+    If($Identity -eq 'null')
     {
-        Write-Verbose "Testing $($Identity -join",") is present on policy $Policy"
-        Foreach($id in $Identity)
+        If($userRights.Identity -eq $null)
         {
-            If($userRights.Identity -notcontains $id)
-            {
-                Write-Verbose "$id not found on $Policy"
-                return $false
-            }      
+            Write-Verbose "No identities found on $policy"
+            return $true
         }
+    
+    }  
+    Foreach($id in $Identity)
+    {
+        If($userRights.Identity -notcontains $id)
+        {
+            Write-Verbose "$id not found on $Policy"
+            return $false
+        }      
     }
+    
 
     #If the code made it this far all identities have the desired user rights
     return $true

@@ -48,7 +48,11 @@ try
     Describe "$($Global:DSCResourceName)_Integration" {
 
         #Get policy state before so we can restore policy after test
-        $beforeTest = Get-TargetResource -Policy $rule.Policy -Identity $rule.Identity -Ensure $rule.Ensure
+        $beforeTest_TrustedCaller = Get-TargetResource -Policy $rule.Policy -Identity $rule.Identity
+        $beforeTest_ActAsOS       = Get-TargetResource -Policy $removeAll.Policy -Identity $removeAll.Identity
+
+        #Applying identity to 'Act_as_part_of_the_operating_system' to test removing all identities from policy
+        Set-TargetResource -Policy $removeAll.Policy -Identity 'Builtin\Administrators'
 
         #region DEFAULT TESTS
         Context "Default Tests" {
@@ -60,31 +64,44 @@ try
                 } | Should not throw
             }
 
-            It 'should be able to call Get-DscConfiguration without throwing' {
+            It 'Should be able to call Get-DscConfiguration without throwing' {
                 { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not throw
             }
         }
         #endregion
 
-        Context "Verify Successful Configuration" {
+        Context 'Verify Successful Configuration on Trusted Caller' {
 
             It 'Should have set the resource and all the parameters should match' {
-                 $getResults = Get-TargetResource -Policy $rule.Policy -Identity $rule.Identity -Ensure $rule.Ensure
+                 $getResults = Get-TargetResource -Policy $rule.Policy -Identity $rule.Identity
                  
                  foreach ($Id in $rule.Identity)
                  {
-                    $getResults.Identity | where {$_ -eq $Id} | Should Be $Id
+                    $getResults.ActualIdentity | where {$_ -eq $Id} | Should Be $Id
                  }
 
                  $rule.Policy | Should Be $getResults.Policy
-                 $rule.Ensure | Should Be $getResults.Ensure
+            }
+        }
+
+        Context 'Verify Success on Act as OS remove all' {
+
+            It 'Should have set the resource and all the parameters should match' {
+                 $getResults = Get-TargetResource -Policy $removeAll.Policy -Identity $removeAll.Identity
+                 
+                 foreach ($Id in $removeAll.Identity)
+                 {
+                    $getResults.ActualIdentity | where {$_ -eq $Id} | Should Be $Id
+                 }
+
+                 $removeAll.Policy | Should Be $getResults.Policy
             }
         }
         #Clean up
-        #Remove all Identities from policy used for testing and restore to original state
-        Set-TargetResource -Policy $rule.Policy -Identity NULL -Ensure Present
+        #Restore policies to their original configuration
+        Set-TargetResource -Policy $beforeTest_TrustedCaller.Policy -Identity $beforeTest_TrustedCaller.ActualIdentity -Verbose
 
-        Set-TargetResource -Policy $rule.Policy -Identity $beforeTest.ActualIdentity -Ensure Present
+        Set-TargetResource -Policy $beforeTest_ActAsOS.Policy -Identity $beforeTest_ActAsOS.ActualIdentity -Verbose
     }
     #endregion
 

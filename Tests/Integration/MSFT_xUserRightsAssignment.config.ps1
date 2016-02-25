@@ -13,20 +13,30 @@
 $rule = @{
 
     Policy   = 'Access_Credential_Manager_as_a_trusted_caller'
-    Identity = 'Builtin\Administrators'
-    Ensure   = 'Present'
+    Identity = 'builtin\Administrators','contoso\testuser1'
+}
+
+$removeAll = @{
+    
+    Policy = 'Act_as_part_of_the_operating_system'
+    Identity = 'NULL'
 }
 
 # TODO: Modify ResourceName
 configuration MSFT_xUserRightsAssignment_config {
     Import-DscResource -ModuleName xSecedit
-
-    xUserRightsAssignment AssignShutdownPrivlegesToAdmins
+    
+    xUserRightsAssignment AccessCredentialManagerAsaTrustedCaller
     {
         #Assign shutdown privileges to only Builtin\Administrators
-        Policy = $rule.Policy
+        Policy   = $rule.Policy
         Identity = $rule.Identity
-        Ensure = $rule.Ensure
+    }
+    
+    xUserRightsAssignment RemoveAllActAsOS
+    {
+        Policy   = $removeAll.Policy
+        Identity = $removeAll.Identity
     }
     
 }
