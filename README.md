@@ -10,7 +10,6 @@ The xSecedit modules contains the xUserRightsAssignment DSC Resource.  This DSC 
 ## xUserRightsAssignment
 * Policy: The policy name of the user right assignment to be configured.
 * Identity: The identity of the user or group to be added or or removed from the user right assignment.
-* Ensure: Specifies if the identities should be granted or removed from a user right assignment.
 
 ## Versions
 1.0.0.0
