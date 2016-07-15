@@ -1,3 +1,20 @@
+data LocalizedData
+{
+	ConvertFrom-StringData @'
+IdentityIsNullRemovingAll=Identity is NULL. Removing all Identities from {0}
+GrantingPolicyRightsToIds=Granting {0} rights to {1}
+TaskSuccess=Task successfully completed
+TaskSuccessFail=Task did not complete successfully
+TestIdentityIsPresentOnPolicy=Testing {0} is present on policy {1}
+NoIdentitiesFoundOnPolicy=No identities found on {0}
+IdNNotFoundOnPolicy={0} not found on {1}
+ErrorCantTranslateSID=Error processing {0}. {1}
+EchoDebugInf=Temp inf {0}
+EchoDebugTestInf=UserRightsInf {0}
+'@
+
+}
+
 function Get-TargetResource
 {
 	[CmdletBinding()]
@@ -62,16 +79,16 @@ function Set-TargetResource
 
     If($Identity -eq 'NULL')
     {
-        Write-Verbose "Identity is NULL. Removing all Identities from $Policy"
+		Write-Verbose -Message ($LocalizedData.IdentityIsNullRemovingAll -f $Policy)
         $idsToAdd = $null
     }
     Else
     {
-        Write-Verbose "Granting $Policy rights to $idsToAdd"
+		Write-Verbose -Message ($LocalizedData.GrantingPolicyRightsToIds -f $Policy, $idsToAdd)
     }
        
     Out-UserRightsInf -InfPolicy $policyName -UserList $idsToAdd -FilePath $userRightsToAddInf
-    Write-Debug "Temp inf $userRightsToAddInf"
+	Write-Debug -Message ($LocalizedData.EchoDebugInf -f $userRightsToAddInf)
 
     Invoke-Secedit -UserRightsToAddInf $userRightsToAddInf -SecEditOutput $seceditOutput
 
@@ -80,12 +97,12 @@ function Set-TargetResource
 
     If($testSuccuess -eq $true)
     {
-        Write-Verbose "The task has completed successfully"
+		Write-Verbose -Message ($LocalizedData.TaskSuccess)
     }
     Else
     {
         $seceditResult = Get-Content $script:seceditOutput
-        Write-Verbose "The task did not complete successfully."
+		Write-Verbose -Message ($LocalizedData.TaskSuccessFail)
         throw "$($seceditResult[-1])"
     }
 }
@@ -110,13 +127,13 @@ function Test-TargetResource
         
     $userRights = Get-USRPolicy -Policy $Policy -Areas USER_Rights
 
-    Write-Verbose "Testing $($Identity -join",") is present on policy $Policy"
+	Write-Verbose -Message ($LocalizedData.TestIdentityIsPresentOnPolicy -f $($Identity -join","), $Policy)
 
     If($Identity -eq 'null')
     {
         If($userRights.Identity -eq $null)
         {
-            Write-Verbose "No identities found on $policy"
+			Write-Verbose -Message ($LocalizedData.NoIdentitiesFoundOnPolicy -f $Policy)
             return $true
         }
     
@@ -125,11 +142,10 @@ function Test-TargetResource
     {
         If($userRights.Identity -notcontains $id)
         {
-            Write-Verbose "$id not found on $Policy"
+			Write-Verbose -Message ($LocalizedData.IdNNotFoundOnPolicy -f $id, $Policy)
             return $false
         }      
-    }
-    
+    }    
 
     #If the code made it this far all identities have the desired user rights
     return $true
