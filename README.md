@@ -1,5 +1,5 @@
 # xSecedit
-A wrapper around secedit.exe to confiugre local security policies.
+A wrapper around secedit.exe to configure local security policies.
 
 ## Description
 The xSecedit modules contains the xUserRightsAssignment DSC Resource.  This DSC Resource allows you to configure user rights assignment in Windows.
