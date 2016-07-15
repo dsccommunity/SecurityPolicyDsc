@@ -52,10 +52,16 @@ Function ConvertTo-LocalFriendlyName
     Foreach($id in $SID)
     {        
         If($id -ne $null -and $id -match "S-")
-        {   
-            $sIDobj = [System.Security.Principal.SecurityIdentifier]($id.trim())
-            $user = $sIDobj.Translate([System.Security.Principal.NTAccount])
-            $user.value            
+        {   try
+            {
+                $sIDobj = [System.Security.Principal.SecurityIdentifier]($id.trim())
+                $user = $sIDobj.Translate([System.Security.Principal.NTAccount])
+                $user.value
+            }
+            catch
+            {
+				Write-Warning -Message ($LocalizedData.ErrorCantTranslateSID -f $id, $($_.Exception.Message) )                
+            }         
         }
     }
 }
@@ -140,7 +146,7 @@ Function Get-USRPolicy
     $policyName = $policyList[$Policy]
 
     $currentUserRights = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')    
-
+    Write-Debug -Message ($LocalizedData.EchoDebugTestInf -f $currentUserRights)
     $secedit = secedit.exe /export /cfg $currentUserRights /areas $areas
 
     $userRights = (Get-UserRightsAssignment $currentUserRights).'Privilege Rights'    
