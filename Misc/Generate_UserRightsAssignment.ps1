@@ -2,12 +2,12 @@ $USR_Policy    = New-xDscResourceProperty -Name Policy -Type String -Attribute K
 $USR_Identity  = New-xDscResourceProperty -Name Identity -Type String[] -Attribute Required -Description "The identity of the user or group to be added or or removed from the user right assignment."
 $USR_DesiredId = New-xDscResourceProperty -Name ActualIdentity -Type String -Attribute Read -Description "Value contains the actual Identities that have been granted rights to a user rights assignment."
 
-$URS = @{
-    Name = 'MSFT_xUserRightsAssignment'
+$URSParameters = @{
+    Name = 'MSFT_UserRightsAssignment'
     Property = $USR_Policy,$USR_Identity,$USR_DesiredId
-    FriendlyName = 'xUserRightsAssignment'
-    ModuleName = 'xSecedit'
+    FriendlyName = 'UserRightsAssignment'
+    ModuleName = 'SeceditDSC'
     Path = 'C:\Program Files\WindowsPowerShell\Modules\'
 }
 
-New-xDscResource @URS
+New-xDscResource @URSParameters

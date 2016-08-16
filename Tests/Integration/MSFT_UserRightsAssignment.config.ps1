@@ -22,9 +22,8 @@ $removeAll = @{
     Identity = 'NULL'
 }
 
-# TODO: Modify ResourceName
-configuration MSFT_xUserRightsAssignment_config {
-    Import-DscResource -ModuleName xSecedit
+configuration MSFT_UserRightsAssignment_config {
+    Import-DscResource -ModuleName SeceditDSC
     
     xUserRightsAssignment AccessCredentialManagerAsaTrustedCaller
     {
@@ -33,12 +32,10 @@ configuration MSFT_xUserRightsAssignment_config {
         Identity = $rule.Identity
     }
     
-    xUserRightsAssignment RemoveAllActAsOS
+    UserRightsAssignment RemoveAllActAsOS
     {
         Policy   = $removeAll.Policy
         Identity = $removeAll.Identity
     }
     
 }
-
-# TODO: (Optional): Add More Configuration Templates

@@ -13,8 +13,8 @@
 #>
 
 # TODO: Customize these parameters...
-$Global:DSCModuleName      = 'xSecedit' # Example xNetworking
-$Global:DSCResourceName    = 'MSFT_xUserRightsAssignment' # Example MSFT_xFirewall
+$Global:DSCModuleName      = 'SeceditDSC' # Example xNetworking
+$Global:DSCResourceName    = 'MSFT_UserRightsAssignment' # Example MSFT_xFirewall
 # /TODO
 
 #region HEADER
@@ -35,8 +35,6 @@ $TestEnvironment = Initialize-TestEnvironment `
     -DSCResourceName $Global:DSCResourceName `
     -TestType Integration 
 #endregion
-
-# TODO: Other Init Code Goes Here...
 
 # Using try/finally to always cleanup even if something awful happens.
 try
@@ -104,7 +102,6 @@ try
         Set-TargetResource -Policy $beforeTest_ActAsOS.Policy -Identity $beforeTest_ActAsOS.ActualIdentity -Verbose
     }
     #endregion
-
 }
 finally
 {
@@ -112,5 +109,4 @@ finally
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
     #endregion
 
-    # TODO: Other Optional Cleanup Code Goes Here...
 }
