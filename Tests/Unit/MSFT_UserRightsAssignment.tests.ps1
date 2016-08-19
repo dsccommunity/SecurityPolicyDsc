@@ -42,8 +42,8 @@ try
         #region Pester Test Initialization
 
             $testUSR = [PSObject]@{
-                Policy         = 'Access_Credential_Manager_as_a_trusted_caller'                
-                Identity       = 'contoso\TestUser1'
+                Policy = 'Access_Credential_Manager_as_a_trusted_caller'                
+                Identity = 'contoso\TestUser1'
             }
 
             $mockUSR = [PSObject]@{
@@ -78,8 +78,7 @@ try
                 It 'Should call expected Mocks' {
                     Assert-MockCalled -CommandName Get-USRPolicy -Exactly 1
                 }
-            }
-			  
+            }			  
         }
         #endregion
 
