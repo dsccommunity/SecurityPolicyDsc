@@ -63,7 +63,7 @@ Function ConvertTo-LocalFriendlyName
             {
                 $sIDobj = [System.Security.Principal.SecurityIdentifier]($id.trim())
                 $user = $sIDobj.Translate([System.Security.Principal.NTAccount])
-                Write-Output return $user.value
+                Write-Output $user.value
             }
             catch
             {
