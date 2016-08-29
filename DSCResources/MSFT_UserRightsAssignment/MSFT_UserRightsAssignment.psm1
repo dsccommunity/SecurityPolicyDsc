@@ -34,11 +34,11 @@ function Get-TargetResource
     
     $usrResult = Get-USRPolicy -Policy $Policy -Areas USER_RIGHTS
 
-    If($($usrResult.Identity) -eq $null)
+    if($($usrResult.Identity) -eq $null)
     {
         $ActualIdentity = 'NULL'
     }
-    Else
+    else
     {
         $ActualIdentity = $usrResult.Identity
     }
@@ -74,12 +74,12 @@ function Set-TargetResource
     $userRightsToAddInf = "$env:TEMP\userRightsToAdd.inf" 
     $idsToAdd = $Identity -join ","
 
-    If($Identity -eq 'NULL')
+    if($Identity -eq 'NULL')
     {
         Write-Verbose -Message ($LocalizedData.IdentityIsNullRemovingAll -f $Policy)
         $idsToAdd = $null
     }
-    Else
+    else
     {
         Write-Verbose -Message ($LocalizedData.GrantingPolicyRightsToIds -f $Policy, $idsToAdd)
     }
@@ -92,11 +92,11 @@ function Set-TargetResource
     #Verify secedit command was successful
     $testSuccuess = Test-TargetResource -Identity $Identity -Policy $Policy -Verbose:0
 
-    If($testSuccuess -eq $true)
+    if($testSuccuess -eq $true)
     {
         Write-Verbose -Message ($LocalizedData.TaskSuccess)
     }
-    Else
+    else
     {
         $seceditResult = Get-Content $script:seceditOutput
         Write-Verbose -Message ($LocalizedData.TaskSuccessFail)
@@ -125,17 +125,17 @@ function Test-TargetResource
 
     Write-Verbose -Message ($LocalizedData.TestIdentityIsPresentOnPolicy -f $($Identity -join","), $Policy)
 
-    If($Identity -eq 'null')
+    if($Identity -eq 'null')
     {
-        If($userRights.Identity -eq $null)
+        if($userRights.Identity -eq $null)
         {
             Write-Verbose -Message ($LocalizedData.NoIdentitiesFoundOnPolicy -f $Policy)
             return $true
         }
     }  
-    Foreach($id in $Identity)
+    foreach($id in $Identity)
     {
-        If($userRights.Identity -notcontains $id)
+        if($userRights.Identity -notcontains $id)
         {
             Write-Verbose -Message ($LocalizedData.IdNNotFoundOnPolicy -f $id, $Policy)
             return $false
