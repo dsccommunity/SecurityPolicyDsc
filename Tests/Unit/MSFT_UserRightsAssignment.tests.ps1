@@ -11,8 +11,8 @@
    Future and therefore should not be altered if possible.
 #>
 
-$Global:DSCModuleName      = 'SeceditDSC'
-$Global:DSCResourceName    = 'MSFT_UserRightsAssignment'
+$Global:DSCModuleName    = 'SeceditDSC'
+$Global:DSCResourceName  = 'MSFT_UserRightsAssignment'
 
 
 #region HEADER
