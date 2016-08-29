@@ -80,8 +80,8 @@ try
                     $result = Get-TargetResource @testUSR
 
                     $result.Policy | Should Be $testUSR.Policy
-					$result.Identity | Should Be $testUSR.Identity
-					$result.ActualIdentity | Should Be $mockUSR.Identity
+                    $result.Identity | Should Be $testUSR.Identity
+                    $result.ActualIdentity | Should Be $mockUSR.Identity
                 }
 
                 It 'Should call expected Mocks' {
