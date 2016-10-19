@@ -1,30 +1,30 @@
 <#
-.SYNOPSIS 
-    Creates Inf with desired configuration for a user right assignment that is passed to secedit.exe
-.PARAMETER InfPolicy
-    Name of user rights assignment policy
-.PARAMETER UserList
-    List of user9s0 to be added to policy
-.PARAMETER FilePath
-    Path Inf will be created
-.EXAMPLE
-    Out-UserRightsInf -InfPolicy SeTrustedCredManAccessPrivilege -UserList Contoso\User1 -FilePath C:\Scratch\Secedit.Inf
+    .SYNOPSIS 
+        Creates Inf with desired configuration for a user right assignment that is passed to secedit.exe
+    .PARAMETER InfPolicy
+        Name of user rights assignment policy
+    .PARAMETER UserList
+        List of user9s0 to be added to policy
+    .PARAMETER FilePath
+        Path Inf will be created
+    .EXAMPLE
+        Out-UserRightsInf -InfPolicy SeTrustedCredManAccessPrivilege -UserList Contoso\User1 -FilePath C:\Scratch\Secedit.Inf
 #>
-Function Out-UserRightsInf
+function Out-UserRightsInf
 {
-	Param
+    Param
 	(
-        [string]
+        [System.String]
         $InfPolicy,
 
-        [string]
+        [System.String]
         $UserList,
 
-        [string]
+        [System.String]
         $FilePath
     )
 
-$infTemplate =@"
+    $infTemplate =@"
 [Unicode]
 Unicode=yes
 [Privilege Rights]
@@ -38,31 +38,31 @@ Revision=1
 }
 
 <#
-.SYNOPSIS
-    Converts SID to friendly name
-.PARAMETER SID
-    SID of identity being converted
-.EXAMPLE
-    ConvertTo-LocalFriendlyName -SID 'S-1-5-21-3623811015-3361044348-30300820-1013'
+    .SYNOPSIS
+        Converts SID to friendly name
+    .PARAMETER SID
+        SID of identity being converted
+    .EXAMPLE
+        ConvertTo-LocalFriendlyName -SID 'S-1-5-21-3623811015-3361044348-30300820-1013'
 #>
-Function ConvertTo-LocalFriendlyName
+function ConvertTo-LocalFriendlyName
 {
     Param
     (
-        [string[]]
+        [System.String[]]
         $SID		
     )
 	
     $domainRole = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
     
-    Foreach($id in $SID)
+    foreach ($id in $SID)
     {        
-        if($id -ne $null -and $id -match 'S-')
+        if ($null -ne $id -and $id -match 'S-')
         {   
             try
             {
-                $sIDobj = [System.Security.Principal.SecurityIdentifier]($id.trim())
-                $user = $sIDobj.Translate([System.Security.Principal.NTAccount])
+                $securityIdentifier = [System.Security.Principal.SecurityIdentifier]($id.trim())
+                $user = $securityIdentifier.Translate([System.Security.Principal.NTAccount])
                 Write-Output $user.value
             }
             catch
@@ -70,7 +70,7 @@ Function ConvertTo-LocalFriendlyName
                 Write-Warning -Message ($LocalizedData.ErrorCantTranslateSID -f $id, $($_.Exception.Message) )                
             }         
         }
-        elseIf($domainRole -eq 4 -or $domainRole -eq 5)
+        elseIf ($domainRole -eq 4 -or $domainRole -eq 5)
         {
             Write-Output "$($env:USERDOMAIN + '\' + $($id.trim()))"
         }
@@ -78,19 +78,19 @@ Function ConvertTo-LocalFriendlyName
 }
 
 <#
-.SYNOPSIS
-    Parses Inf produced by secedit.exe /export and returns an object of identites assigned to a user rights assignment policy
-.PARAMETER FilePath
-    Path to Inf
-.EXAMPLE
-    Get-UserRightsAssignment -FilePath C:\seceditOutput.inf
+    .SYNOPSIS
+        Parses Inf produced by 'secedit.exe /export' and returns an object of identites assigned to a user rights assignment policy
+    .PARAMETER FilePath
+        Path to Inf
+    .EXAMPLE
+        Get-UserRightsAssignment -FilePath C:\seceditOutput.inf
 #>
 function Get-UserRightsAssignment
 {
-    [cmdletbinding()]
+    [CmdletBinding()]
     Param
     (
-        [string]
+        [System.String]
         $FilePath
     )
 
@@ -120,27 +120,27 @@ function Get-UserRightsAssignment
 }
 
 <#
-.SYNOPSIS
-    Converts policy names that match the GUI the abbreviated names used by secedit.exe 
+    .SYNOPSIS
+        Converts policy names that match the GUI the abbreviated names used by secedit.exe 
 #>
-Function Get-AssignmentFriendlyNames
+function Get-AssignmentFriendlyNames
 {
     Get-Content -Path $PSScriptRoot\UserRightsFriendlyNameConversions.psd1 -Raw | ConvertFrom-StringData
 }
 
 <#
-.SYNOPSIS
-    Returns an object of the identities assigned to a user rights assignment
-.PARAMETER Policy
-    Name of the policy to inspect
-.PARAMETER Areas
-    Specifies the security areas to be inspect. Possible values: "SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES"
-.EXAMPLE
-    Get-USRPolicy -Policy Create_a_token_object -Areas USER_RIGHTS
+    .SYNOPSIS
+        Returns an object of the identities assigned to a user rights assignment
+    .PARAMETER Policy
+        Name of the policy to inspect
+    .PARAMETER Areas
+        Specifies the security areas to be inspect. Possible values: "SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES"
+    .EXAMPLE
+        Get-USRPolicy -Policy Create_a_token_object -Areas USER_RIGHTS
 #>
-Function Get-USRPolicy
+function Get-USRPolicy
 {
-    [cmdletbinding()]
+    [CmdletBinding()]
     Param
     (
         [parameter(Mandatory = $true)]
@@ -150,7 +150,7 @@ Function Get-USRPolicy
         
         [parameter(Mandatory = $true)]
         [ValidateSet("SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES")]
-        [string]
+        [System.String]
         $Areas = "USER_Rights"
     )
 
@@ -171,24 +171,24 @@ Function Get-USRPolicy
 }
 
 <#
-.SYNOPSIS
-    Wrapper around secedit.exe
-.PARAMETER UserRightsToAddInf
-    Inf with desired user rights assignment policy configuration
-.PARAMETER SeceditOutput
-    Path to secedit log file output
-.EXAMPLE
-    Invoke-Secedit -UserRightsToAddInf C:\secedit.inf -SeceditOutput C:\seceditLog.txt
+    .SYNOPSIS
+        Wrapper around secedit.exe
+    .PARAMETER UserRightsToAddInf
+        Inf with desired user rights assignment policy configuration
+    .PARAMETER SeceditOutput
+        Path to secedit log file output
+    .EXAMPLE
+        Invoke-Secedit -UserRightsToAddInf C:\secedit.inf -SeceditOutput C:\seceditLog.txt
 #>
-Function Invoke-Secedit
+function Invoke-Secedit
 {
-    [cmdletbinding()]
+    [CmdletBinding()]
     Param
     (
-        [string]
+        [System.String]
         $UserRightsToAddInf,
 
-        [string]
+        [System.String]
         $SeceditOutput
     )
 
@@ -198,12 +198,12 @@ Function Invoke-Secedit
 }
 
 <#
-.SYNOPSIS
-    Returns all the possible user rights assignments.
-    Only used for dev purposes
-    Not used by code
+    .SYNOPSIS
+        Returns all the possible user rights assignments.
+        Only used for dev purposes
+        Not used by code
 #>
-Function Get-PrivilegeRightsList
+function Get-PrivilegeRightsList
 {
     $currentUserRights = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')
 

@@ -12,7 +12,9 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ## xUserRightsAssignment
 * **Policy**: The policy name of the user right assignment to be configured.
-* **Identity**: The identity of the user or group to be added or or removed from the user right assignment.
+* **Identity**: The identity of the user or group to be added or removed from the user right assignment.
+
+## Unreleased
 
 ## Versions
 1.0.0.0
