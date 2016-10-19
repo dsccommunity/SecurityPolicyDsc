@@ -74,6 +74,10 @@ function ConvertTo-LocalFriendlyName
         {
             Write-Output "$($env:USERDOMAIN + '\' + $($id.trim()))"
         }
+        elseIf ($id -notmatch '^S-')
+        {
+            Write-Output "$($id.trim())"
+        }
     }
 }
 
@@ -159,6 +163,7 @@ function Get-USRPolicy
 
     $currentUserRights = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')    
     Write-Debug -Message ($LocalizedData.EchoDebugTestInf -f $currentUserRights)
+
     $secedit = secedit.exe /export /cfg $currentUserRights /areas $areas
 
     $userRights = (Get-UserRightsAssignment $currentUserRights).'Privilege Rights'    
@@ -172,7 +177,7 @@ function Get-USRPolicy
 
 <#
     .SYNOPSIS
-        Wrapper around secedit.exe
+        Wrapper around secedit.exe used to make changes
     .PARAMETER UserRightsToAddInf
         Inf with desired user rights assignment policy configuration
     .PARAMETER SeceditOutput
@@ -189,27 +194,34 @@ function Invoke-Secedit
         $UserRightsToAddInf,
 
         [System.String]
-        $SeceditOutput
+        $SeceditOutput,
+
+        [System.Management.Automation.SwitchParameter]
+        $OverWrite
     )
 
-    $tempDB = "$env:TEMP\DscSecedit.sdb"   
-    
-    Start-Process secedit.exe -ArgumentList "/configure /db $tempDB /cfg $userRightsToAddInf" -RedirectStandardOutput $seceditOutput -NoNewWindow -Wait
+    $tempDB = "$env:TEMP\DscSecedit.sdb"
+    $arguments = "/configure /db $tempDB /cfg $userRightsToAddInf"
+
+    if ($OverWrite)
+    {
+        $arguments = $arguments + " /overwrite /quiet"
+    }
+
+    Start-Process secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput -NoNewWindow -Wait
 }
 
 <#
     .SYNOPSIS
-        Returns all the possible user rights assignments.
-        Only used for dev purposes
-        Not used by code
+        Invokes secedit.exe to create an INF file of the current policies
 #>
-function Get-PrivilegeRightsList
+function Get-SecInfFile
 {
-    $currentUserRights = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')
-
-    $secedit = secedit.exe /export /cfg $currentUserRights /areas USER_RIGHTS
-
-    $UserRights = (Get-UserRightsAssignment $currentUserRights).'Privilege Rights'
-
-    $userRights.Keys
+    param
+    (
+        [System.String]$Path
+    )
+    
+    $secedit = secedit.exe /export /cfg $currentUserRights /areas "USER_Rights"
+    $currentUserRights
 }
