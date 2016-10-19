@@ -8,15 +8,18 @@ For more information see the [Code of Conduct FAQ](https://opensource.microsoft.
 If you would like to contribute to this repository, please read the DSC Resource Kit [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
 
 ## Resources
-*  **xUserRightsAssignment** configures user rights assignments in local security policies.
+*  **UserRightsAssignment** configures user rights assignments in local security policies.
+*  **SecInf** configures user rights assignments that are defined in an INF file
 
-## xUserRightsAssignment
+## UserRightsAssignment
 * **Policy**: The policy name of the user right assignment to be configured.
 * **Identity**: The identity of the user or group to be added or removed from the user right assignment.
 
+## SecInf
+* **PathToInf**: Path to Inf the defines the desired security policies.
 ## Unreleased
 
 ## Versions
 1.0.0.0
 * Initial release with the following resource:
- * xUserRightsAssignment
+ * UserRightsAssignment
