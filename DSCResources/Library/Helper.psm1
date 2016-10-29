@@ -1,3 +1,12 @@
+data LocalizedData
+{
+    ConvertFrom-StringData @'
+        EchoDebugInf=Temp inf {0}
+        ErrorCantTranslateSID=Error processing {0}. {1}
+'@
+
+}
+
 <#
     .SYNOPSIS 
         Creates Inf with desired configuration for a user right assignment that is passed to secedit.exe
@@ -125,7 +134,7 @@ function Get-UserRightsAssignment
 
 <#
     .SYNOPSIS
-        Converts policy names that match the GUI the abbreviated names used by secedit.exe 
+        Converts policy names that match the GUI to the abbreviated names used by secedit.exe 
 #>
 function Get-AssignmentFriendlyNames
 {
@@ -222,6 +231,34 @@ function Get-SecInfFile
         [System.String]$Path
     )
     
-    $secedit = secedit.exe /export /cfg $currentUserRights /areas "USER_Rights"
-    $currentUserRights
+    $secedit = secedit.exe /export /cfg $Path /areas "USER_Rights"
+    $Path
+}
+
+<#
+    .SYNOPSIS
+        Wrapper around Get-UserRightsAssignment for easier Mocking in Pester tests    
+#>
+function Get-CurrentPolicy
+{
+    param
+    (
+        [System.String]$Path
+    )
+
+    (Get-UserRightsAssignment -FilePath $Path).'Privilege Rights'
+}
+
+<#
+    .SYNOPSIS
+        Wrapper around Get-UserRightsAssignment for easier Mocking in Pester tests    
+#>
+function Get-DesiredPolicy
+{
+    param
+    (
+        [System.String]$Path
+    )
+
+    (Get-UserRightsAssignment -FilePath $Path).'Privilege Rights'
 }

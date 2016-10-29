@@ -26,22 +26,35 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 
-# TODO: Insert the correct <ModuleName> and <ResourceName> for your resource
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName '<ModuleName>' `
-    -DSCResourceName '<ResourceName>' `
+    -DSCModuleName 'SecEditDSC' `
+    -DSCResourceName 'MSFT_SecInf' `
     -TestType Unit 
 
 #endregion HEADER
 
 function Invoke-TestSetup {
-    # TODO: Optional init code goes here...
+
+}
+
+function Replace-HashValue
+{
+    param
+    (
+
+        $HashTable,
+        $Key,
+        $NewValue
+    )
+
+    $HashTable.Remove($key)
+    $HashTable.Add($Key,$NewValue)
+    $HashTable
 }
 
 function Invoke-TestCleanup {
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
     
-    # TODO: Other Optional Cleanup Code Goes Here...
 }
 
 # Begin Testing
@@ -49,59 +62,80 @@ try
 {
     Invoke-TestSetup
 
-    InModuleScope '<ResourceName>' {
-        # TODO: Optionally create any variables here for use by your tests
-    
-        # TODO: Complete the Describe blocks below and add more as needed.
-        # The most common method for unit testing is to test by function. For more information
-        # check out this introduction to writing unit tests in Pester: 
-        # https://www.simple-talk.com/sysadmin/powershell/practical-powershell-unit-testing-getting-started/#eleventh
-        # You may also follow one of the patterns provided in the TestsGuidelines.md file:
-        # https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md
+    InModuleScope 'MSFT_SecInf' {
         
-        Describe '<Test-name>' {
-            BeforeEach {
-                # per-test-initialization
+        Describe 'The system is not in a desired state' {
+            $testParameters = @{
+                PathToInf = 'C:\baseline.inf'
+            }
+            $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
+
+            Context 'Get and Test method tests' {
+
+                It 'Should return path of desired inf' {
+                    $getResult = Get-TargetResource -PathToInf $testParameters.PathToInf
+                    $getResult.PathToInf | Should be $testParameters.PathToInf
+                }
+
+                It 'Test method should return FALSE' {
+                                      
+                    Mock -CommandName Get-CurrentPolicy -MockWith {$mockResults}
+                    Mock -CommandName Backup-SecurityPolicy -MockWith {}
+                    Mock -CommandName Get-SecInfFile -MockWith {}
+                    Mock -CommandName Test-Path -MockWith {$true}
+                    Mock -CommandName Get-UserRightsAssignment -MockWith {}
+                    Mock -CommandName Get-Module -MockWith {}
+
+                    foreach($key in $mockResults.keys)
+                    {
+                        $modifiedMockResults = $mockResults.clone()
+                        $mockFalseResults = Replace-HashValue -HashTable $modifiedMockResults -Key $key -NewValue NoIdentity
+                 
+                        Mock -CommandName Get-DesiredPolicy -MockWith {$mockFalseResults}
+                        Test-TargetResource -PathToInf $testParameters.PathToInf | should be $false
+                    }
+                }
             }
 
-            AfterEach {
-                # per-test-cleanup
-            }
+            Context 'Set method tests' {
+                    Mock Restore-SecurityPolicy  -MockWith {}
+                    Mock Invoke-Secedit -MockWith {}
+                    Mock Test-TargetResource -MockWith {$true}
 
-            Context 'Context-description' {
-                BeforeEach {
-                    # per-test-initialization
+                It 'Should call Invoke-Secedit when SecurityCmdlet module does not exist' {
+                    
+                    Mock Get-Module -MockWith {$false}                 
+
+                    {Set-TargetResource -PathToInf $testParameters.PathToInf} | should not throw
+                    Assert-MockCalled -CommandName Invoke-Secedit -Exactly 1
                 }
 
-                AfterEach {
-                    # per-test-cleanup
-                }
-
-                It 'Should...test-description' {
-                    # test-code
-                }
-
-                It 'Should...test-description' {
-                    # test-code
-                }
-            }
-
-            Context 'Context-description' {
-                It 'Should ....test-description' {
-                    # test-code
+                It 'Should Call Restore-SecurityPolicy when SecurityCmdlet module does exist' {
+                    Mock Get-Module -MockWith {$true}
+                    {Set-TargetResource -PathToInf $testParameters.PathToInf} | should not throw
+                    Assert-MockCalled -CommandName Restore-SecurityPolicy -Exactly 1                    
                 }
             }
         }
 
-        Describe '<Test-name>' {
-            Context '<Context-description>' {
-                It 'Should ...test-description' {
-                    # test-code
+        Describe 'The system is in a desired state' {
+            Context 'Test for Test emthod' {
+                $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
+
+                It 'Test method should return TRUE' {
+                    Mock -CommandName Get-CurrentPolicy -MockWith {$mockResults}
+                    Mock -CommandName Get-DesiredPolicy -MockWith {$mockResults}
+                    Mock -CommandName Backup-SecurityPolicy -MockWith {}
+                    Mock -CommandName Get-SecInfFile -MockWith {}
+                    Mock -CommandName Test-Path -MockWith {$true}
+                    Mock -CommandName Get-UserRightsAssignment -MockWith {}
+                    Mock -CommandName Get-Module -MockWith {}
+                    
+                    Test-TargetResource -PathToInf 'C:\Security.inf' | should be $true
+                       
                 }
             }
-        }
-        
-        # TODO: add more Describe blocks as needed
+        }        
     }
 }
 finally
