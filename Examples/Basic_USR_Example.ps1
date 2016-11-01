@@ -22,4 +22,4 @@ Configuration UserRights
 
 UserRights -OutputPath c:\dsc
 
-Start-DscConfiguration -Path c:\dsc -Verbose -Wait -Force 
+Start-DscConfiguration -Path c:\dsc -Verbose -Wait -Force
