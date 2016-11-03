@@ -17,9 +17,12 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ## SecInf
 * **PathToInf**: Path to Inf the defines the desired security policies.
-## Unreleased
 
 ## Versions
+
+## Unreleased
+
 1.0.0.0
 * Initial release with the following resource:
  * UserRightsAssignment
+ * SecInf
