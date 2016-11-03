@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿Configuration CompareInfs
+=======
+Configuration CompareInfs
+>>>>>>> dev
 {
     Import-DscResource -ModuleName SeceditDsc
 
