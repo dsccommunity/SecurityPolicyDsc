@@ -1,3 +1,12 @@
+data LocalizedData
+{
+    ConvertFrom-StringData @'
+        EchoDebugInf=Temp inf {0}
+        ErrorCantTranslateSID=Error processing {0}. {1}
+'@
+
+}
+
 <#
     .SYNOPSIS 
         Creates Inf with desired configuration for a user right assignment that is passed to secedit.exe
@@ -12,8 +21,8 @@
 #>
 function Out-UserRightsInf
 {
-    Param
-	(
+    param
+    (
         [System.String]
         $InfPolicy,
 
@@ -47,7 +56,7 @@ Revision=1
 #>
 function ConvertTo-LocalFriendlyName
 {
-    Param
+    param
     (
         [System.String[]]
         $SID		
@@ -92,19 +101,19 @@ function ConvertTo-LocalFriendlyName
 function Get-UserRightsAssignment
 {
     [CmdletBinding()]
-    Param
+    param
     (
         [System.String]
         $FilePath
     )
 
-    $ini = @{}
+    $iniHashTable = @{}
     switch -regex -file $FilePath
     {
         "^\[(.+)\]" # Section
         {
             $section = $matches[1]
-            $ini[$section] = @{}
+            $iniHashTable[$section] = @{}
             $CommentCount = 0
         }
         "^(;.*)$" # Comment
@@ -112,20 +121,20 @@ function Get-UserRightsAssignment
             $value = $matches[1]
             $commentCount = $commentCount + 1
             $name = "Comment" + $commentCount
-            $ini[$section][$name] = $value
+            $iniHashTable[$section][$name] = $value
         } 
         "(.+?)\s*=(.*)" # Key
         {
             $name,$value =  $matches[1..2] -replace "\*"
-            $ini[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
+            $iniHashTable[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
         }
     }
-    return $ini
+    return $iniHashTable
 }
 
 <#
     .SYNOPSIS
-        Converts policy names that match the GUI the abbreviated names used by secedit.exe 
+        Converts policy names that match the GUI to the abbreviated names used by secedit.exe 
 #>
 function Get-AssignmentFriendlyNames
 {
@@ -138,17 +147,17 @@ function Get-AssignmentFriendlyNames
     .PARAMETER Policy
         Name of the policy to inspect
     .PARAMETER Areas
-        Specifies the security areas to be inspect. Possible values: "SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES"
+        Specifies the security areas to inspect. Possible values: "SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES"
     .EXAMPLE
         Get-USRPolicy -Policy Create_a_token_object -Areas USER_RIGHTS
 #>
 function Get-USRPolicy
 {
     [CmdletBinding()]
-    Param
+    param
     (
         [parameter(Mandatory = $true)]
-		[ValidateSet("Create_a_token_object","Access_this_computer_from_the_network","Change_the_system_time","Deny_log_on_as_a_batch_job","Deny_log_on_through_Remote_Desktop_Services","Create_global_object","Remove_computer_from_docking_station","Deny_access_to_this_computer_form_the_network","Act_as_part_of_the_operating_system","Modify_firmware_environment_values","Deny_log_on_locally","Access_Credential_Manager_as_a_trusted_caller","Restore_files_and_directories","Change_the_time_zone","Replace_a_process_level_token","Manage_auditing_and_security_log","Create_symbolic_links","Modify_an_object_label","Enable_computer_and_user_accounts_to_be_trusted_for_delegation","Generate_security_audits","Increase_a_process_working_set","Take_ownership_of_files_or_other_objects","Bypass_traverse_checking","Log_on_as_a_service","Shut_down_the_system","Lock_pages_in_memory","Impersonate_a_client_after_authentication","Profile_system_performance","Debug_programs","Profile_single_process","Allow_log_on_through_Remote_Desktop_Services","Allow_log_on_locally","Increase_scheduling_priority","Synchronize_directory_service_data","Add_workstations_to_domain","Adjust_memory_quotas_for_a_process","Perform_volume_maintenance_tasks","Load_and_unload_device_drivers","Force_shutdown_from_a_remote_system","Back_up_files_and_directories","Create_a_pagefile","Deny_log_on_as_a_service","Log_on_as_a_batch_job","Create_permanent_shared_objects")]
+        [ValidateSet("Create_a_token_object","Access_this_computer_from_the_network","Change_the_system_time","Deny_log_on_as_a_batch_job","Deny_log_on_through_Remote_Desktop_Services","Create_global_objects","Remove_computer_from_docking_station","Deny_access_to_this_computer_from_the_network","Act_as_part_of_the_operating_system","Modify_firmware_environment_values","Deny_log_on_locally","Access_Credential_Manager_as_a_trusted_caller","Restore_files_and_directories","Change_the_time_zone","Replace_a_process_level_token","Manage_auditing_and_security_log","Create_symbolic_links","Modify_an_object_label","Enable_computer_and_user_accounts_to_be_trusted_for_delegation","Generate_security_audits","Increase_a_process_working_set","Take_ownership_of_files_or_other_objects","Bypass_traverse_checking","Log_on_as_a_service","Shut_down_the_system","Lock_pages_in_memory","Impersonate_a_client_after_authentication","Profile_system_performance","Debug_programs","Profile_single_process","Allow_log_on_through_Remote_Desktop_Services","Allow_log_on_locally","Increase_scheduling_priority","Synchronize_directory_service_data","Add_workstations_to_domain","Adjust_memory_quotas_for_a_process","Perform_volume_maintenance_tasks","Load_and_unload_device_drivers","Force_shutdown_from_a_remote_system","Back_up_files_and_directories","Create_a_pagefile","Deny_log_on_as_a_service","Log_on_as_a_batch_job","Create_permanent_shared_objects")]
         [System.String]
         $Policy,
         
@@ -188,7 +197,7 @@ function Get-USRPolicy
 function Invoke-Secedit
 {
     [CmdletBinding()]
-    Param
+    param
     (
         [System.String]
         $UserRightsToAddInf,
@@ -222,6 +231,34 @@ function Get-SecInfFile
         [System.String]$Path
     )
     
-    $secedit = secedit.exe /export /cfg $currentUserRights /areas "USER_Rights"
-    $currentUserRights
+    $secedit = secedit.exe /export /cfg $Path /areas "USER_Rights"
+    $Path
+}
+
+<#
+    .SYNOPSIS
+        Wrapper around Get-UserRightsAssignment for easier Mocking in Pester tests    
+#>
+function Get-CurrentPolicy
+{
+    param
+    (
+        [System.String]$Path
+    )
+
+    (Get-UserRightsAssignment -FilePath $Path).'Privilege Rights'
+}
+
+<#
+    .SYNOPSIS
+        Wrapper around Get-UserRightsAssignment for easier Mocking in Pester tests    
+#>
+function Get-DesiredPolicy
+{
+    param
+    (
+        [System.String]$Path
+    )
+
+    (Get-UserRightsAssignment -FilePath $Path).'Privilege Rights'
 }
