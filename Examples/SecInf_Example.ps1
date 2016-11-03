@@ -1,4 +1,4 @@
-﻿Configuration CompareInfs
+Configuration CompareInfs
 {
     Import-DscResource -ModuleName SeceditDsc
 
@@ -6,7 +6,7 @@
     {
         SecInf TrustedCredentialAccess
         {
-           PathToInf = "C:\scratch\UserRights.inf"
+            PathToInf = "C:\scratch\UserRights.inf"
         }
     }
 }
