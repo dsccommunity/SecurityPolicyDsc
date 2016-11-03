@@ -1,4 +1,4 @@
-Configuration CompareInfs
+Configuration CompareInfsq
 {
     Import-DscResource -ModuleName SeceditDsc
 
