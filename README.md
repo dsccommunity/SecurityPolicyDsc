@@ -16,7 +16,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 * **Identity**: The identity of the user or group to be added or removed from the user right assignment.
 
 ## SecInf
-* **PathToInf**: Path to Inf the defines the desired security policies.
+* **Path**: Path to Inf the defines the desired security policies.
 
 ## Versions
 

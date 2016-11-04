@@ -1,5 +1,5 @@
 ﻿$properties = @()
-$properties += New-xDscResourceProperty -Name PathToInf -Type String -Attribute Key -Description "Path to Inf the defines the desired security policies"
+$properties += New-xDscResourceProperty -Name Path -Type String -Attribute Key -Description "Path to Inf the defines the desired security policies"
 
 $secInfParameters = @{
     Name = 'MSFT_SecInf'

@@ -6,7 +6,7 @@ Configuration CompareInfsq
     {
         SecInf TrustedCredentialAccess
         {
-            PathToInf = "C:\scratch\UserRights.inf"
+            Path = "C:\scratch\UserRights.inf"
         }
     }
 }

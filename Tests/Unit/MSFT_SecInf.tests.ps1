@@ -51,15 +51,15 @@ try
         
         Describe 'The system is not in a desired state' {
             $testParameters = @{
-                PathToInf = 'C:\baseline.inf'
+                Path = 'C:\baseline.inf'
             }
             $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
 
             Context 'Get and Test method tests' {
 
                 It 'Should return path of desired inf' {
-                    $getResult = Get-TargetResource -PathToInf $testParameters.PathToInf
-                    $getResult.PathToInf | Should be $testParameters.PathToInf
+                    $getResult = Get-TargetResource -Path $testParameters.Path
+                    $getResult.Path | Should be $testParameters.Path
                 }
 
                 It 'Test method should return FALSE' {
@@ -77,7 +77,7 @@ try
                         $mockFalseResults = Set-HashValue -HashTable $modifiedMockResults -Key $key -NewValue NoIdentity
                  
                         Mock -CommandName Get-DesiredPolicy -MockWith {$mockFalseResults}
-                        Test-TargetResource -PathToInf $testParameters.PathToInf | should be $false
+                        Test-TargetResource -Path $testParameters.Path | should be $false
                     }
                 }
             }
@@ -91,13 +91,13 @@ try
                     
                     Mock Get-Module -MockWith {$false}                 
 
-                    {Set-TargetResource -PathToInf $testParameters.PathToInf} | should not throw
+                    {Set-TargetResource -Path $testParameters.Path} | should not throw
                     Assert-MockCalled -CommandName Invoke-Secedit -Exactly 1
                 }
 
                 It 'Should Call Restore-SecurityPolicy when SecurityCmdlet module does exist' {
                     Mock Get-Module -MockWith {$true}
-                    {Set-TargetResource -PathToInf $testParameters.PathToInf} | should not throw
+                    {Set-TargetResource -Path $testParameters.Path} | should not throw
                     Assert-MockCalled -CommandName Restore-SecurityPolicy -Exactly 1                    
                 }
             }
@@ -116,7 +116,7 @@ try
                     Mock -CommandName Get-UserRightsAssignment -MockWith {}
                     Mock -CommandName Get-Module -MockWith {}
                     
-                    Test-TargetResource -PathToInf 'C:\Security.inf' | should be $true
+                    Test-TargetResource -Path 'C:\Security.inf' | should be $true
                        
                 }
             }
