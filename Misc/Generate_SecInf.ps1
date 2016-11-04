@@ -5,7 +5,7 @@ $secInfParameters = @{
     Name = 'MSFT_SecInf'
     Property = $properties
     FriendlyName = 'SecInf'
-    ModuleName = 'SeceditDSC'
+    ModuleName = 'SecurityPolicyDsc'
     Path = 'C:\Program Files\WindowsPowerShell\Modules\'
 }
 

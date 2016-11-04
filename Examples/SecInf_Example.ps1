@@ -1,6 +1,6 @@
 Configuration CompareInfsq
 {
-    Import-DscResource -ModuleName SeceditDsc
+    Import-DscResource -ModuleName SecurityPolicyDsc
 
     node localhost
     {

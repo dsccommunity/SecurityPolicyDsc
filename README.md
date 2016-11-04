@@ -1,4 +1,4 @@
-# SeceditDSC
+# SecurityPolicyDsc
 A wrapper around secedit.exe to allow you to confiugre local security policies.  This resouce requires a Windows OS with secedit.exe.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).

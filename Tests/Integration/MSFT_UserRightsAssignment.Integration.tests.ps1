@@ -1,5 +1,5 @@
 
-$Global:DSCModuleName      = 'SeceditDSC'
+$Global:DSCModuleName      = 'SecurityPolicyDsc'
 $Global:DSCResourceName    = 'MSFT_UserRightsAssignment'
 
 #region HEADER

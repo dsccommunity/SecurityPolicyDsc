@@ -1,6 +1,6 @@
 Configuration UserRights
 {
-    Import-DscResource -ModuleName SeceditDSC
+    Import-DscResource -ModuleName SecurityPolicyDsc
 
     Node localhost
     {

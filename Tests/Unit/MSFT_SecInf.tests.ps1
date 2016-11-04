@@ -12,7 +12,7 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName 'SecEditDSC' `
+    -DSCModuleName 'SecurityPolicyDsc' `
     -DSCResourceName 'MSFT_SecInf' `
     -TestType Unit 
 

@@ -12,7 +12,7 @@ $removeAll = @{
 }
 
 configuration MSFT_UserRightsAssignment_config {
-    Import-DscResource -ModuleName SeceditDSC
+    Import-DscResource -ModuleName SecurityPolicyDsc
     
     xUserRightsAssignment AccessCredentialManagerAsaTrustedCaller
     {
