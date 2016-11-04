@@ -13,7 +13,7 @@
 
 
 # TODO: Customize these parameters...
-$Global:DSCModuleName      = 'xSecedit' # Example xNetworking
+$Global:DSCModuleName      = 'SecurityPolicyDsc' # Example xNetworking
 $Global:DSCResourceName    = 'MSFT_xUserRightsAssignment' # Example MSFT_xFirewall
 # /TODO
 

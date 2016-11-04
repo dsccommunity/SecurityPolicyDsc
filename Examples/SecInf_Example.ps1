@@ -1,12 +1,12 @@
-Configuration CompareInfsq
+Configuration CompareInfs
 {
-    Import-DscResource -ModuleName SeceditDsc
+    Import-DscResource -ModuleName SecurityPolicyDsc
 
     node localhost
     {
         SecInf TrustedCredentialAccess
         {
-            PathToInf = "C:\scratch\UserRights.inf"
+            Path = "C:\scratch\UserRights.inf"
         }
     }
 }

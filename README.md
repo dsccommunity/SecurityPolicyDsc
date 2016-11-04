@@ -1,4 +1,4 @@
-# SeceditDSC
+# SecurityPolicyDsc
 A wrapper around secedit.exe to allow you to confiugre local security policies.  This resouce requires a Windows OS with secedit.exe.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
@@ -16,7 +16,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 * **Identity**: The identity of the user or group to be added or removed from the user right assignment.
 
 ## SecInf
-* **PathToInf**: Path to Inf the defines the desired security policies.
+* **Path**: Path to Inf the defines the desired security policies.
 
 ## Versions
 

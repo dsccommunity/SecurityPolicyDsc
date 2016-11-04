@@ -6,7 +6,7 @@ $URSParameters = @{
     Name = 'MSFT_UserRightsAssignment'
     Property = $USR_Policy,$USR_Identity,$USR_DesiredId
     FriendlyName = 'UserRightsAssignment'
-    ModuleName = 'SeceditDSC'
+    ModuleName = 'SecurityPolicyDsc'
     Path = 'C:\Program Files\WindowsPowerShell\Modules\'
 }
 
