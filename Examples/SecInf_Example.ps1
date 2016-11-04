@@ -1,4 +1,4 @@
-Configuration CompareInfsq
+Configuration CompareInfs
 {
     Import-DscResource -ModuleName SecurityPolicyDsc
 
