@@ -17,20 +17,6 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion HEADER
 
-function Set-HashValue
-{
-    param
-    (
-        $HashTable,
-        $Key,
-        $NewValue
-    )
-
-    $HashTable.Remove($key)
-    $HashTable.Add($Key,$NewValue)
-    $HashTable
-}
-
 function Invoke-TestCleanup {
     Restore-TestEnvironment -TestEnvironment $TestEnvironment    
 }
@@ -39,7 +25,20 @@ function Invoke-TestCleanup {
 try
 { 
     InModuleScope 'MSFT_SecInf' {
-        
+
+    function Set-HashValue
+    {  
+        param
+        (
+            $HashTable,
+            $Key,
+            $NewValue
+        )
+
+        $HashTable.Remove($key)
+        $HashTable.Add($Key,$NewValue)
+        $HashTable
+    }   
         Describe 'The system is not in a desired state' {
             $testParameters = @{
                 Path = 'C:\baseline.inf'

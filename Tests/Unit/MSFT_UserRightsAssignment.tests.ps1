@@ -1,19 +1,16 @@
 
-$Global:DSCModuleName      = 'SecurityPolicyDsc'
-$Global:DSCResourceName    = 'MSFT_xUserRightsAssignment'
-# /TODO
+$Global:DSCModuleName    = 'SecurityPolicyDsc' 
+$Global:DSCResourceName  = 'MSFT_UserRightsAssignment'
 
 #region HEADER
-if ( (-not (Test-Path -Path '.\DSCResource.Tests\')) -or `
-     (-not (Test-Path -Path '.\DSCResource.Tests\TestHelper.psm1')) )
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
+     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git')
+    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
-else
-{
-    & git @('-C',(Join-Path -Path (Get-Location) -ChildPath '\DSCResource.Tests\'),'pull')
-}
-Import-Module .\DSCResource.Tests\TestHelper.psm1 -Force
+
+Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $Global:DSCModuleName `
     -DSCResourceName $Global:DSCResourceName `
@@ -23,43 +20,40 @@ $TestEnvironment = Initialize-TestEnvironment `
 # Begin Testing
 try
 {
-
     #region Pester Tests
 
     InModuleScope $Global:DSCResourceName {
 
-        #region Pester Test Initialization
             $testUSR = [PSObject]@{
                 Policy   = 'Access_Credential_Manager_as_a_trusted_caller'                
-                Identity = 'contoso\TestUser1'
-                Ensure   = 'Present'
+                Identity = 'contoso\TestUser1'                
             }
 
             $mockUSR = [PSObject]@{
-                Policy             = 'SeTrustedCredManAccessPrivilege'
-                Identity           = 'contoso\testUser1','contoso\TestUser2'
+                Policy = 'SeTrustedCredManAccessPrivilege'
+                Identity = 'contoso\testUser1','contoso\TestUser2'
                 PolicyFriendlyName = $testUSR.Policy
             }
 
             $mockGetTargetTesult = [PSObject] @{
-                Policy         = 'Access_Credential_Manager_as_a_trusted_caller'
-                Identity       = 'contoso\TestUser2'
-                Ensure         = 'Present'
+                Policy = 'Access_Credential_Manager_as_a_trusted_caller'
+                Identity = 'contoso\TestUser2'                
                 ActualIdentity = 'contoso\TestUser1'
             }
         #endregion
 
         #region Function Get-TargetResource
-        Describe "$($Global:DSCResourceName)\Get-TargetResource" {
+        Describe "$($Global:DSCResourceName)\Get-TargetResource" {        
                
-            Context 'Identity is not present on Policy' {
+            Context 'Identity should not match on Policy' {
+
                 Mock Get-USRPolicy -MockWith {return @($mockUSR)}
                 Mock Test-TargetResource -MockWith {$false}
 
                 It 'Should return absent Identity' {                    
                     $Result = Get-TargetResource @testUSR
 
-                    $Result.Ensure | Should Be 'Absent'
+                    $Result.ActualIdentity | Should Not BeExactly $testUSR.Identity
                 }
 
                 It 'Should call expected Mocks' {
@@ -69,21 +63,17 @@ try
 
             Context 'Identity does exist on Policy' {           
                 Mock Get-USRPolicy -MockWith {return @($mockUSR)}
-                Mock Test-TargetResource -MockWith {return $true}
-
-                It 'Should return Present' {
+                
+                It 'Identity should match' {
                     $Result = Get-TargetResource @testUSR
-
-                    $Result.Ensure         | Should Be 'Present'
+                    
                     $Result.Policy         | Should Be $testUSR.Policy
                     $Result.Identity       | Should Be $testUSR.Identity
                     $Result.ActualIdnetity | Should Be $testUSR.ActualIdnetity
                 }
 
                 It 'Should call the expected mocks' {
-
                     Assert-MockCalled -CommandName Get-USRPolicy -Exactly 1
-                    Assert-MockCalled -CommandName Test-TargetResource -Exactly 1
                 }
             }
         }
@@ -92,10 +82,12 @@ try
         #region Function Set-TargetResource
         Describe "$($Global:DSCResourceName)\Test-TargetResource" {
             Context 'Identity does exist' {
+
                 Mock Get-USRPolicy -MockWith {$mockUSR}
 
                 It 'Should return true' {
                     $testResult = Test-TargetResource @testUSR
+
                     $testResult | Should Be $true
                 }
 
@@ -105,16 +97,18 @@ try
             }
 
             Context 'Identity does not exist' {
+
                 Mock Get-USRPolicy
 
                 It 'Should return false' {
                     $testResult = Test-TargetResource @testUSR
+
                     $testResult | Should Be $false
                 }
 
                 It 'Should call expected mocks' {
                     Assert-MockCalled -CommandName Get-USRPolicy -Exactly 1
-                }  
+                } 
             }
         }
         #endregion
@@ -122,82 +116,25 @@ try
         Describe "$($Global:DSCResourceName)\Set-TargetResource" {
 
             Context 'Identity does not exist but should' {
-                Mock Invoke-Secedit
-                Mock Test-TargetResource -MockWith {$true}              
-                Mock Get-TargetResource -MockWith {$mockGetTargetTesult}
 
-                It 'Should not throw' { 
+                Mock Invoke-Secedit
+                Mock Test-TargetResource -MockWith {$true}
+                Mock Get-Content -MockWith {"Tasked Failed"}             
+
+                It 'Should not throw' {                    
+
                     {Set-TargetResource @testUSR} | Should Not Throw
                 }
 
+                It 'Should throw when set fails' {
+                    Mock Test-TargetResource -MockWith {$false}  
+                    {Set-TargetResource @testUSR} | Should Throw
+ 
+                }
                 It 'Should call expected mocks' {
-                    Assert-MockCalled -CommandName Invoke-Secedit -Exactly 1
-                    Assert-MockCalled -CommandName Get-TargetResource -Exactly 1
-                    Assert-MockCalled -CommandName Test-TargetResource -Exactly 1
+                    Assert-MockCalled -CommandName Invoke-Secedit -Exactly 2
+                    Assert-MockCalled -CommandName Test-TargetResource -Exactly 2
                 }
-
-                It 'Should return updated policy' {
-                    $cloneTestUSR = $testUSR.Clone()                    
-                    $cloneTestUSR.Add('PassThru',$true)
-                    $setResults = Set-TargetResource @cloneTestUSR
-
-                    $setResults.Identity | Should Be $cloneTestUSR.Identity
-                }
-            }
-
-            Context 'Idenity is NULL (Remove all identites from policy)' {
-                Mock Invoke-Secedit
-                Mock Test-TargetResource -MockWith {$true}              
-                Mock Get-TargetResource -MockWith {$mockGetTargetTesult}
-
-                It 'Identity is NULL should remove all' {
-                    $nullUSR = $testUSR.Clone()
-                    $nullUSR.Identity = 'NULL'
-                    $nullUSR.Add('PassThru',$true)
-
-                    $setResults = Set-TargetResource @nullUSR
-
-                    $setResults.Identity | Should Be ''
-                }
-
-                It 'Should call expected mocks' {
-                    Assert-MockCalled -CommandName Invoke-Secedit -Exactly 1
-                    Assert-MockCalled -CommandName Get-TargetResource -Exactly 1
-                    Assert-MockCalled -CommandName Test-TargetResource -Exactly 1
-                } 
-            }
-
-            Context 'Remove only one identity from policy when multiple are assigned' {
-                $testUSR = [PSObject]@{
-                    Policy   = 'Access_Credential_Manager_as_a_trusted_caller'                
-                    Identity = 'contoso\TestUser1'
-                    Ensure   = 'Absent'
-                    PassThru = $true
-                }
-
-                $mockGetTargetResult = [PSObject] @{
-                    Policy         = 'Access_Credential_Manager_as_a_trusted_caller'
-                    Identity       = 'contoso\TestUser1'
-                    Ensure         = 'Present'
-                    ActualIdentity = 'contoso\TestUser1','contoso\TestUser2'
-                }
-
-                Mock Invoke-Secedit
-                Mock Test-TargetResource -MockWith {$true}              
-                Mock Get-TargetResource -MockWith {$mockGetTargetResult}
-
-                It 'Should Remove only specified Identity from Policy' {
-                    $expectedResult = 'contoso\testuser2'
-                    $setResult = Set-TargetResource @testUSR
-
-                    $setResult.Identity | Should be $expectedResult
-                }
-
-                It 'Should call expected mocks' {
-                    Assert-MockCalled -CommandName Invoke-Secedit -Exactly 1
-                    Assert-MockCalled -CommandName Get-TargetResource -Exactly 1
-                    Assert-MockCalled -CommandName Test-TargetResource -Exactly 1
-                }     
             }
         }
         #endregion 
