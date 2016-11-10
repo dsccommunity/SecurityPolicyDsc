@@ -163,13 +163,13 @@ function Get-UserRightsAssignment
         $FilePath
     )
 
-    $iniHashTable = @{}
+    $policyConfiguration = @{}
     switch -regex -file $FilePath
     {
         "^\[(.+)\]" # Section
         {
             $section = $matches[1]
-            $iniHashTable[$section] = @{}
+            $policyConfiguration[$section] = @{}
             $CommentCount = 0
         }
         "^(;.*)$" # Comment
@@ -177,15 +177,15 @@ function Get-UserRightsAssignment
             $value = $matches[1]
             $commentCount = $commentCount + 1
             $name = "Comment" + $commentCount
-            $iniHashTable[$section][$name] = $value
+            $policyConfiguration[$section][$name] = $value
         } 
         "(.+?)\s*=(.*)" # Key
         {
             $name,$value =  $matches[1..2] -replace "\*"
-            $iniHashTable[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
+            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
         }
     }
-    return $iniHashTable
+    return $policyConfiguration
 }
 
 <#
