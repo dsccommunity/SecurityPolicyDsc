@@ -1,5 +1,4 @@
 
-
 #region HEADER
 
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -18,15 +17,10 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion HEADER
 
-function Invoke-TestSetup {
-
-}
-
 function Set-HashValue
 {
     param
     (
-
         $HashTable,
         $Key,
         $NewValue
@@ -38,15 +32,12 @@ function Set-HashValue
 }
 
 function Invoke-TestCleanup {
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment
-    
+    Restore-TestEnvironment -TestEnvironment $TestEnvironment    
 }
 
 # Begin Testing
 try
-{
-    Invoke-TestSetup
-
+{ 
     InModuleScope 'MSFT_SecInf' {
         
         Describe 'The system is not in a desired state' {
