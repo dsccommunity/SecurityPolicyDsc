@@ -1,20 +1,18 @@
-data LocalizedData
-{
-    ConvertFrom-StringData @'
-        IdentityIsNullRemovingAll=Identity is NULL. Removing all Identities from {0}
-        GrantingPolicyRightsToIds=Granting {0} rights to {1}
-        TaskSuccess=Task successfully completed
-        TaskSuccessFail=Task did not complete successfully
-        TestIdentityIsPresentOnPolicy=Testing {0} is present on policy {1}
-        NoIdentitiesFoundOnPolicy=No identities found on {0}
-        IdNotFoundOnPolicy={0} not found on {1}
-        ErrorCantTranslateSID=Error processing {0}. {1}
-        EchoDebugInf=Temp inf {0}
-        EchoDebugTestInf=UserRightsInf {0}
-'@
 
-}
+Import-Module -Name (Join-Path -Path ( Split-Path $PSScriptRoot -Parent ) `
+                               -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
+                               -Force
 
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_UserRightsAssignment'
+
+<#
+    .SYNOPSIS
+        Gets the current identities assigned to a user rights assignment.
+    .PARAMETER Policy
+        Specifies the policy to configure.
+    .PARAMETER Identity
+        Specifies the identity to add to a user rights assignment.
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -52,6 +50,14 @@ function Get-TargetResource
     $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Gets the current identities assigned to a user rights assignment.
+    .PARAMETER Policy
+        Specifies the policy to configure.
+    .PARAMETER Identity
+        Specifies the identity to add to a user rights assignment.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -104,6 +110,14 @@ function Set-TargetResource
     }
 }
 
+<#
+    .SYNOPSIS
+        Gets the current identities assigned to a user rights assignment.
+    .PARAMETER Policy
+        Specifies the policy to configure.
+    .PARAMETER Identity
+        Specifies the identity to add to a user rights assignment.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]

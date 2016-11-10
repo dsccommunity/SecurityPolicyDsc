@@ -20,9 +20,9 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ## Versions
 
-## Unreleased
+### Unreleased
 
-1.0.0.0
+### 1.0.0.0
 * Initial release with the following resource:
  * UserRightsAssignment
  * SecInf

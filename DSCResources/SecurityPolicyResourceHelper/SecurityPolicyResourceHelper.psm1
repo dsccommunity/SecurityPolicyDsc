@@ -1,11 +1,66 @@
-data LocalizedData
-{
-    ConvertFrom-StringData @'
-        EchoDebugInf=Temp inf {0}
-        ErrorCantTranslateSID=Error processing {0}. {1}
-'@
 
+<#
+
+    .SYNOPSIS
+
+        Retrieves the localized string data based on the machine's culture.
+        Falls back to en-US strings if the machine's culture is not supported.
+
+    .PARAMETER ResourceName
+
+        The name of the resource as it appears before '.strings.psd1' of the localized string file.
+        For example:
+            AuditPolicySubcategory: MSFT_AuditPolicySubcategory
+            AuditPolicyOption: MSFT_AuditPolicyOption
+#>
+
+function Get-LocalizedData
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true, ParameterSetName = 'resource')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $ResourceName,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'helper')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $HelperName
+
+    )
+
+    # With the helper module just update the name and path variables as if it were a resource. 
+    if ($PSCmdlet.ParameterSetName -eq 'helper')
+    {
+        $resourceDirectory = $PSScriptRoot
+        $ResourceName = $HelperName
+    }
+    else 
+    {
+        # Step up one additional level to build the correct path to the resource culture.
+        $resourceDirectory = Join-Path -Path ( Split-Path $PSScriptRoot -Parent ) `
+                                       -ChildPath $ResourceName
+    }
+
+    $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath $PSUICulture
+
+    if (-not (Test-Path -Path $localizedStringFileLocation))
+    {
+        # Fallback to en-US
+
+        $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath 'en-US'
+    }
+
+    Import-LocalizedData `
+        -BindingVariable 'localizedData' `
+        -FileName "$ResourceName.strings.psd1" `
+        -BaseDirectory $localizedStringFileLocation
+
+    return $localizedData
 }
+
 
 <#
     .SYNOPSIS 
@@ -13,9 +68,9 @@ data LocalizedData
     .PARAMETER InfPolicy
         Name of user rights assignment policy
     .PARAMETER UserList
-        List of user9s0 to be added to policy
+        List of users to be added to policy
     .PARAMETER FilePath
-        Path Inf will be created
+        Path to where the Inf will be created
     .EXAMPLE
         Out-UserRightsInf -InfPolicy SeTrustedCredManAccessPrivilege -UserList Contoso\User1 -FilePath C:\Scratch\Secedit.Inf
 #>
@@ -59,15 +114,16 @@ function ConvertTo-LocalFriendlyName
     param
     (
         [System.String[]]
-        $SID		
+        $SID        
     )
-	
+    
+    $localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
     $domainRole = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
     
     foreach ($id in $SID)
     {        
         if ($null -ne $id -and $id -match 'S-')
-        {   
+        {
             try
             {
                 $securityIdentifier = [System.Security.Principal.SecurityIdentifier]($id.trim())
@@ -76,8 +132,8 @@ function ConvertTo-LocalFriendlyName
             }
             catch
             {
-                Write-Warning -Message ($LocalizedData.ErrorCantTranslateSID -f $id, $($_.Exception.Message) )                
-            }         
+                Write-Warning -Message ($LocalizedData.ErrorCantTranslateSID -f $id, $($_.Exception.Message) )
+            }
         }
         elseIf ($domainRole -eq 4 -or $domainRole -eq 5)
         {
@@ -171,7 +227,7 @@ function Get-USRPolicy
     $policyName = $policyList[$Policy]
 
     $currentUserRights = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')    
-    Write-Debug -Message ($LocalizedData.EchoDebugTestInf -f $currentUserRights)
+    Write-Debug -Message ($LocalizedData.EchoDebugInf -f $currentUserRights)
 
     $secedit = secedit.exe /export /cfg $currentUserRights /areas $areas
 
