@@ -1,20 +1,6 @@
-<#
-.Synopsis
-   Template for creating DSC Resource Unit Tests
-.DESCRIPTION
-   To Use:
-     1. Copy to \Tests\Unit\ folder and rename MSFT_x<ResourceName>.tests.ps1
-     2. Customize TODO sections.
 
-.NOTES
-   Code in HEADER and FOOTER regions are standard and may be moved into DSCResource.Tools in
-   Future and therefore should not be altered if possible.
-#>
-
-
-# TODO: Customize these parameters...
-$Global:DSCModuleName      = 'SecurityPolicyDsc' # Example xNetworking
-$Global:DSCResourceName    = 'MSFT_xUserRightsAssignment' # Example MSFT_xFirewall
+$Global:DSCModuleName      = 'SecurityPolicyDsc'
+$Global:DSCResourceName    = 'MSFT_xUserRightsAssignment'
 # /TODO
 
 #region HEADER
@@ -53,7 +39,6 @@ try
                 Policy = 'SeTrustedCredManAccessPrivilege'
                 Identity = 'contoso\testUser1','contoso\TestUser2'
                 PolicyFriendlyName = $testUSR.Policy
-
             }
 
             $mockGetTargetTesult = [PSObject] @{
@@ -66,10 +51,8 @@ try
 
         #region Function Get-TargetResource
         Describe "$($Global:DSCResourceName)\Get-TargetResource" {
-        
                
             Context 'Identity is not present on Policy' {
-
                 Mock Get-USRPolicy -MockWith {return @($mockUSR)}
                 Mock Test-TargetResource -MockWith {$false}
 
@@ -84,10 +67,9 @@ try
                 }
             }
 
-            Context 'Identity does exist on Policy' {
-           
+            Context 'Identity does exist on Policy' {           
                 Mock Get-USRPolicy -MockWith {return @($mockUSR)}
-                Mock Test-TargetResource -MockWith {return $true }
+                Mock Test-TargetResource -MockWith {return $true}
 
                 It 'Should return Present' {
                     $Result = Get-TargetResource @testUSR
@@ -110,7 +92,6 @@ try
         #region Function Set-TargetResource
         Describe "$($Global:DSCResourceName)\Test-TargetResource" {
             Context 'Identity does exist' {
-
                 Mock Get-USRPolicy -MockWith {$mockUSR}
 
                 It 'Should return true' {
@@ -121,7 +102,6 @@ try
                 It 'Should call expected mocks' {
                     Assert-MockCalled -CommandName Get-USRPolicy -Exactly 1
                 }
-
             }
 
             Context 'Identity does not exist' {
@@ -178,7 +158,6 @@ try
                     $setResults = Set-TargetResource @nullUSR
 
                     $setResults.Identity | Should Be ''
-
                 }
 
                 It 'Should call expected mocks' {
