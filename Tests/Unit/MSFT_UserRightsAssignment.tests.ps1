@@ -30,21 +30,21 @@ try
 
         #region Pester Test Initialization
             $testUSR = [PSObject]@{
-                Policy         = 'Access_Credential_Manager_as_a_trusted_caller'                
-                Identity       = 'contoso\TestUser1'
-                Ensure         = 'Present'
+                Policy   = 'Access_Credential_Manager_as_a_trusted_caller'                
+                Identity = 'contoso\TestUser1'
+                Ensure   = 'Present'
             }
 
             $mockUSR = [PSObject]@{
-                Policy = 'SeTrustedCredManAccessPrivilege'
-                Identity = 'contoso\testUser1','contoso\TestUser2'
+                Policy             = 'SeTrustedCredManAccessPrivilege'
+                Identity           = 'contoso\testUser1','contoso\TestUser2'
                 PolicyFriendlyName = $testUSR.Policy
             }
 
             $mockGetTargetTesult = [PSObject] @{
-                Policy = 'Access_Credential_Manager_as_a_trusted_caller'
-                Identity = 'contoso\TestUser2'
-                Ensure = 'Present'
+                Policy         = 'Access_Credential_Manager_as_a_trusted_caller'
+                Identity       = 'contoso\TestUser2'
+                Ensure         = 'Present'
                 ActualIdentity = 'contoso\TestUser1'
             }
         #endregion
@@ -169,16 +169,16 @@ try
 
             Context 'Remove only one identity from policy when multiple are assigned' {
                 $testUSR = [PSObject]@{
-                    Policy         = 'Access_Credential_Manager_as_a_trusted_caller'                
-                    Identity       = 'contoso\TestUser1'
-                    Ensure         = 'Absent'
-                    PassThru       = $true
+                    Policy   = 'Access_Credential_Manager_as_a_trusted_caller'                
+                    Identity = 'contoso\TestUser1'
+                    Ensure   = 'Absent'
+                    PassThru = $true
                 }
 
                 $mockGetTargetResult = [PSObject] @{
-                    Policy = 'Access_Credential_Manager_as_a_trusted_caller'
-                    Identity = 'contoso\TestUser1'
-                    Ensure = 'Present'
+                    Policy         = 'Access_Credential_Manager_as_a_trusted_caller'
+                    Identity       = 'contoso\TestUser1'
+                    Ensure         = 'Present'
                     ActualIdentity = 'contoso\TestUser1','contoso\TestUser2'
                 }
 
