@@ -12,7 +12,7 @@ Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\
 
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName 'SecurityPolicyDsc' `
-    -DSCResourceName 'MSFT_SecInf' `
+    -DSCResourceName 'MSFT_SecurityTemplate' `
     -TestType Unit 
 
 #endregion HEADER
@@ -24,7 +24,7 @@ function Invoke-TestCleanup {
 # Begin Testing
 try
 { 
-    InModuleScope 'MSFT_SecInf' {
+    InModuleScope 'MSFT_SecurityTemplate' {
 
     function Set-HashValue
     {  
@@ -46,20 +46,21 @@ try
             $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
 
             Context 'Get and Test method tests' {
-
-                It 'Should return path of desired inf' {
-                    $getResult = Get-TargetResource -Path $testParameters.Path
-                    $getResult.Path | Should be $testParameters.Path
-                }
-
-                It 'Test method should return FALSE' {
-                                      
                     Mock -CommandName Get-CurrentPolicy -MockWith {$mockResults}
                     Mock -CommandName Backup-SecurityPolicy -MockWith {}
                     Mock -CommandName Get-SecInfFile -MockWith {}
                     Mock -CommandName Test-Path -MockWith {$true}
                     Mock -CommandName Get-UserRightsAssignment -MockWith {}
                     Mock -CommandName Get-Module -MockWith {}
+                It 'Should return path of desired inf' {
+                    
+                    $getResult = Get-TargetResource -Path $testParameters.Path
+                    $getResult.Path | Should BeLike "*.inf"
+                }
+
+                It 'Test method should return FALSE' {
+                                      
+
 
                     foreach($key in $mockResults.keys)
                     {
@@ -94,7 +95,7 @@ try
         }
 
         Describe 'The system is in a desired state' {
-            Context 'Test for Test emthod' {
+            Context 'Test for Test method' {
                 $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
 
                 It 'Test method should return TRUE' {

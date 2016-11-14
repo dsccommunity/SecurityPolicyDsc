@@ -1,6 +1,6 @@
 
-$Global:DSCModuleName    = 'SecurityPolicyDsc' 
-$Global:DSCResourceName  = 'MSFT_UserRightsAssignment'
+$global:DSCModuleName    = 'SecurityPolicyDsc' 
+$global:DSCResourceName  = 'MSFT_UserRightsAssignment'
 
 #region HEADER
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -12,8 +12,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $Global:DSCModuleName `
-    -DSCResourceName $Global:DSCResourceName `
+    -DSCModuleName $global:DSCModuleName `
+    -DSCResourceName $global:DSCResourceName `
     -TestType Unit 
 #endregion
 
@@ -22,7 +22,7 @@ try
 {
     #region Pester Tests
 
-    InModuleScope $Global:DSCResourceName {
+    InModuleScope $global:DSCResourceName {
 
             $testUSR = [PSObject]@{
                 Policy   = 'Access_Credential_Manager_as_a_trusted_caller'                
@@ -43,7 +43,7 @@ try
         #endregion
 
         #region Function Get-TargetResource
-        Describe "$($Global:DSCResourceName)\Get-TargetResource" {        
+        Describe "$($global:DSCResourceName)\Get-TargetResource" {        
                
             Context 'Identity should not match on Policy' {
 
@@ -80,7 +80,7 @@ try
         #endregion
 
         #region Function Set-TargetResource
-        Describe "$($Global:DSCResourceName)\Test-TargetResource" {
+        Describe "$($global:DSCResourceName)\Test-TargetResource" {
             Context 'Identity does exist' {
 
                 Mock Get-USRPolicy -MockWith {$mockUSR}
@@ -113,7 +113,7 @@ try
         }
         #endregion
         #region Function Test-TargetResource
-        Describe "$($Global:DSCResourceName)\Set-TargetResource" {
+        Describe "$($global:DSCResourceName)\Set-TargetResource" {
 
             Context 'Identity does not exist but should' {
 

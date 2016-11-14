@@ -1,19 +1,15 @@
 
 <#
-
     .SYNOPSIS
-
         Retrieves the localized string data based on the machine's culture.
         Falls back to en-US strings if the machine's culture is not supported.
 
     .PARAMETER ResourceName
-
         The name of the resource as it appears before '.strings.psd1' of the localized string file.
         For example:
             AuditPolicySubcategory: MSFT_AuditPolicySubcategory
             AuditPolicyOption: MSFT_AuditPolicyOption
 #>
-
 function Get-LocalizedData
 {
     [CmdletBinding()]
@@ -111,6 +107,8 @@ Revision=1
 #>
 function ConvertTo-LocalFriendlyName
 {
+    [OutputType([String])]
+    [CmdletBinding()]
     param
     (
         [System.String[]]
@@ -132,7 +130,7 @@ function ConvertTo-LocalFriendlyName
             }
             catch
             {
-                Write-Warning -Message ($LocalizedData.ErrorCantTranslateSID -f $id, $($_.Exception.Message) )
+                Write-Warning -Message ($localizedData.ErrorCantTranslateSID -f $id, $($_.Exception.Message) )
             }
         }
         elseIf ($domainRole -eq 4 -or $domainRole -eq 5)
@@ -156,6 +154,7 @@ function ConvertTo-LocalFriendlyName
 #>
 function Get-UserRightsAssignment
 {
+    [OutputType([Hashtable])]
     [CmdletBinding()]
     param
     (
@@ -194,6 +193,9 @@ function Get-UserRightsAssignment
 #>
 function Get-AssignmentFriendlyNames
 {
+    [OutputType([Hashtable])]
+    [CmdletBinding()]
+    Param ()
     Get-Content -Path $PSScriptRoot\UserRightsFriendlyNameConversions.psd1 -Raw | ConvertFrom-StringData
 }
 
@@ -209,6 +211,7 @@ function Get-AssignmentFriendlyNames
 #>
 function Get-USRPolicy
 {
+    [OutputType([PSObject])]
     [CmdletBinding()]
     param
     (
@@ -227,13 +230,13 @@ function Get-USRPolicy
     $policyName = $policyList[$Policy]
 
     $currentUserRights = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')    
-    Write-Debug -Message ($LocalizedData.EchoDebugInf -f $currentUserRights)
+    Write-Debug -Message ($localizedData.EchoDebugInf -f $currentUserRights)
 
     $secedit = secedit.exe /export /cfg $currentUserRights /areas $areas
 
     $userRights = (Get-UserRightsAssignment $currentUserRights).'Privilege Rights'    
 
-    [psobject]@{
+    [PSObject]@{
         Policy = $policyName
         PolicyFriendlyName = $Policy
         Identity = $userRights[$policyName]
@@ -282,6 +285,8 @@ function Invoke-Secedit
 #>
 function Get-SecInfFile
 {
+    [OutputType([String])]
+    [CmdletBinding()]   
     param
     (
         [System.String]$Path
@@ -297,6 +302,8 @@ function Get-SecInfFile
 #>
 function Get-CurrentPolicy
 {
+    [OutputType([Hashtable])]
+    [CmdletBinding()] 
     param
     (
         [System.String]$Path
@@ -311,10 +318,41 @@ function Get-CurrentPolicy
 #>
 function Get-DesiredPolicy
 {
+    [OutputType([Hashtable])]
+    [CmdletBinding()] 
     param
     (
         [System.String]$Path
     )
 
     (Get-UserRightsAssignment -FilePath $Path).'Privilege Rights'
+}
+
+<#
+    .SYNOPSIS
+        Removes the other security areas from policy template file so only settings for user rights assignments are returned.
+    .PARAMETER Path
+        Specifies the file to the template to be parsed.
+#>
+function Format-SecurityPolicyFile
+{
+    [OutputType([String])]
+    [CmdletBinding()]
+    param
+    (
+        [System.String]$Path
+    )
+
+    $outputPath = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')
+    $content = Get-Content -Path $Path 
+
+    $privilegeRightsMatch = Select-String -Path $Path -Pattern "[Privilege Rights]" -SimpleMatch
+    $endOfFileMatch = Select-String -Path $Path -Pattern "Revision=1" -SimpleMatch
+
+    $startOfFile = $privilegeRightIndex.LineNumber -1
+    $endOfFile = $endOfFileMatch.LineNumber
+
+    $content[$startOfFile..$endOfFile] | Out-File -FilePath $outputPath
+
+    $outputPath
 }

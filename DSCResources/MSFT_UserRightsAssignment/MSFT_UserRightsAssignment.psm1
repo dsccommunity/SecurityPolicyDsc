@@ -80,18 +80,18 @@ function Set-TargetResource
     $userRightsToAddInf = "$env:TEMP\userRightsToAdd.inf" 
     $idsToAdd = $Identity -join ","
 
-    if ($Identity -eq 'NULL')
+    if ($Identity -eq 'null')
     {
-        Write-Verbose -Message ($LocalizedData.IdentityIsNullRemovingAll -f $Policy)
+        Write-Verbose -Message ($script:localizedData.IdentityIsNullRemovingAll -f $Policy)
         $idsToAdd = $null
     }
     else
     {
-        Write-Verbose -Message ($LocalizedData.GrantingPolicyRightsToIds -f $Policy, $idsToAdd)
+        Write-Verbose -Message ($script:localizedData.GrantingPolicyRightsToIds -f $Policy, $idsToAdd)
     }
        
     Out-UserRightsInf -InfPolicy $policyName -UserList $idsToAdd -FilePath $userRightsToAddInf
-    Write-Debug -Message ($LocalizedData.EchoDebugInf -f $userRightsToAddInf)
+    Write-Debug -Message ($script:localizedData.EchoDebugInf -f $userRightsToAddInf)
 
     Invoke-Secedit -UserRightsToAddInf $userRightsToAddInf -SecEditOutput $seceditOutput
 
@@ -100,12 +100,12 @@ function Set-TargetResource
 
     if ($testSuccuess -eq $true)
     {
-        Write-Verbose -Message ($LocalizedData.TaskSuccess)
+        Write-Verbose -Message ($script:localizedData.TaskSuccess)
     }
     else
     {
         $seceditResult = Get-Content $script:seceditOutput
-        Write-Verbose -Message ($LocalizedData.TaskSuccessFail)
+        Write-Verbose -Message ($script:localizedData.TaskSuccessFail)
         throw "$($seceditResult[-1])"
     }
 }
@@ -137,13 +137,13 @@ function Test-TargetResource
         
     $userRights = Get-USRPolicy -Policy $Policy -Areas USER_Rights
 
-    Write-Verbose -Message ($LocalizedData.TestIdentityIsPresentOnPolicy -f $($Identity -join","), $Policy)
+    Write-Verbose -Message ($script:localizedData.TestIdentityIsPresentOnPolicy -f $($Identity -join","), $Policy)
 
     if ($Identity -eq 'null')
     {
-        if ($userRights.Identity -eq $null)
+        if ($null -eq $userRights.Identity)
         {
-            Write-Verbose -Message ($LocalizedData.NoIdentitiesFoundOnPolicy -f $Policy)
+            Write-Verbose -Message ($script:localizedData.NoIdentitiesFoundOnPolicy -f $Policy)
             return $true
         }
     }  
@@ -151,7 +151,7 @@ function Test-TargetResource
     {
         if ($userRights.Identity -notcontains $id)
         {
-            Write-Verbose -Message ($LocalizedData.IdNotFoundOnPolicy -f $id, $Policy)
+            Write-Verbose -Message ($script:localizedData.IdNotFoundOnPolicy -f $id, $Policy)
             return $false
         }      
     }    

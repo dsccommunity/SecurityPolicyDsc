@@ -4,7 +4,7 @@ Configuration CompareInfs
 
     node localhost
     {
-        SecInf TrustedCredentialAccess
+        SecurityTemplate TrustedCredentialAccess
         {
             Path = "C:\scratch\UserRights.inf"
         }
