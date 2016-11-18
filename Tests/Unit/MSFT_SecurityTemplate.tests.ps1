@@ -35,8 +35,8 @@ try
             $NewValue
         )
 
-        $HashTable.Remove($key)
-        $HashTable.Add($Key,$NewValue)
+        ($HashTable.'Privilege Rights').Remove($key)
+        ($HashTable.'Privilege Rights').Add($Key,$NewValue)
         $HashTable
     }   
         Describe 'The system is not in a desired state' {
@@ -44,13 +44,12 @@ try
                 Path = 'C:\baseline.inf'
             }
             $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
-
+            $modifiedMockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
             Context 'Get and Test method tests' {
-                    Mock -CommandName Get-CurrentPolicy -MockWith {$mockResults}
+
                     Mock -CommandName Backup-SecurityPolicy -MockWith {}
                     Mock -CommandName Get-SecInfFile -MockWith {}
-                    Mock -CommandName Test-Path -MockWith {$true}
-                    Mock -CommandName Get-UserRightsAssignment -MockWith {}
+                    Mock -CommandName Test-Path -MockWith {$true}                    
                     Mock -CommandName Get-Module -MockWith {}
                 It 'Should return path of desired inf' {
                     
@@ -58,17 +57,15 @@ try
                     $getResult.Path | Should BeLike "*.inf"
                 }
 
-                It 'Test method should return FALSE' {
-                                      
+                It 'Test method should return FALSE' {  
 
-
-                    foreach($key in $mockResults.keys)
-                    {
-                        $modifiedMockResults = $mockResults.clone()
+                    foreach($key in $mockResults.'Privilege Rights'.keys)
+                    {                        
                         $mockFalseResults = Set-HashValue -HashTable $modifiedMockResults -Key $key -NewValue NoIdentity
-                 
-                        Mock -CommandName Get-DesiredPolicy -MockWith {$mockFalseResults}
-                        Test-TargetResource -Path $testParameters.Path | should be $false
+                        Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockResults} -ParameterFilter {$FilePath -like "*\Temp\inf*inf"}
+                        Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockFalseResults} -ParameterFilter {$FilePath -eq $testParameters.Path} 
+
+                        Test-TargetResource -Path $testParameters.Path | Should Be $false
                     }
                 }
             }
@@ -82,13 +79,13 @@ try
                     
                     Mock Get-Module -MockWith {$false}                 
 
-                    {Set-TargetResource -Path $testParameters.Path} | should not throw
+                    {Set-TargetResource -Path $testParameters.Path} | Should Not throw
                     Assert-MockCalled -CommandName Invoke-Secedit -Exactly 1
                 }
 
                 It 'Should Call Restore-SecurityPolicy when SecurityCmdlet module does exist' {
                     Mock Get-Module -MockWith {$true}
-                    {Set-TargetResource -Path $testParameters.Path} | should not throw
+                    {Set-TargetResource -Path $testParameters.Path} | Should Not throw
                     Assert-MockCalled -CommandName Restore-SecurityPolicy -Exactly 1                    
                 }
             }
@@ -99,8 +96,7 @@ try
                 $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
 
                 It 'Test method should return TRUE' {
-                    Mock -CommandName Get-CurrentPolicy -MockWith {$mockResults}
-                    Mock -CommandName Get-DesiredPolicy -MockWith {$mockResults}
+                    Mock -CommandName Get-UserRightsAssignment -MockWith {$mockResults}                    
                     Mock -CommandName Backup-SecurityPolicy -MockWith {}
                     Mock -CommandName Get-SecInfFile -MockWith {}
                     Mock -CommandName Test-Path -MockWith {$true}

@@ -57,148 +57,6 @@ function Get-LocalizedData
     return $localizedData
 }
 
-
-<#
-    .SYNOPSIS 
-        Creates Inf with desired configuration for a user right assignment that is passed to secedit.exe
-    .PARAMETER InfPolicy
-        Name of user rights assignment policy
-    .PARAMETER UserList
-        List of users to be added to policy
-    .PARAMETER FilePath
-        Path to where the Inf will be created
-    .EXAMPLE
-        Out-UserRightsInf -InfPolicy SeTrustedCredManAccessPrivilege -UserList Contoso\User1 -FilePath C:\Scratch\Secedit.Inf
-#>
-function Out-UserRightsInf
-{
-    param
-    (
-        [System.String]
-        $InfPolicy,
-
-        [System.String]
-        $UserList,
-
-        [System.String]
-        $FilePath
-    )
-
-    $infTemplate =@"
-[Unicode]
-Unicode=yes
-[Privilege Rights]
-$InfPolicy = $UserList
-[Version]
-signature="`$CHICAGO`$"
-Revision=1
-"@
-
-    Out-File -InputObject $infTemplate -FilePath $FilePath -Encoding unicode
-}
-
-<#
-    .SYNOPSIS
-        Converts SID to friendly name
-    .PARAMETER SID
-        SID of identity being converted
-    .EXAMPLE
-        ConvertTo-LocalFriendlyName -SID 'S-1-5-21-3623811015-3361044348-30300820-1013'
-#>
-function ConvertTo-LocalFriendlyName
-{
-    [OutputType([String])]
-    [CmdletBinding()]
-    param
-    (
-        [System.String[]]
-        $SID        
-    )
-    
-    $localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
-    $domainRole = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
-    
-    foreach ($id in $SID)
-    {        
-        if ($null -ne $id -and $id -match 'S-')
-        {
-            try
-            {
-                $securityIdentifier = [System.Security.Principal.SecurityIdentifier]($id.trim())
-                $user = $securityIdentifier.Translate([System.Security.Principal.NTAccount])
-                Write-Output $user.value
-            }
-            catch
-            {
-                Write-Warning -Message ($localizedData.ErrorCantTranslateSID -f $id, $($_.Exception.Message) )
-            }
-        }
-        elseIf ($domainRole -eq 4 -or $domainRole -eq 5)
-        {
-            Write-Output "$($env:USERDOMAIN + '\' + $($id.trim()))"
-        }
-        elseIf ($id -notmatch '^S-')
-        {
-            Write-Output "$($id.trim())"
-        }
-    }
-}
-
-<#
-    .SYNOPSIS
-        Parses Inf produced by 'secedit.exe /export' and returns an object of identites assigned to a user rights assignment policy
-    .PARAMETER FilePath
-        Path to Inf
-    .EXAMPLE
-        Get-UserRightsAssignment -FilePath C:\seceditOutput.inf
-#>
-function Get-UserRightsAssignment
-{
-    [OutputType([Hashtable])]
-    [CmdletBinding()]
-    param
-    (
-        [System.String]
-        $FilePath
-    )
-
-    $policyConfiguration = @{}
-    switch -regex -file $FilePath
-    {
-        "^\[(.+)\]" # Section
-        {
-            $section = $matches[1]
-            $policyConfiguration[$section] = @{}
-            $CommentCount = 0
-        }
-        "^(;.*)$" # Comment
-        {
-            $value = $matches[1]
-            $commentCount = $commentCount + 1
-            $name = "Comment" + $commentCount
-            $policyConfiguration[$section][$name] = $value
-        } 
-        "(.+?)\s*=(.*)" # Key
-        {
-            $name,$value =  $matches[1..2] -replace "\*"
-            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
-        }
-    }
-    return $policyConfiguration
-}
-
-<#
-    .SYNOPSIS
-        Converts policy names that match the GUI to the abbreviated names used by secedit.exe 
-#>
-function Get-AssignmentFriendlyNames
-{
-    [OutputType([Hashtable])]
-    [CmdletBinding()]
-    Param ()
-    Get-Content -Path $PSScriptRoot\UserRightsFriendlyNameConversions.psd1 -Raw | ConvertFrom-StringData
-}
-
 <#
     .SYNOPSIS
         Returns an object of the identities assigned to a user rights assignment
@@ -292,40 +150,102 @@ function Get-SecInfFile
         [System.String]$Path
     )
     
-    $secedit = secedit.exe /export /cfg $Path /areas "USER_Rights"
-    $Path
+    $secedit = secedit.exe /export /cfg $Path /areas "USER_Rights"    
 }
 
 <#
     .SYNOPSIS
-        Wrapper around Get-UserRightsAssignment for easier Mocking in Pester tests    
+        Parses Inf produced by 'secedit.exe /export' and returns an object of identites assigned to a user rights assignment policy
+    .PARAMETER FilePath
+        Path to Inf
+    .EXAMPLE
+        Get-UserRightsAssignment -FilePath C:\seceditOutput.inf
 #>
-function Get-CurrentPolicy
+function Get-UserRightsAssignment
 {
     [OutputType([Hashtable])]
-    [CmdletBinding()] 
+    [CmdletBinding()]
     param
     (
-        [System.String]$Path
+        [System.String]
+        $FilePath
     )
 
-    (Get-UserRightsAssignment -FilePath $Path).'Privilege Rights'
+    $policyConfiguration = @{}
+    switch -regex -file $FilePath
+    {
+        "^\[(.+)\]" # Section
+        {
+            $section = $matches[1]
+            $policyConfiguration[$section] = @{}
+            $CommentCount = 0
+        }
+        "^(;.*)$" # Comment
+        {
+            $value = $matches[1]
+            $commentCount = $commentCount + 1
+            $name = "Comment" + $commentCount
+            $policyConfiguration[$section][$name] = $value
+        } 
+        "(.+?)\s*=(.*)" # Key
+        {
+            $name,$value =  $matches[1..2] -replace "\*"
+            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
+        }
+    }
+    return $policyConfiguration
 }
 
 <#
     .SYNOPSIS
-        Wrapper around Get-UserRightsAssignment for easier Mocking in Pester tests    
+        Converts policy names that match the GUI to the abbreviated names used by secedit.exe 
 #>
-function Get-DesiredPolicy
+function Get-AssignmentFriendlyNames
 {
     [OutputType([Hashtable])]
-    [CmdletBinding()] 
+    [CmdletBinding()]
+    Param ()
+    
+    Get-Content -Path $PSScriptRoot\UserRightsFriendlyNameConversions.psd1 -Raw | ConvertFrom-StringData
+}
+
+<#
+    .SYNOPSIS 
+        Creates Inf with desired configuration for a user right assignment that is passed to secedit.exe
+    .PARAMETER InfPolicy
+        Name of user rights assignment policy
+    .PARAMETER UserList
+        List of users to be added to policy
+    .PARAMETER FilePath
+        Path to where the Inf will be created
+    .EXAMPLE
+        Out-UserRightsInf -InfPolicy SeTrustedCredManAccessPrivilege -UserList Contoso\User1 -FilePath C:\Scratch\Secedit.Inf
+#>
+function Out-UserRightsInf
+{
     param
     (
-        [System.String]$Path
+        [System.String]
+        $InfPolicy,
+
+        [System.String]
+        $UserList,
+
+        [System.String]
+        $FilePath
     )
 
-    (Get-UserRightsAssignment -FilePath $Path).'Privilege Rights'
+    $infTemplate =@"
+[Unicode]
+Unicode=yes
+[Privilege Rights]
+$InfPolicy = $UserList
+[Version]
+signature="`$CHICAGO`$"
+Revision=1
+"@
+
+    Out-File -InputObject $infTemplate -FilePath $FilePath -Encoding unicode
 }
 
 <#
@@ -356,3 +276,51 @@ function Format-SecurityPolicyFile
 
     $outputPath
 }
+
+<#
+    .SYNOPSIS
+        Converts SID to friendly name
+    .PARAMETER SID
+        SID of identity being converted
+    .EXAMPLE
+        ConvertTo-LocalFriendlyName -SID 'S-1-5-21-3623811015-3361044348-30300820-1013'
+#>
+function ConvertTo-LocalFriendlyName
+{
+    [OutputType([String])]
+    [CmdletBinding()]
+    param
+    (
+        [System.String[]]
+        $SID        
+    )
+    
+    $localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
+    $domainRole = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
+    
+    foreach ($id in $SID)
+    {        
+        if ($null -ne $id -and $id -match 'S-')
+        {
+            try
+            {
+                $securityIdentifier = [System.Security.Principal.SecurityIdentifier]($id.trim())
+                $user = $securityIdentifier.Translate([System.Security.Principal.NTAccount])
+                Write-Output $user.value
+            }
+            catch
+            {
+                Write-Warning -Message ($localizedData.ErrorCantTranslateSID -f $id, $($_.Exception.Message) )
+            }
+        }
+        elseIf ($domainRole -eq 4 -or $domainRole -eq 5)
+        {
+            Write-Output "$($env:USERDOMAIN + '\' + $($id.trim()))"
+        }
+        elseIf ($id -notmatch '^S-')
+        {
+            Write-Output "$($id.trim())"
+        }
+    }
+}
+

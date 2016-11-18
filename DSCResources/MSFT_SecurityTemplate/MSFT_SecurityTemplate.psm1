@@ -7,9 +7,9 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SecurityTemplate'
 
 <#
     .SYNOPSIS
-        Gets the path of the desired policy template.
+        Gets the path of the current policy template.
     .PARAMETER Path
-        Specifies the path to the policy template.
+        Not used in Get-TargetResource.
 #>
 function Get-TargetResource
 {
@@ -120,10 +120,10 @@ function Test-TargetResource
     {
         Get-SecInfFile -Path $currentUserRightsInf | Out-Null
     }
-
-    $currentPolicies = Get-CurrentPolicy -Path $currentUserRightsInf
-    $desiredPolicies = Get-DesiredPolicy -Path $Path
-
+    
+    $desiredPolicies = (Get-UserRightsAssignment -FilePath $Path).'Privilege Rights'
+    $currentPolicies = (Get-UserRightsAssignment -FilePath $currentUserRightsInf).'Privilege Rights'
+    
     $policyNames = $desiredPolicies.keys
 
     $policiesMatch = $false
@@ -149,7 +149,6 @@ function Test-TargetResource
     # If the code made it this far all policies must be in a desired state
     return $true
 }
-
 
 Export-ModuleMember -Function *-TargetResource
 

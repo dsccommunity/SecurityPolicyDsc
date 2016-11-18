@@ -32,7 +32,7 @@ function Get-TargetResource
     
     $usrResult = Get-USRPolicy -Policy $Policy -Areas USER_RIGHTS
 
-    if ($($usrResult.Identity) -eq $null)
+    if ($null -eq $usrResult.Identity)
     {
         $ActualIdentity = 'NULL'
     }
@@ -104,7 +104,7 @@ function Set-TargetResource
     }
     else
     {
-        $seceditResult = Get-Content $script:seceditOutput
+        $seceditResult = Get-Content -Path $script:seceditOutput
         Write-Verbose -Message ($script:localizedData.TaskSuccessFail)
         throw "$($seceditResult[-1])"
     }
@@ -161,3 +161,4 @@ function Test-TargetResource
 }
 
 Export-ModuleMember -Function *-TargetResource
+

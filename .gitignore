@@ -3,3 +3,5 @@
 /xSecedit.sln
 DSCResource.Tests
 .vscode
+/Misc/Generate_SecurityTemplate.ps1
+/Misc/Generate_UserRightsAssignment.ps1
