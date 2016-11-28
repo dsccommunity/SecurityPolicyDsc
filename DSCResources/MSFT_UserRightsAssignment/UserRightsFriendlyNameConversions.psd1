@@ -33,6 +33,7 @@ Log_on_as_a_service                           = SeServiceLogonRight
 Manage_auditing_and_security_log              = SeSecurityPrivilege
 Modify_an_object_label                        = SeRelabelPrivilege
 Modify_firmware_environment_values            = SeSystemEnvironmentPrivilege
+Obtain_an_impersonation_token_for_another_user_in_the_same_session = SeDelegateSessionUserImpersonatePrivilege
 Perform_volume_maintenance_tasks              = SeManageVolumePrivilege
 Profile_single_process                        = SeProfileSingleProcessPrivilege
 Profile_system_performance                    = SeSystemProfilePrivilege
