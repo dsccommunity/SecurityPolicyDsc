@@ -8,4 +8,5 @@ ConvertFrom-StringData @'
     IdNotFoundOnPolicy            = {0} not found on {1}
     ErrorCantTranslateSID         = Error processing {0}. {1}
     EchoDebugInf                  = Temp inf {0}
+    IdentityFoundExpectedNull     = Identity found on {0}. Expected NULL
 '@

@@ -48,7 +48,7 @@ try
             Context 'Get and Test method tests' {
 
                     Mock -CommandName Backup-SecurityPolicy -MockWith {}
-                    Mock -CommandName Get-SecInfFile -MockWith {}
+                    Mock -CommandName Get-SecurityTemplate -MockWith {}
                     Mock -CommandName Test-Path -MockWith {$true}                    
                     Mock -CommandName Get-Module -MockWith {}
                 It 'Should return path of desired inf' {
@@ -98,7 +98,7 @@ try
                 It 'Test method should return TRUE' {
                     Mock -CommandName Get-UserRightsAssignment -MockWith {$mockResults}                    
                     Mock -CommandName Backup-SecurityPolicy -MockWith {}
-                    Mock -CommandName Get-SecInfFile -MockWith {}
+                    Mock -CommandName Get-SecurityTemplate -MockWith {}
                     Mock -CommandName Test-Path -MockWith {$true}
                     Mock -CommandName Get-UserRightsAssignment -MockWith {}
                     Mock -CommandName Get-Module -MockWith {}

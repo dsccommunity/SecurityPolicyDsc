@@ -33,7 +33,7 @@ function Get-TargetResource
     }
     else
     {
-        Get-SecInfFile -Path $currentUserRightsInf | Out-Null
+        Get-SecurityTemplate -Path $currentUserRightsInf | Out-Null
         $templateFileName = $currentUserRightsInf
     }
 
@@ -73,7 +73,7 @@ function Set-TargetResource
         Invoke-Secedit -UserRightsToAddInf $Path -SecEditOutput $seceditOutput
     }
     # Verify secedit command was successful
-    $testSuccuess = Test-TargetResource -Path $Path -Verbose:0
+    $testSuccuess = Test-TargetResource -Path $Path
 
     if ($testSuccuess -eq $true)
     {
@@ -118,7 +118,7 @@ function Test-TargetResource
     }
     else
     {
-        Get-SecInfFile -Path $currentUserRightsInf | Out-Null
+        Get-SecurityTemplate -Path $currentUserRightsInf | Out-Null
     }
     
     $desiredPolicies = (Get-UserRightsAssignment -FilePath $Path).'Privilege Rights'
@@ -148,6 +148,51 @@ function Test-TargetResource
 
     # If the code made it this far all policies must be in a desired state
     return $true
+}
+
+<#
+    .SYNOPSIS
+        Removes the other security areas from policy template file so only settings for user rights assignments are returned.
+    .PARAMETER Path
+        Specifies the file to the template to be parsed.
+#>
+function Format-SecurityPolicyFile
+{
+    [OutputType([String])]
+    [CmdletBinding()]
+    param
+    (
+        [System.String]$Path
+    )
+
+    $outputPath = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')
+    $content = Get-Content -Path $Path 
+
+    $privilegeRightsMatch = Select-String -Path $Path -Pattern "[Privilege Rights]" -SimpleMatch
+    $endOfFileMatch = Select-String -Path $Path -Pattern "Revision=1" -SimpleMatch
+
+    $startOfFile = $privilegeRightIndex.LineNumber -1
+    $endOfFile = $endOfFileMatch.LineNumber
+
+    $content[$startOfFile..$endOfFile] | Out-File -FilePath $outputPath
+
+    $outputPath
+}
+
+<#
+    .SYNOPSIS
+        Invokes secedit.exe to create an INF file of the current policies
+#>
+function Get-SecurityTemplate
+{
+    [OutputType([String])]
+    [CmdletBinding()]   
+    param
+    (
+        [System.String]$Path
+    )
+    
+    $secedit = secedit.exe /export /cfg $Path /areas "USER_Rights"    
 }
 
 Export-ModuleMember -Function *-TargetResource
