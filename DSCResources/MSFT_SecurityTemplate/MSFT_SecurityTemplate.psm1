@@ -23,8 +23,7 @@ function Get-TargetResource
     )
 
     $securityCdmlets = Get-Module -Name SecurityCmdlets -ListAvailable
-    $currentUserRightsInf = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')    
-
+    $currentUserRightsInf = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')
 
     if ($securityCdmlets)
     {
