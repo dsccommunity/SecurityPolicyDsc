@@ -21,21 +21,16 @@ $TestEnvironment = Initialize-TestEnvironment `
 try
 {
     #region Integration Tests
-    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($Global:DSCResourceName).config.ps1"
+    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
     . $ConfigFile
 
     Describe "$($script:DSCResourceName)_Integration" {
-
-        $beforeTest_TrustedCaller = Get-TargetResource -Policy $rule.Policy -Identity $rule.Identity
-        $beforeTest_ActAsOS       = Get-TargetResource -Policy $removeAll.Policy -Identity $removeAll.Identity
-
-        Set-TargetResource -Policy $removeAll.Policy -Identity 'Builtin\Administrators'
 
         #region DEFAULT TESTS
         Context "Default Tests" {
             It 'Should compile without throwing' {
                 {
-                    Invoke-Expression -Command "$($Global:DSCResourceName)_Config -OutputPath `$TestEnvironment.WorkingFolder"
+                    & "$($script:DSCResourceName)_Config" -OutputPath $TestEnvironment.WorkingFolder
                     Start-DscConfiguration -Path $TestEnvironment.WorkingFolder `
                         -ComputerName localhost -Wait -Verbose -Force
                 } | Should not throw
@@ -48,7 +43,7 @@ try
         #endregion
 
         Context 'Verify Successful Configuration on Trusted Caller' {
-
+            Import-Module "$PSScriptRoot\..\..\DSCResources\MSFT_UserRightsAssignment\MSFT_UserRightsAssignment.psm1"
             It 'Should have set the resource and all the parameters should match' {
                 $getResults = Get-TargetResource -Policy $rule.Policy -Identity $rule.Identity
                  
@@ -75,9 +70,6 @@ try
             }
         }
 
-        Set-TargetResource -Policy $beforeTest_TrustedCaller.Policy -Identity $beforeTest_TrustedCaller.ActualIdentity -Verbose
-
-        Set-TargetResource -Policy $beforeTest_ActAsOS.Policy -Identity $beforeTest_ActAsOS.ActualIdentity -Verbose
     }
     #endregion
 }
