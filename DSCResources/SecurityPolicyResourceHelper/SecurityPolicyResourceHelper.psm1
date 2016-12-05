@@ -148,7 +148,7 @@ function Get-UserRightsAssignment
 #>
 function ConvertTo-LocalFriendlyName
 {
-    [OutputType([String])]
+    [OutputType([String[]])]
     [CmdletBinding()]
     param
     (
@@ -158,7 +158,7 @@ function ConvertTo-LocalFriendlyName
     
     $localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
     $domainRole = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
-    
+    $friendlyNames = [String[]]@()
     foreach ($id in $SID)
     {        
         if ($null -ne $id -and $id -match 'S-')
@@ -167,7 +167,7 @@ function ConvertTo-LocalFriendlyName
             {
                 $securityIdentifier = [System.Security.Principal.SecurityIdentifier]($id.trim())
                 $user = $securityIdentifier.Translate([System.Security.Principal.NTAccount])
-                Write-Output $user.value
+                $friendlyNames += $user.value
             }
             catch
             {
@@ -176,12 +176,14 @@ function ConvertTo-LocalFriendlyName
         }
         elseIf ($domainRole -eq 4 -or $domainRole -eq 5)
         {
-            Write-Output "$($env:USERDOMAIN + '\' + $($id.trim()))"
+            $friendlyNames += "$($env:USERDOMAIN + '\' + $($id.trim()))"
         }
         elseIf ($id -notmatch '^S-')
         {
-            Write-Output "$($id.trim())"
+            $friendlyNames += "$($id.trim())"
         }
     }
+
+    return $friendlyNames
 }
 

@@ -424,7 +424,6 @@ function Get-AssignmentFriendlyNames
 #>
 function Out-UserRightsInf
 {
-    [OutputType('None')]
     [CmdletBinding()]
     param
     (
@@ -448,7 +447,7 @@ signature="`$CHICAGO`$"
 Revision=1
 "@
 
-    Out-File -InputObject $infTemplate -FilePath $FilePath -Encoding unicode
+    $null = Out-File -InputObject $infTemplate -FilePath $FilePath -Encoding unicode
 }
 
 Export-ModuleMember -Function *-TargetResource
