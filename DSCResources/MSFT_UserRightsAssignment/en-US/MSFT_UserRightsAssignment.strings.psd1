@@ -9,4 +9,5 @@ ConvertFrom-StringData @'
     ErrorCantTranslateSID         = Error processing {0}. {1}
     EchoDebugInf                  = Temp inf {0}
     IdentityFoundExpectedNull     = Identity found on {0}. Expected NULL
+    IdentityNotSpecified          = An Identity must be sepcified even if it is NULL
 '@
