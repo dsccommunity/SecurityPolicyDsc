@@ -18,6 +18,13 @@ function Get-TargetResource
     param
     (
         [parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Yes')]
+        [String]
+        $IsSingleInstance,
+
+        [parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Path
     )
@@ -38,6 +45,7 @@ function Get-TargetResource
 
     $returnValue = @{
         Path = [System.String]$templateFileName
+        IsSingleInstance = 'Yes'
     }
 
     $returnValue    
@@ -55,6 +63,13 @@ function Set-TargetResource
     param
     (
         [parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Yes')]
+        [String]
+        $IsSingleInstance,
+
+        [parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Path
     )
@@ -72,7 +87,7 @@ function Set-TargetResource
         Invoke-Secedit -UserRightsToAddInf $Path -SecEditOutput $seceditOutput
     }
     # Verify secedit command was successful
-    $testSuccuess = Test-TargetResource -Path $Path
+    $testSuccuess = Test-TargetResource @PSBoundParameters
 
     if ($testSuccuess -eq $true)
     {
@@ -98,6 +113,12 @@ function Test-TargetResource
     param
     (
         [parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $IsSingleInstance, 
+
+        [parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $Path
     )

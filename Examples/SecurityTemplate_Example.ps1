@@ -6,7 +6,8 @@ Configuration CompareInfs
     {
         SecurityTemplate TrustedCredentialAccess
         {
-            Path = "C:\scratch\UserRights.inf"
+            Path = "C:\scratch\SecurityPolicyBackup.inf"
+            IsSingleInstance = 'Yes'
         }
     }
 }
