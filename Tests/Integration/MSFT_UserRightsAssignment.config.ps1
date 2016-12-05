@@ -8,7 +8,7 @@ $rule = @{
 $removeAll = @{
     
     Policy = 'Act_as_part_of_the_operating_system'
-    Identity = 'NULL'
+    Identity = $null
 }
 
 configuration MSFT_UserRightsAssignment_config {

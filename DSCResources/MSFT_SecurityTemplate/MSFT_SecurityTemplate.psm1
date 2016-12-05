@@ -114,6 +114,7 @@ function Test-TargetResource
     (
         [parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
+        [ValidateSet('Yes')]
         [String]
         $IsSingleInstance, 
 

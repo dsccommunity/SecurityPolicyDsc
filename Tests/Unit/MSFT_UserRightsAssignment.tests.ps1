@@ -37,8 +37,7 @@ try
 
             $mockGetTargetTesult = [PSObject] @{
                 Policy = 'Access_Credential_Manager_as_a_trusted_caller'
-                Identity = 'contoso\TestUser2'                
-                ActualIdentity = 'contoso\TestUser1'
+                Identity = 'contoso\TestUser2'
             }
         #endregion
 
@@ -57,22 +56,6 @@ try
                 }
 
                 It 'Should call expected Mocks' {
-                    Assert-MockCalled -CommandName Get-USRPolicy -Exactly 1
-                }
-            }
-
-            Context 'Identity does exist on Policy' {           
-                Mock Get-USRPolicy -MockWith {return @($mockUSR)}
-                
-                It 'Identity should match' {
-                    $Result = Get-TargetResource @testUSR
-                    
-                    $Result.Policy         | Should Be $testUSR.Policy
-                    $Result.Identity       | Should Be $testUSR.Identity
-                    $Result.ActualIdnetity | Should Be $testUSR.ActualIdnetity
-                }
-
-                It 'Should call the expected mocks' {
                     Assert-MockCalled -CommandName Get-USRPolicy -Exactly 1
                 }
             }
