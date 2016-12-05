@@ -30,7 +30,7 @@ try
         Context "Default Tests" {
             It 'Should compile without throwing' {
                 {
-                    & "$($script:DSCResourceName)_Config" -OutputPath $TestEnvironment.WorkingFolder
+                    & "$($script:DSCResourceName)_Config" -OutputPath $TestDrive
                     Start-DscConfiguration -Path $TestDrive `
                         -ComputerName localhost -Wait -Verbose -Force
                 } | Should not throw
@@ -49,7 +49,7 @@ try
                  
                 foreach ($Id in $rule.Identity)
                 {
-                    $getResults.ActualIdentity | where {$_ -eq $Id} | Should Be $Id
+                    $getResults.Identity | where {$_ -eq $Id} | Should Be $Id
                 }
 
                 $rule.Policy | Should Be $getResults.Policy
@@ -63,13 +63,12 @@ try
                  
                 foreach ($Id in $removeAll.Identity)
                 {
-                    $getResults.ActualIdentity | where {$_ -eq $Id} | Should Be $Id
+                    $getResults.Identity | where {$_ -eq $Id} | Should Be $Id
                 }
 
                 $removeAll.Policy | Should Be $getResults.Policy
             }
         }
-
     }
     #endregion
 }
