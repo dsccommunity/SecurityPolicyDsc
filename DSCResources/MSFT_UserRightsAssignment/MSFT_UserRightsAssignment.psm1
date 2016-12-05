@@ -71,26 +71,16 @@ function Get-TargetResource
         $Policy,
 
         [parameter(Mandatory = $true)]
-        [AllowNull()]
+        [AllowEmptyCollection()]
         [System.String[]]
         $Identity
     )
     
     $usrResult = Get-USRPolicy -Policy $Policy -Areas USER_RIGHTS
 
-    if ($null -eq $usrResult.Identity)
-    {
-        $ActualIdentity = 'NULL'
-    }
-    else
-    {
-        $ActualIdentity = $usrResult.Identity
-    }
-
     $returnValue = @{
         Policy         = $usrResult.PolicyFriendlyName
-        Identity       = $Identity
-        ActualIdentity = $ActualIdentity
+        Identity       = $usrResult.Identity
     }
 
     $returnValue
