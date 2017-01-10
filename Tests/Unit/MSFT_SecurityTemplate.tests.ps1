@@ -25,35 +25,45 @@ function Invoke-TestCleanup {
 try
 { 
     InModuleScope 'MSFT_SecurityTemplate' {
+        $securityModulePresent = Get-Module -Name SecurityCmdlets -ListAvailable
+        $testParameters = @{
+            Path = 'C:\baseline.inf'
+            IsSingleInstance = 'Yes'
+        }
 
-    function Set-HashValue
-    {  
-        param
-        (
-            $HashTable,
-            $Key,
-            $NewValue
-        )
+        function Set-HashValue
+        {  
+            param
+            (
+                $HashTable,
+                $Key,
+                $NewValue
+            )
 
-        ($HashTable.'Privilege Rights').Remove($key)
-        ($HashTable.'Privilege Rights').Add($Key,$NewValue)
-        $HashTable
-    }   
+            ($HashTable.'Privilege Rights').Remove($key)
+            ($HashTable.'Privilege Rights').Add($Key,$NewValue)
+            $HashTable
+        }
+
         Describe 'The system is not in a desired state' {
-            $testParameters = @{
-                Path = 'C:\baseline.inf'
-            }
+
+           # $securityModulePresent = Get-Module -Name SecurityCmdlets -ListAvailable
             $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
             $modifiedMockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
-            Context 'Get and Test method tests' {
 
+            Context 'Get and Test method tests' {
+                Mock -CommandName Get-SecurityTemplate -MockWith {}
+                Mock -CommandName Test-Path -MockWith {$true}                    
+                Mock -CommandName Get-Module -MockWith {}
+
+                if($securityModulePresent)
+                {
                     Mock -CommandName Backup-SecurityPolicy -MockWith {}
-                    Mock -CommandName Get-SecurityTemplate -MockWith {}
-                    Mock -CommandName Test-Path -MockWith {$true}                    
-                    Mock -CommandName Get-Module -MockWith {}
+                }
+
                 It 'Should return path of desired inf' {
                     
-                    $getResult = Get-TargetResource -Path $testParameters.Path
+                    $getResult = Get-TargetResource @testParameters
                     $getResult.Path | Should BeLike "*.inf"
                 }
 
@@ -65,13 +75,17 @@ try
                         Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockResults} -ParameterFilter {$FilePath -like "*\Temp\inf*inf"}
                         Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockFalseResults} -ParameterFilter {$FilePath -eq $testParameters.Path} 
 
-                        Test-TargetResource -Path $testParameters.Path | Should Be $false
+                        Test-TargetResource -Path @testParameters | Should Be $false
                     }
                 }
             }
 
             Context 'Set method tests' {
+                if($securityModulePresent)
+                {
                     Mock Restore-SecurityPolicy  -MockWith {}
+                }
+                    Mock Invoke-Secedit -MockWith {}
                     Mock Invoke-Secedit -MockWith {}
                     Mock Test-TargetResource -MockWith {$true}
 
@@ -79,14 +93,17 @@ try
                     
                     Mock Get-Module -MockWith {$false}                 
 
-                    {Set-TargetResource -Path $testParameters.Path} | Should Not throw
+                    {Set-TargetResource @testParameters} | Should Not throw
                     Assert-MockCalled -CommandName Invoke-Secedit -Exactly 1
                 }
 
-                It 'Should Call Restore-SecurityPolicy when SecurityCmdlet module does exist' {
-                    Mock Get-Module -MockWith {$true}
-                    {Set-TargetResource -Path $testParameters.Path} | Should Not throw
-                    Assert-MockCalled -CommandName Restore-SecurityPolicy -Exactly 1                    
+                if($securityModulePresent)
+                {
+                    It 'Should Call Restore-SecurityPolicy when SecurityCmdlet module does exist' {
+                        Mock Get-Module -MockWith {$true}
+                        {Set-TargetResource -Path @testParameters} | Should Not throw
+                        Assert-MockCalled -CommandName Restore-SecurityPolicy -Exactly 1                    
+                    }
                 }
             }
         }
@@ -96,14 +113,18 @@ try
                 $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
 
                 It 'Test method should return TRUE' {
-                    Mock -CommandName Get-UserRightsAssignment -MockWith {$mockResults}                    
-                    Mock -CommandName Backup-SecurityPolicy -MockWith {}
+                    Mock -CommandName Get-UserRightsAssignment -MockWith {$mockResults}
                     Mock -CommandName Get-SecurityTemplate -MockWith {}
                     Mock -CommandName Test-Path -MockWith {$true}
                     Mock -CommandName Get-UserRightsAssignment -MockWith {}
                     Mock -CommandName Get-Module -MockWith {}
                     
-                    Test-TargetResource -Path 'C:\Security.inf' | should be $true
+                    if($securityModulePresent)
+                    {
+                        Mock -CommandName Backup-SecurityPolicy -MockWith {}
+                    }
+
+                    Test-TargetResource @testParameters | should be $true
                        
                 }
             }
