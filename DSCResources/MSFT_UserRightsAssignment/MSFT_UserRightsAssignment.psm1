@@ -372,7 +372,7 @@ function Get-USRPolicy
         [parameter(Mandatory = $true)]
         [ValidateSet("SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES")]
         [System.String]
-        $Areas = "USER_Rights"
+        $Areas
     )
 
     $policyList = Get-AssignmentFriendlyNames
