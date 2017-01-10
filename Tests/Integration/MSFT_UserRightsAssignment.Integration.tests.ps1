@@ -63,7 +63,7 @@ try
                  
                 foreach ($Id in $removeAll.Identity)
                 {
-                    $getResults.Identity | where {$_ -eq $Id} | Should Be $Id
+                    $getResults.Identity | where {$_ -eq $Id} | Should Be $null
                 }
 
                 $removeAll.Policy | Should Be $getResults.Policy
