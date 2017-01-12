@@ -47,37 +47,60 @@ try
 
         Describe 'The system is not in a desired state' {
 
-           # $securityModulePresent = Get-Module -Name SecurityCmdlets -ListAvailable
+           $securityModulePresent = Get-Module -Name SecurityCmdlets -ListAvailable
             $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
             $modifiedMockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
 
             Context 'Get and Test method tests' {
                 Mock -CommandName Get-SecurityTemplate -MockWith {}
-                Mock -CommandName Test-Path -MockWith {$true}                    
-                Mock -CommandName Get-Module -MockWith {}
+                Mock -CommandName Test-Path -MockWith {$true}
+                                  
 
                 if($securityModulePresent)
                 {
                     Mock -CommandName Backup-SecurityPolicy -MockWith {}
-                }
+                    Mock -CommandName Get-Module -MockWith {return $true}
+                    Mock -CommandName Format-SecurityPolicyFile -MockWith {"file.inf"}
 
-                It 'Should return path of desired inf' {
+                    It 'Get method should return path of inf with SecurityCmdlets' { 
+
+                        $getResult = Get-TargetResource @testParameters
+                        $getResult.Path | Should BeLike "*.inf"
+
+                        Assert-MockCalled -CommandName Format-SecurityPolicyFile -Exactly 1
+                    }
+
+                }
+                else
+                {
+                    It 'Get method should return path of desired inf without SecurityCmdlets' {
+                        Mock -CommandName Get-Module -MockWith {$false}
                     
-                    $getResult = Get-TargetResource @testParameters
-                    $getResult.Path | Should BeLike "*.inf"
-                }
+                        $getResult = Get-TargetResource @testParameters
+                        $getResult.Path | Should BeLike "*.inf"
 
-                It 'Test method should return FALSE' {  
-
-                    foreach($key in $mockResults.'Privilege Rights'.keys)
-                    {                        
-                        $mockFalseResults = Set-HashValue -HashTable $modifiedMockResults -Key $key -NewValue NoIdentity
-                        Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockResults} -ParameterFilter {$FilePath -like "*\Temp\inf*inf"}
-                        Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockFalseResults} -ParameterFilter {$FilePath -eq $testParameters.Path} 
-
-                        Test-TargetResource -Path @testParameters | Should Be $false
+                        Assert-MockCalled -CommandName Get-SecurityTemplate
                     }
                 }
+
+                It 'Test method should throw if inf not found' {
+                    Mock -CommandName Test-Path -MockWith {$false}
+                    {Set-TargetResource @testParameters} | should throw
+                }
+               
+
+                    foreach($key in $mockResults.'Privilege Rights'.Keys)
+                    {                        
+                        $mockFalseResults = Set-HashValue -HashTable $modifiedMockResults -Key $key -NewValue NoIdentity
+                        
+                        Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockResults} -ParameterFilter {$FilePath -like "*Temp*inf*inf"}
+                        Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockFalseResults} -ParameterFilter {$FilePath -eq $testParameters.Path} 
+                        Mock -CommandName Test-Path -MockWith {$true}
+                        It "Test method should return FALSE when testing $key" {  
+                            Test-TargetResource @testParameters | Should Be $false
+                        }
+                    }
+                
             }
 
             Context 'Set method tests' {
@@ -98,10 +121,10 @@ try
                 }
 
                 if($securityModulePresent)
-                {
+                {        
                     It 'Should Call Restore-SecurityPolicy when SecurityCmdlet module does exist' {
                         Mock Get-Module -MockWith {$true}
-                        {Set-TargetResource -Path @testParameters} | Should Not throw
+                        {Set-TargetResource @testParameters} | Should Not throw
                         Assert-MockCalled -CommandName Restore-SecurityPolicy -Exactly 1                    
                     }
                 }
@@ -128,7 +151,66 @@ try
                        
                 }
             }
-        }        
+        }
+        
+        Describe 'Test helper functions' {
+            Context 'Test Format-SecurityPolicyFile' {
+                It 'Should not throw' {
+                    Mock Get-Content -MockWith {@('Line1','Line2')}
+                    Mock Out-File -MockWith {}
+                    Mock Select-String -MockWith {}
+                    {Format-SecurityPolicyFile -Path 'policy.inf'} | Should Not throw
+                }
+            }
+
+            Context 'Test ConvertTo-LocalFriendlyName' {
+                $sid = 'S-1-5-32-544'
+                It 'Should equal BUILTIN\Administrators' {
+                    ConvertTo-LocalFriendlyName -SID $sid | should be 'BUILTIN\Administrators'
+                }
+
+                It "Should return $env:USERDOMAIN\user1" {
+                    
+                    Mock -CommandName Get-WmiObject -MockWith {return @{DomainRole=4}} -ModuleName SecurityPolicyResourceHelper
+                    ConvertTo-LocalFriendlyName -SID 'user1' | Should be "$env:USERDOMAIN\user1"
+
+                }
+
+                It 'Should ignore SID translation' {
+                    Mock -CommandName Get-WmiObject -MockWith {return @{DomainRole=2}} -ModuleName SecurityPolicyResourceHelper
+                    ConvertTo-LocalFriendlyName -SID 'user1' | Should be 'user1'
+                }
+            }
+            Context 'Test Invoke-Secedit' {
+                Mock Start-Process -MockWith {}
+                $invokeSeceditParameters = @{
+                    UserRightsToAddInf = 'temp.inf'
+                    SeceditOutput      = 'output.txt'
+                    OverWrite          = $true
+                }
+                It 'Should not throw' {
+                    {Invoke-Secedit @invokeSeceditParameters} | Should not throw
+                }
+            }
+            Context 'Test Get-UserRightsAssignment' {               
+                $ini = "$PSScriptRoot..\..\..\\Misc\TestHelpers\TestIni.txt"
+                 Mock ConvertTo-LocalFriendlyName -MockWith {}
+
+                 $results = Get-UserRightsAssignment $ini
+
+                 It 'INI Section should match' {
+                     $results.Keys | Should Be 'section' 
+
+                 }
+                 It 'INI Comment should match' {
+                     $results.section.Comment1 | Should Be '; this is a comment'
+                 }
+
+                 It 'INI value should match' {
+                     $results.section.Key1 | SHould be 'Value1'
+                 }
+            }
+        }     
     }
 }
 

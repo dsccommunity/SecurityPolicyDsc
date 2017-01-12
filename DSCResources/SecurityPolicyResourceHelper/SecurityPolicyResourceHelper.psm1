@@ -92,7 +92,7 @@ function Invoke-Secedit
         $arguments = $arguments + " /overwrite /quiet"
     }
 
-    Start-Process secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput -NoNewWindow -Wait
+    Start-Process -FilePath secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput -NoNewWindow -Wait
 }
 
 <#
@@ -157,7 +157,7 @@ function ConvertTo-LocalFriendlyName
     )
     
     $localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
-    $domainRole = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
+    $domainRole = (Get-WmiObject -Class Win32_ComputerSystem).DomainRole
     $friendlyNames = [String[]]@()
     foreach ($id in $SID)
     {        

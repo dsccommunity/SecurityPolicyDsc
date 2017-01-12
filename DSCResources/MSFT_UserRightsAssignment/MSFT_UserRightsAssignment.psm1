@@ -298,7 +298,7 @@ function Test-TargetResource
         }      
     }    
 
-    #If the code made it this far all identities have the desired user rights
+    # If the code made it this far all identities have the desired user rights
     return $true
 }
 
