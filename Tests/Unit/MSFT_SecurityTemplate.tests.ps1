@@ -62,7 +62,6 @@ try
                     Mock -CommandName Format-SecurityPolicyFile -MockWith {"file.inf"}
 
                     It 'Get method should return path of inf with SecurityCmdlets' { 
-
                         $getResult = Get-TargetResource @testParameters
                         $getResult.Path | Should BeLike "*.inf"
 
@@ -107,8 +106,7 @@ try
                     Mock Invoke-Secedit -MockWith {}
                     Mock Test-TargetResource -MockWith {$true}
 
-                It 'Should call Invoke-Secedit when SecurityCmdlet module does not exist' {
-                    
+                It 'Should call Invoke-Secedit when SecurityCmdlet module does not exist' {                    
                     Mock Get-Module -MockWith {$false}                 
 
                     {Set-TargetResource @testParameters} | Should Not throw
@@ -163,8 +161,7 @@ try
                     ConvertTo-LocalFriendlyName -SID $sid | should be 'BUILTIN\Administrators'
                 }
 
-                It "Should return $env:USERDOMAIN\user1" {
-                    
+                It "Should return $env:USERDOMAIN\user1" {                    
                     Mock -CommandName Get-WmiObject -MockWith {return @{DomainRole=4}} -ModuleName SecurityPolicyResourceHelper
                     ConvertTo-LocalFriendlyName -SID 'user1' | Should be "$env:USERDOMAIN\user1"
                 }
@@ -193,10 +190,8 @@ try
                  $results = Get-UserRightsAssignment $ini
 
                  It 'INI Section should match' {
-                     $results.Keys | Should Be 'section' 
-
-                 }
-                 It 'INI Comment should match' {
+                     $results.Keys | Should Be 'section'
+                 }                 It 'INI Comment should match' {
                      $results.section.Comment1 | Should Be '; this is a comment'
                  }
 

@@ -53,10 +53,8 @@ try
         #endregion
 
         #region Function Get-TargetResource
-        Describe "Get-TargetResource" {        
-               
+        Describe "Get-TargetResource" {  
             Context 'Identity should not match on Policy' {
-
                 Mock Get-USRPolicy -MockWith {return @($mockUSR)}
                 Mock Test-TargetResource -MockWith {$false}
 
@@ -84,7 +82,6 @@ try
             }
 
             Context 'Identity does exist and should' {
-
                 Mock Get-USRPolicy -MockWith {$mockUSR}
 
                 It 'Should return true' {
@@ -99,7 +96,6 @@ try
             }
 
             Context 'Identity does not exist' {
-
                 Mock Get-USRPolicy -MockWith {$mockUSRDoesNotExist}
 
                 It 'Shoud return false' {
@@ -109,7 +105,6 @@ try
             }
 
             Context 'Identity does not exist but should' {
-
                 Mock Get-USRPolicy
 
                 It 'Should return false' {
@@ -123,8 +118,7 @@ try
                 } 
             }
 
-            Context 'Identity is NULL but should be' {                
-
+            Context 'Identity is NULL but should be' {
                 It 'Should return true' {
                     Mock Get-USRPolicy -MockWith {$mockNullIdentity}
                     $testResult = Test-TargetResource -Policy Access_Credential_Manager_as_a_trusted_caller -Identity $null
@@ -143,15 +137,12 @@ try
         #endregion
         #region Function Set-TargetResource
         Describe "Set-TargetResource" {
-
             Context 'Identity does not exist but should' {
-
                 Mock Invoke-Secedit
                 Mock Test-TargetResource -MockWith {$true}
                 Mock Get-Content -ParameterFilter {$Path -match "Secedit-OutPut.txt"} -MockWith {"Tasked Failed"}             
 
-                It 'Should not throw' {                    
-
+                It 'Should not throw' { 
                     {Set-TargetResource @testUSR} | Should Not Throw
                 }
 
@@ -167,9 +158,7 @@ try
             }
 
             Context 'Identity is NULL' {
-
                 It 'Should not throw' {
-
                     Mock Invoke-Secedit
                     Mock Test-TargetResource -MockWith {$true}
                     Mock Get-Content -ParameterFilter {$Path -match "Secedit-OutPut.txt"} -MockWith {"Tasked Failed"}             
@@ -194,7 +183,8 @@ try
                 Assert-MockCalled -CommandName Get-UserRightsAssignment
             }
         }
-        #endregion    }
+        #endregion    
+    }
     #endregion
 }
 finally
