@@ -47,14 +47,13 @@ try
 
         Describe 'The system is not in a desired state' {
 
-           $securityModulePresent = Get-Module -Name SecurityCmdlets -ListAvailable
+            $securityModulePresent = Get-Module -Name SecurityCmdlets -ListAvailable
             $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
             $modifiedMockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
 
             Context 'Get and Test method tests' {
                 Mock -CommandName Get-SecurityTemplate -MockWith {}
-                Mock -CommandName Test-Path -MockWith {$true}
-                                  
+                Mock -CommandName Test-Path -MockWith {$true}                                  
 
                 if($securityModulePresent)
                 {
@@ -69,7 +68,6 @@ try
 
                         Assert-MockCalled -CommandName Format-SecurityPolicyFile -Exactly 1
                     }
-
                 }
                 else
                 {
@@ -86,21 +84,18 @@ try
                 It 'Test method should throw if inf not found' {
                     Mock -CommandName Test-Path -MockWith {$false}
                     {Set-TargetResource @testParameters} | should throw
-                }
-               
-
-                    foreach($key in $mockResults.'Privilege Rights'.Keys)
-                    {                        
-                        $mockFalseResults = Set-HashValue -HashTable $modifiedMockResults -Key $key -NewValue NoIdentity
-                        
-                        Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockResults} -ParameterFilter {$FilePath -like "*Temp*inf*inf"}
-                        Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockFalseResults} -ParameterFilter {$FilePath -eq $testParameters.Path} 
-                        Mock -CommandName Test-Path -MockWith {$true}
-                        It "Test method should return FALSE when testing $key" {  
-                            Test-TargetResource @testParameters | Should Be $false
-                        }
+                }        
+                foreach($key in $mockResults.'Privilege Rights'.Keys)
+                {                        
+                    $mockFalseResults = Set-HashValue -HashTable $modifiedMockResults -Key $key -NewValue NoIdentity
+                    
+                    Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockResults} -ParameterFilter {$FilePath -like "*Temp*inf*inf"}
+                    Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockFalseResults} -ParameterFilter {$FilePath -eq $testParameters.Path} 
+                    Mock -CommandName Test-Path -MockWith {$true}
+                    It "Test method should return FALSE when testing $key" {  
+                        Test-TargetResource @testParameters | Should Be $false
                     }
-                
+                }                
             }
 
             Context 'Set method tests' {
@@ -147,8 +142,7 @@ try
                         Mock -CommandName Backup-SecurityPolicy -MockWith {}
                     }
 
-                    Test-TargetResource @testParameters | should be $true
-                       
+                    Test-TargetResource @testParameters | should be $true                       
                 }
             }
         }
@@ -173,7 +167,6 @@ try
                     
                     Mock -CommandName Get-WmiObject -MockWith {return @{DomainRole=4}} -ModuleName SecurityPolicyResourceHelper
                     ConvertTo-LocalFriendlyName -SID 'user1' | Should be "$env:USERDOMAIN\user1"
-
                 }
 
                 It 'Should ignore SID translation' {
@@ -188,6 +181,7 @@ try
                     SeceditOutput      = 'output.txt'
                     OverWrite          = $true
                 }
+
                 It 'Should not throw' {
                     {Invoke-Secedit @invokeSeceditParameters} | Should not throw
                 }

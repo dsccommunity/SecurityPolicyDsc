@@ -1,23 +1,4 @@
-﻿<#
-
-.Synopsis
-
-   DSC Configuration Template for DSC Resource Integration tests.
-
-.DESCRIPTION
-
-   To Use:
-
-     1. Copy to \Tests\Integration\ folder and rename <ResourceName>.config.ps1 (e.g. MSFT_xFirewall.config.ps1)
-
-     2. Customize TODO sections.
-
-
-
-.NOTES
-
-#>
-
+﻿
 # create test user and security template
 $userName = "TestUser-" + ([guid]::NewGuid().guid).substring(0,6)
 $policy = 'SeTrustedCredManAccessPrivilege'

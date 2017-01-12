@@ -157,8 +157,7 @@ try
 
                 It 'Should throw when set fails' {
                     Mock Test-TargetResource -MockWith {$false}  
-                    {Set-TargetResource @testUSR} | Should Throw
- 
+                    {Set-TargetResource @testUSR} | Should Throw 
                 }
 
                 It 'Should call expected mocks' {
@@ -171,16 +170,14 @@ try
 
                 It 'Should not throw' {
 
-                Mock Invoke-Secedit
-                Mock Test-TargetResource -MockWith {$true}
-                Mock Get-Content -ParameterFilter {$Path -match "Secedit-OutPut.txt"} -MockWith {"Tasked Failed"}             
-                $setParameters = @{
-                    Policy = 'Access_Credential_Manager_as_a_trusted_caller'
-                    Identity = $null
-                }               
-
+                    Mock Invoke-Secedit
+                    Mock Test-TargetResource -MockWith {$true}
+                    Mock Get-Content -ParameterFilter {$Path -match "Secedit-OutPut.txt"} -MockWith {"Tasked Failed"}             
+                    $setParameters = @{
+                        Policy = 'Access_Credential_Manager_as_a_trusted_caller'
+                        Identity = $null
+                    }               
                     {Set-TargetResource @setParameters} | Should Not Throw
-
                 }
             }
         }
@@ -197,8 +194,7 @@ try
                 Assert-MockCalled -CommandName Get-UserRightsAssignment
             }
         }
-        #endregion
-    }
+        #endregion    }
     #endregion
 }
 finally
