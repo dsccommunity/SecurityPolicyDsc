@@ -191,7 +191,9 @@ try
 
                  It 'INI Section should match' {
                      $results.Keys | Should Be 'section'
-                 }                 It 'INI Comment should match' {
+                 }
+                 
+                 It 'INI Comment should match' {
                      $results.section.Comment1 | Should Be '; this is a comment'
                  }
 
@@ -202,7 +204,6 @@ try
         }     
     }
 }
-
 finally
 {
     Invoke-TestCleanup
