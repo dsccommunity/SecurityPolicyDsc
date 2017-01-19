@@ -79,7 +79,7 @@ try
 
                 It 'Should throw if inf not found' {
                     Mock -CommandName Test-Path -MockWith {$false}
-                    {Set-TargetResource @testParameters} | should throw
+                    {Test-TargetResource @testParameters} | should throw "$($testParameters.Path) not found"
                 }        
                 foreach($key in $mockResults.'Privilege Rights'.Keys)
                 {                        
@@ -123,9 +123,9 @@ try
 
         Describe 'The system is in a desired state' {
             Context 'Test for Test method' {
-                $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
+                $mockResults = Import-Clixml -Path "$PSScriptRoot..\..\..\Misc\MockObjects\MockResults.xml"
 
-                It 'Should return TRUE' {
+                It 'Should return true when in a desired state' {
                     Mock -CommandName Get-UserRightsAssignment -MockWith {$mockResults}
                     Mock -CommandName Get-SecurityTemplate -MockWith {}
                     Mock -CommandName Test-Path -MockWith {$true}
@@ -151,7 +151,6 @@ try
                     {Format-SecurityPolicyFile -Path 'policy.inf'} | Should Not throw
                 }
             }
-
             Context 'Test ConvertTo-LocalFriendlyName' {
                 $sid = 'S-1-5-32-544'
                 It 'Should equal BUILTIN\Administrators' {
@@ -169,7 +168,7 @@ try
                 }
             }
             Context 'Test Invoke-Secedit' {
-                Mock Start-Process -MockWith {}
+                Mock Start-Process -MockWith {} -ModuleName SecurityPolicyResourceHelper
                 $invokeSeceditParameters = @{
                     UserRightsToAddInf = 'temp.inf'
                     SeceditOutput      = 'output.txt'
@@ -179,10 +178,14 @@ try
                 It 'Should not throw' {
                     {Invoke-Secedit @invokeSeceditParameters} | Should not throw
                 }
+
+                It 'Should call Start-Process' {
+                    Assert-MockCalled -CommandName Start-Process -Exactly 1 -Scope Context -ModuleName SecurityPolicyResourceHelper
+                }
             }
-            Context 'Test Get-UserRightsAssignment' {               
-                $ini = "$PSScriptRoot..\..\..\\Misc\TestHelpers\TestIni.txt"
-                 Mock ConvertTo-LocalFriendlyName -MockWith {}
+            Context 'Test Get-UserRightsAssignment' {
+                $ini = "$PSScriptRoot..\..\..\Misc\TestHelpers\TestIni.txt"
+                 Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {}
 
                  $results = Get-UserRightsAssignment $ini
 
@@ -194,7 +197,7 @@ try
                      $results.section.Comment1 | Should Be '; this is a comment'
                  }
 
-                 It 'Should match INI value' {
+                 It 'Should be Value1' {
                      $results.section.Key1 | SHould be 'Value1'
                  }
             }

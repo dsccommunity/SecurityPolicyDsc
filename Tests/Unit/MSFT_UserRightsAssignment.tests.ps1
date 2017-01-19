@@ -1,6 +1,6 @@
 
-$script:DSCModuleName    = 'SecurityPolicyDsc' 
-$script:DSCResourceName  = 'MSFT_UserRightsAssignment'
+$script:dscModuleName    = 'SecurityPolicyDsc' 
+$script:dscResourceName  = 'MSFT_UserRightsAssignment'
 
 #region HEADER
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -24,21 +24,21 @@ try
 
     InModuleScope $script:DSCResourceName {
 
-            $testUSR = [PSObject]@{
+            $testParameters = [PSObject]@{
                 Policy   = 'Access_Credential_Manager_as_a_trusted_caller'                
                 Identity = 'contoso\TestUser1'                
             }
 
-            $mockUSR = [PSObject]@{
+            $mockGetUSRPolicyResult = [PSObject]@{
                 Policy = 'SeTrustedCredManAccessPrivilege'
                 Identity = 'contoso\testUser1','contoso\TestUser2'
-                PolicyFriendlyName = $testUSR.Policy
+                PolicyFriendlyName = $testParameters.Policy
             }
 
             $mockUSRDoesNotExist = [PSObject]@{
                 Policy = 'SeTrustedCredManAccessPrivilege'
                 Identity = 'contoso\testUser3','contoso\TestUser2'
-                PolicyFriendlyName = $testUSR.Policy
+                PolicyFriendlyName = $testParameters.Policy
             }
 
             $mockNullIdentity = [PSObject] @{
@@ -46,7 +46,7 @@ try
                 Identity = $null
             }
 
-            $mockGetTargetTesult = [PSObject] @{
+            $mockGetTargetResult = [PSObject] @{
                 Policy = 'Access_Credential_Manager_as_a_trusted_caller'
                 Identity = 'contoso\TestUser2'
             }
@@ -55,13 +55,13 @@ try
         #region Function Get-TargetResource
         Describe "Get-TargetResource" {  
             Context 'Identity should not match on Policy' {
-                Mock Get-USRPolicy -MockWith {return @($mockUSR)}
-                Mock Test-TargetResource -MockWith {$false}
+                Mock -CommandName Get-USRPolicy -MockWith {return @($mockGetUSRPolicyResult)}
+                Mock -CommandName Test-TargetResource -MockWith {$false}
 
-                It 'Should return absent Identity' {                    
-                    $Result = Get-TargetResource @testUSR
+                It 'Should not match Identity' {                    
+                    $result = Get-TargetResource @testParameters
 
-                    $Result.ActualIdentity | Should Not BeExactly $testUSR.Identity
+                    $result.ActualIdentity | Should Not BeExactly $testParameters.Identity
                 }
 
                 It 'Should call expected Mocks' {
@@ -71,21 +71,21 @@ try
         }
         #endregion
 
-        #region Function Set-TargetResource
+        #region Function Test-TargetResource
         Describe "Test-TargetResource" {
             Context "Should throw if Identity not specified" {
-                $testParameters = @{
+                $testSetParameters = @{
                     Policy = 'Access_Credential_Manager_as_a_trusted_caller'                    
                 }
 
-                {Test-TargetResource @testParameters} | Should throw
+                {Test-TargetResource @testSetParameters} | Should throw "An Identity must be sepcified even if it is NULL"
             }
 
             Context 'Identity does exist and should' {
-                Mock Get-USRPolicy -MockWith {$mockUSR}
+                Mock -CommandName  Get-USRPolicy -MockWith {$mockGetUSRPolicyResult}
 
                 It 'Should return true' {
-                    $testResult = Test-TargetResource @testUSR
+                    $testResult = Test-TargetResource @testParameters
 
                     $testResult | Should Be $true
                 }
@@ -96,19 +96,19 @@ try
             }
 
             Context 'Identity does not exist' {
-                Mock Get-USRPolicy -MockWith {$mockUSRDoesNotExist}
+                Mock -CommandName Get-USRPolicy -MockWith {$mockUSRDoesNotExist}
 
                 It 'Shoud return false' {
-                   $testResult = Test-TargetResource @testUSR
+                   $testResult = Test-TargetResource @testParameters
                    $testResult | Should be $false
                 }
             }
 
             Context 'Identity does not exist but should' {
-                Mock Get-USRPolicy
+                Mock -CommandName Get-USRPolicy -MockWith {}
 
                 It 'Should return false' {
-                    $testResult = Test-TargetResource @testUSR
+                    $testResult = Test-TargetResource @testParameters
 
                     $testResult | Should Be $false
                 }
@@ -118,16 +118,16 @@ try
                 } 
             }
 
-            Context 'Identity is NULL but should be' {
+            Context 'Identity is NULL and should be' {
                 It 'Should return true' {
-                    Mock Get-USRPolicy -MockWith {$mockNullIdentity}
+                    Mock -CommandName Get-USRPolicy -MockWith {$mockNullIdentity}
                     $testResult = Test-TargetResource -Policy Access_Credential_Manager_as_a_trusted_caller -Identity $null
 
                     $testResult | Should be $true
                 }
 
                 It 'Should return false' {
-                    Mock Get-USRPolicy -MockWith {$mockUSR}
+                    Mock -CommandName Get-USRPolicy -MockWith {$mockGetUSRPolicyResult}
                     $testResult = Test-TargetResource -Policy Access_Credential_Manager_as_a_trusted_caller -Identity $null
 
                     $testResult | Should be $false
@@ -138,17 +138,17 @@ try
         #region Function Set-TargetResource
         Describe "Set-TargetResource" {
             Context 'Identity does not exist but should' {
-                Mock Invoke-Secedit
-                Mock Test-TargetResource -MockWith {$true}
-                Mock Get-Content -ParameterFilter {$Path -match "Secedit-OutPut.txt"} -MockWith {"Tasked Failed"}             
+                Mock -CommandName Invoke-Secedit -MockWith {}
+                Mock -CommandName Test-TargetResource -MockWith {$true}
+                Mock -CommandName Get-Content -ParameterFilter {$Path -match "Secedit-OutPut.txt"} -MockWith {"Tasked Failed"}             
 
                 It 'Should not throw' { 
-                    {Set-TargetResource @testUSR} | Should Not Throw
+                    {Set-TargetResource @testParameters} | Should Not Throw
                 }
 
                 It 'Should throw when set fails' {
                     Mock Test-TargetResource -MockWith {$false}  
-                    {Set-TargetResource @testUSR} | Should Throw 
+                    {Set-TargetResource @testParameters} | Should Throw "Task did not complete successfully"
                 }
 
                 It 'Should call expected mocks' {
@@ -159,26 +159,40 @@ try
 
             Context 'Identity is NULL' {
                 It 'Should not throw' {
-                    Mock Invoke-Secedit
-                    Mock Test-TargetResource -MockWith {$true}
-                    Mock Get-Content -ParameterFilter {$Path -match "Secedit-OutPut.txt"} -MockWith {"Tasked Failed"}             
+                    Mock -CommandName Invoke-Secedit -MockWith {}
+                    Mock -CommandName Test-TargetResource -MockWith {$true}            
                     $setParameters = @{
                         Policy = 'Access_Credential_Manager_as_a_trusted_caller'
                         Identity = $null
                     }               
                     {Set-TargetResource @setParameters} | Should Not Throw
                 }
+
+                It 'Should call expected mocks' {
+                    Assert-MockCalled -CommandName Invoke-Secedit
+                    Assert-MockCalled -CommandName Test-TargetResource                    
+                }
             }
         }
         #endregion
         #region Function Get-USRPolicy
         Describe "Get-USRPolicy" {
-            Mock Get-AssignmentFriendlyNames -MockWith { @{'Access_Credential_Manager_as_a_trusted_caller' = 'SeTrustedCredManAccessPrivilege'}}
-            Mock Get-UserRightsAssignment -MockWith {@{'Privilege Rights' = "foo"}}
+            Mock -CommandName Get-AssignmentFriendlyNames -MockWith { @{'Access_Credential_Manager_as_a_trusted_caller' = 'SeTrustedCredManAccessPrivilege'}}
+            Mock -CommandName Get-UserRightsAssignment -MockWith {@{'Privilege Rights' = @{'SeTrustedCredManAccessPrivilege' = "foo"}}}
+
+            $getUsrResult = Get-USRPolicy -Policy 'Access_Credential_Manager_as_a_trusted_caller' -Areas USER_Rights
+
+            It 'Should match policy' {
+                $getUsrResult.Policy | Should Be 'SeTrustedCredManAccessPrivilege'
+            }
+            It 'Should match PolicyFriendlyName' {
+                $getUsrResult.PolicyFriendlyName | Should be 'Access_Credential_Manager_as_a_trusted_caller'
+            }
+            It 'Should match Identity' {
+                $getUsrResult.Identity | Should be 'foo'
+            }
 
             It 'Should call expected mnocks' {
-                Get-USRPolicy -Policy 'Access_Credential_Manager_as_a_trusted_caller' -Areas USER_Rights
-
                 Assert-MockCalled -CommandName Get-AssignmentFriendlyNames
                 Assert-MockCalled -CommandName Get-UserRightsAssignment
             }

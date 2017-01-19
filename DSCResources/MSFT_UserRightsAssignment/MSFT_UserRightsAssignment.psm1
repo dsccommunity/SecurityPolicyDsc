@@ -188,7 +188,7 @@ function Set-TargetResource
     {
         $seceditResult = Get-Content -Path $script:seceditOutput
         Write-Verbose -Message ($script:localizedData.TaskSuccessFail)
-        throw "$($seceditResult[-1])"
+        throw "$($script:localizedData.TaskSuccessFail) $($seceditResult[-1])"
     }    
 }
 
