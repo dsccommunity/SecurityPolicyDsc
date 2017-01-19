@@ -148,7 +148,7 @@ try
                     Mock Get-Content -MockWith {@('Line1','Line2')}
                     Mock Out-File -MockWith {}
                     Mock Select-String -MockWith {}
-                    
+
                     {Format-SecurityPolicyFile -Path 'policy.inf'} | Should Not throw
                 }
             }
@@ -199,7 +199,7 @@ try
                  }
 
                  It 'Should be Value1' {
-                     $results.section.Key1 | SHould be 'Value1'
+                     $results.section.Key1 | Should be 'Value1'
                  }
             }
         }     
