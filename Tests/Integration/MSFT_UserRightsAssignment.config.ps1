@@ -16,7 +16,7 @@ configuration MSFT_UserRightsAssignment_config {
     
     UserRightsAssignment AccessCredentialManagerAsaTrustedCaller
     {
-        #Assign shutdown privileges to only Builtin\Administrators
+        # Assign shutdown privileges to only Builtin\Administrators
         Policy   = $rule.Policy
         Identity = $rule.Identity
     }

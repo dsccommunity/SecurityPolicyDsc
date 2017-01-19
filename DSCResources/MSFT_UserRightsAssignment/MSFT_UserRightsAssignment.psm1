@@ -19,7 +19,7 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet(
             "Create_a_token_object",
             "Access_this_computer_from_the_network",
@@ -99,7 +99,7 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet(
             "Create_a_token_object",
             "Access_this_computer_from_the_network",
@@ -206,7 +206,7 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet(
             "Create_a_token_object",
             "Access_this_computer_from_the_network",
@@ -318,7 +318,7 @@ function Get-USRPolicy
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet(
             "Create_a_token_object",
             "Access_this_computer_from_the_network",

@@ -10,16 +10,12 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 
-$TestEnvironment = Initialize-TestEnvironment `
+$script:testEnvironment = Initialize-TestEnvironment `
     -DSCModuleName 'SecurityPolicyDsc' `
     -DSCResourceName 'MSFT_SecurityTemplate' `
     -TestType Unit 
 
 #endregion HEADER
-
-function Invoke-TestCleanup {
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment    
-}
 
 # Begin Testing
 try
@@ -33,6 +29,7 @@ try
 
         function Set-HashValue
         {  
+            [OutputType([Hashtable])]
             param
             (
                 $HashTable,
@@ -61,7 +58,7 @@ try
                     Mock -CommandName Get-Module -MockWith {return $true}
                     Mock -CommandName Format-SecurityPolicyFile -MockWith {"file.inf"}
 
-                    It 'Get method should return path of inf with SecurityCmdlets' { 
+                    It 'Should return path of inf with SecurityCmdlets' { 
                         $getResult = Get-TargetResource @testParameters
                         $getResult.Path | Should BeLike "*.inf"
 
@@ -70,7 +67,7 @@ try
                 }
                 else
                 {
-                    It 'Get method should return path of desired inf without SecurityCmdlets' {
+                    It 'Should return path of desired inf without SecurityCmdlets' {
                         Mock -CommandName Get-Module -MockWith {$false}
                     
                         $getResult = Get-TargetResource @testParameters
@@ -80,7 +77,7 @@ try
                     }
                 }
 
-                It 'Test method should throw if inf not found' {
+                It 'Should throw if inf not found' {
                     Mock -CommandName Test-Path -MockWith {$false}
                     {Set-TargetResource @testParameters} | should throw
                 }        
@@ -91,7 +88,8 @@ try
                     Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockResults} -ParameterFilter {$FilePath -like "*Temp*inf*inf"}
                     Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockFalseResults} -ParameterFilter {$FilePath -eq $testParameters.Path} 
                     Mock -CommandName Test-Path -MockWith {$true}
-                    It "Test method should return FALSE when testing $key" {  
+
+                    It "Test method should return false when testing $key" {  
                         Test-TargetResource @testParameters | Should Be $false
                     }
                 }                
@@ -101,8 +99,7 @@ try
                 if($securityModulePresent)
                 {
                     Mock Restore-SecurityPolicy  -MockWith {}
-                }
-                    Mock Invoke-Secedit -MockWith {}
+                }                    
                     Mock Invoke-Secedit -MockWith {}
                     Mock Test-TargetResource -MockWith {$true}
 
@@ -128,7 +125,7 @@ try
             Context 'Test for Test method' {
                 $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
 
-                It 'Test method should return TRUE' {
+                It 'Should return TRUE' {
                     Mock -CommandName Get-UserRightsAssignment -MockWith {$mockResults}
                     Mock -CommandName Get-SecurityTemplate -MockWith {}
                     Mock -CommandName Test-Path -MockWith {$true}
@@ -189,15 +186,15 @@ try
 
                  $results = Get-UserRightsAssignment $ini
 
-                 It 'INI Section should match' {
+                 It 'Should match INI Section' {
                      $results.Keys | Should Be 'section'
                  }
                  
-                 It 'INI Comment should match' {
+                 It 'Should match INI Comment' {
                      $results.section.Comment1 | Should Be '; this is a comment'
                  }
 
-                 It 'INI value should match' {
+                 It 'Should match INI value' {
                      $results.section.Key1 | SHould be 'Value1'
                  }
             }
@@ -206,5 +203,5 @@ try
 }
 finally
 {
-    Invoke-TestCleanup
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment  
 }
