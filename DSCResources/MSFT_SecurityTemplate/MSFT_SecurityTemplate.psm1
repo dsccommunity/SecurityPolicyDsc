@@ -209,7 +209,6 @@ function Format-SecurityPolicyFile
 #>
 function Get-SecurityTemplate
 {
-    [OutputType([String])]
     [CmdletBinding()]   
     param
     (
