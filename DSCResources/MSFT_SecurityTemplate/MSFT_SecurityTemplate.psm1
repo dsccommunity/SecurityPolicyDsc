@@ -30,7 +30,7 @@ function Get-TargetResource
     )
 
     $securityCmdlets = Get-Module -Name SecurityCmdlets -ListAvailable
-    $currentUserRightsInf = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')
+    $currentUserRightsInf = ([System.IO.Path]::GetTempFileName()).Replace('tmp','inf')
 
     if ($securityCmdlets)
     {
@@ -125,7 +125,7 @@ function Test-TargetResource
     )
     
     $securityCmdlets = Get-Module -Name SecurityCmdlets -ListAvailable
-    $currentUserRightsInf = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')
+    $currentUserRightsInf = ([System.IO.Path]::GetTempFileName()).Replace('tmp','inf')
     $fileExists = Test-Path -Path $Path
 
     if ($fileExists -eq $false)
