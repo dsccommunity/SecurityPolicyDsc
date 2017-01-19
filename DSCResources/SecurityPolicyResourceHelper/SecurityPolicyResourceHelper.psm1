@@ -12,6 +12,7 @@
 #>
 function Get-LocalizedData
 {
+    [OutputType([String])]
     [CmdletBinding()]
     param
     (

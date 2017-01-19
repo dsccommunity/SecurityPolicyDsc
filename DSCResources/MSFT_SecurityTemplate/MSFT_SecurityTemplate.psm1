@@ -17,22 +17,22 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [ValidateSet('Yes')]
         [String]
         $IsSingleInstance,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Path
     )
 
-    $securityCdmlets = Get-Module -Name SecurityCmdlets -ListAvailable
+    $securityCmdlets = Get-Module -Name SecurityCmdlets -ListAvailable
     $currentUserRightsInf = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')
 
-    if ($securityCdmlets)
+    if ($securityCmdlets)
     {
         Backup-SecurityPolicy -Path $currentUserRightsInf
         $templateFileName = Format-SecurityPolicyFile -Path $currentUserRightsInf
@@ -62,27 +62,27 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [ValidateSet('Yes')]
         [String]
         $IsSingleInstance,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Path
     )
 
-    $securityCdmlets = Get-Module -Name SecurityCmdlets -ListAvailable
+    $securityCmdlets = Get-Module -Name SecurityCmdlets -ListAvailable
 
-    if ($securityCdmlets)
+    if ($securityCmdlets)
     {
         Restore-SecurityPolicy -Path $Path
     }
     else
     {
-        $seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
+        $secEditOutput = "$env:TEMP\Secedit-OutPut.txt"
     
         Invoke-Secedit -UserRightsToAddInf $Path -SecEditOutput $seceditOutput
     }
@@ -96,7 +96,7 @@ function Set-TargetResource
     else
     {
         $seceditResult = Get-Content $seceditOutput
-        Write-Error -Message ($script:localizedData.TaskSuccessFail)        
+        Write-Error -Message ($script:localizedData.TaskFail)        
     }
 }
 
@@ -112,19 +112,19 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [ValidateSet('Yes')]
         [String]
         $IsSingleInstance, 
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Path
     )
     
-    $securityCdmlets = Get-Module -Name SecurityCmdlets -ListAvailable
+    $securityCmdlets = Get-Module -Name SecurityCmdlets -ListAvailable
     $currentUserRightsInf = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')
     $fileExists = Test-Path -Path $Path
 
@@ -133,7 +133,7 @@ function Test-TargetResource
         throw ($script:localizedData.PathNotFound) -f $Path
     }
 
-    if ($securityCdmlets)
+    if ($securityCmdlets)
     {
         Backup-SecurityPolicy -Path $currentUserRightsInf
     }
@@ -145,12 +145,12 @@ function Test-TargetResource
     $desiredPolicies = (Get-UserRightsAssignment -FilePath $Path).'Privilege Rights'
     $currentPolicies = (Get-UserRightsAssignment -FilePath $currentUserRightsInf).'Privilege Rights'
     
-    $policyNames = $desiredPolicies.keys
-
-    $policiesMatch = $false
+    $policyNames = $desiredPolicies.keys    
 
     foreach ($policy in $policyNames)
     {
+        $policiesMatch = $false
+
         if ($null -eq $currentPolicies[$policy] -or $null -eq $desiredPolicies[$policy])
         {
             $policiesMatch = $null -eq $currentPolicies[$policy] -and $null -eq $desiredPolicies[$policy]
@@ -175,7 +175,7 @@ function Test-TargetResource
     .SYNOPSIS
         Removes the other security areas from policy template file so only settings for user rights assignments are returned.
     .PARAMETER Path
-        Specifies the file to the template to be parsed.
+        Specifies the path to the template file to be parsed.
 #>
 function Format-SecurityPolicyFile
 {
@@ -183,10 +183,11 @@ function Format-SecurityPolicyFile
     [CmdletBinding()]
     param
     (
-        [System.String]$Path
+        [System.String]
+        $Path
     )
 
-    $outputPath = ([system.IO.Path]::GetTempFileName()).Replace('tmp','inf')
+    $outputPath = ([System.IO.Path]::GetTempFileName()).Replace('tmp','inf')
     $content = Get-Content -Path $Path 
 
     $privilegeRightsMatch = Select-String -Path $Path -Pattern "[Privilege Rights]" -SimpleMatch
@@ -202,7 +203,9 @@ function Format-SecurityPolicyFile
 
 <#
     .SYNOPSIS
-        Invokes secedit.exe to create an INF file of the current policies
+        Invokes secedit.exe to create an INF file of the current policies.
+    .PARAMETER Path
+        The path to the export INF file that will be created.
 #>
 function Get-SecurityTemplate
 {
@@ -210,10 +213,11 @@ function Get-SecurityTemplate
     [CmdletBinding()]   
     param
     (
-        [System.String]$Path
+        [System.String]
+        $Path
     )
     
-    $secedit = secedit.exe /export /cfg $Path /areas "USER_Rights"    
+    secedit.exe /export /cfg $Path /areas "USER_Rights"    
 }
 
 Export-ModuleMember -Function *-TargetResource

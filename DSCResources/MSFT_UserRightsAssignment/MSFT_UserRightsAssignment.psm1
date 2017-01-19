@@ -177,7 +177,7 @@ function Set-TargetResource
 
     Invoke-Secedit -UserRightsToAddInf $userRightsToAddInf -SecEditOutput $seceditOutput
     
-    #Verify secedit command was successful
+    # Verify secedit command was successful
     $testSuccuess = Test-TargetResource -Identity $Identity -Policy $Policy
 
     if ($testSuccuess -eq $true)
@@ -187,8 +187,8 @@ function Set-TargetResource
     else
     {
         $seceditResult = Get-Content -Path $script:seceditOutput
-        Write-Verbose -Message ($script:localizedData.TaskSuccessFail)
-        throw "$($script:localizedData.TaskSuccessFail) $($seceditResult[-1])"
+        Write-Verbose -Message ($script:localizedData.TaskFail)
+        throw "$($script:localizedData.TaskFail) $($seceditResult[-1])"
     }    
 }
 
@@ -263,7 +263,7 @@ function Test-TargetResource
         $Identity
     )
 
-    if (!$PSBoundParameters.ContainsKey('Identity'))
+    if (-not $PSBoundParameters.ContainsKey('Identity'))
     {
         throw $($script:localizedData.IdentityNotSpecified)
     }
@@ -407,7 +407,7 @@ function Get-AssignmentFriendlyNames
 
 <#
     .SYNOPSIS 
-        Creates Inf with desired configuration for a user right assignment that is passed to secedit.exe
+        Creates Inf with desired configuration for a user rights assignment that is passed to secedit.exe
     .PARAMETER InfPolicy
         Name of user rights assignment policy
     .PARAMETER UserList

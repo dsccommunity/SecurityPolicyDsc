@@ -13,16 +13,16 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ## UserRightsAssignment
 * **Policy**: The policy name of the user right assignment to be configured.
-* **Identity**: The identity of the user or group to be added or removed from the user right assignment.
+* **Identity**: The identity of the user or group to be added or removed from the user rights assignment.
 
 ## SecurityTemplate
-* **Path**: Path to Inf the defines the desired security policies.
+* **Path**: Path to Inf that defines the desired security policies.
 
 ## Versions
 
 ### Unreleased
 
 ### 1.0.0.0
-* Initial release with the following resource:
+* Initial release with the following resources:
  * UserRightsAssignment
  * SecurityTemplate
