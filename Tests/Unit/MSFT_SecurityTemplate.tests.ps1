@@ -103,13 +103,6 @@ try
                     Mock Invoke-Secedit -MockWith {}
                     Mock Test-TargetResource -MockWith {$true}
 
-                It 'Should call Invoke-Secedit when SecurityCmdlet module does not exist' {                    
-                    Mock Get-Module -MockWith {$false}                 
-
-                    {Set-TargetResource @testParameters} | Should Not throw
-                    Assert-MockCalled -CommandName Invoke-Secedit -Exactly 1
-                }
-
                 if($securityModulePresent)
                 {        
                     It 'Should Call Restore-SecurityPolicy when SecurityCmdlet module does exist' {
@@ -152,22 +145,6 @@ try
                     {Format-SecurityPolicyFile -Path 'policy.inf'} | Should Not throw
                 }
             }
-            Context 'Test ConvertTo-LocalFriendlyName' {
-                $sid = 'S-1-5-32-544'
-                It 'Should equal BUILTIN\Administrators' {
-                    ConvertTo-LocalFriendlyName -SID $sid | should be 'BUILTIN\Administrators'
-                }
-
-                It "Should return $env:USERDOMAIN\user1" {                    
-                    Mock -CommandName Get-WmiObject -MockWith {return @{DomainRole=4}} -ModuleName SecurityPolicyResourceHelper
-                    ConvertTo-LocalFriendlyName -SID 'user1' | Should be "$env:USERDOMAIN\user1"
-                }
-
-                It 'Should ignore SID translation' {
-                    Mock -CommandName Get-WmiObject -MockWith {return @{DomainRole=2}} -ModuleName SecurityPolicyResourceHelper
-                    ConvertTo-LocalFriendlyName -SID 'user1' | Should be 'user1'
-                }
-            }
             Context 'Test Invoke-Secedit' {
                 Mock Start-Process -MockWith {} -ModuleName SecurityPolicyResourceHelper
                 $invokeSeceditParameters = @{
@@ -183,24 +160,6 @@ try
                 It 'Should call Start-Process' {
                     Assert-MockCalled -CommandName Start-Process -Exactly 1 -Scope Context -ModuleName SecurityPolicyResourceHelper
                 }
-            }
-            Context 'Test Get-UserRightsAssignment' {
-                $ini = "$PSScriptRoot..\..\..\Misc\TestHelpers\TestIni.txt"
-                 Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {}
-
-                 $results = Get-UserRightsAssignment $ini
-
-                 It 'Should match INI Section' {
-                     $results.Keys | Should Be 'section'
-                 }
-                 
-                 It 'Should match INI Comment' {
-                     $results.section.Comment1 | Should Be '; this is a comment'
-                 }
-
-                 It 'Should be Value1' {
-                     $results.section.Key1 | Should be 'Value1'
-                 }
             }
         }     
     }

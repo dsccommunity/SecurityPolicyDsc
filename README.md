@@ -12,7 +12,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 *  **SecurityTemplate** configures user rights assignments that are defined in an INF file
 
 ## UserRightsAssignment
-* **Policy**: The policy name of the user right assignment to be configured.
+* **Policy**: The policy name of the user rights assignment to be configured.
 * **Identity**: The identity of the user or group to be added or removed from the user rights assignment.
 
 ## SecurityTemplate

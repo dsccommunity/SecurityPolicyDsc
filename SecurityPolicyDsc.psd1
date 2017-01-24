@@ -24,7 +24,7 @@ CompanyName = 'Microsoft Corporation'
 Copyright = '(c) 2016 Microsoft. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'This module is a wrapper around secedit.exe which provides the ability to configure User Rights Assignments'
+Description = 'This module is a wrapper around secedit.exe which provides the ability to configure user rights assignments'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '4.0'

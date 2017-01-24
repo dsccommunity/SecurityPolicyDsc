@@ -54,14 +54,14 @@ try
 
         #region Function Get-TargetResource
         Describe "Get-TargetResource" {  
-            Context 'Identity should not match on Policy' {
-                Mock -CommandName Get-USRPolicy -MockWith {return @($mockGetUSRPolicyResult)}
+            Context 'Identity should match on Policy' {
+                Mock -CommandName Get-USRPolicy -MockWith {return @($testParameters)}
                 Mock -CommandName Test-TargetResource -MockWith {$false}
 
                 It 'Should not match Identity' {                    
                     $result = Get-TargetResource @testParameters
 
-                    $result.ActualIdentity | Should Not BeExactly $testParameters.Identity
+                    $result.Identity | Should Be $testParameters.Identity
                 }
 
                 It 'Should call expected Mocks' {
@@ -148,7 +148,7 @@ try
 
                 It 'Should throw when set fails' {
                     Mock Test-TargetResource -MockWith {$false}  
-                    {Set-TargetResource @testParameters} | Should Throw "Task did not complete successfully"
+                    {Set-TargetResource @testParameters} | Should Throw $script:localizedData.TaskFail
                 }
 
                 It 'Should call expected mocks' {

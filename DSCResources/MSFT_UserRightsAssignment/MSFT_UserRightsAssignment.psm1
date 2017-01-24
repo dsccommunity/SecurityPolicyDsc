@@ -178,9 +178,8 @@ function Set-TargetResource
     Invoke-Secedit -UserRightsToAddInf $userRightsToAddInf -SecEditOutput $seceditOutput
     
     # Verify secedit command was successful
-    $testSuccuess = Test-TargetResource -Identity $Identity -Policy $Policy
 
-    if ($testSuccuess -eq $true)
+    if (Test-TargetResource -Identity $Identity -Policy $Policy)
     {
         Write-Verbose -Message ($script:localizedData.TaskSuccess)
     }
