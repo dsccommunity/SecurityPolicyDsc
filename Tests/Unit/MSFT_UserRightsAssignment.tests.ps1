@@ -56,7 +56,6 @@ try
         Describe "Get-TargetResource" {  
             Context 'Identity should match on Policy' {
                 Mock -CommandName Get-USRPolicy -MockWith {return @($testParameters)}
-                Mock -CommandName Test-TargetResource -MockWith {$false}
 
                 It 'Should not match Identity' {                    
                     $result = Get-TargetResource @testParameters
