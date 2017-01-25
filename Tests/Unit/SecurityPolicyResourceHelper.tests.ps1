@@ -11,9 +11,8 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 
-# TODO: Insert the correct <ModuleName> and <ResourceName> for your resource
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName 'securityPOlicyDsc' `
+    -DSCModuleName 'SecurityPolicyDsc' `
     -DSCResourceName 'SecurityPolicyResourceHelper' `
     -TestType Unit
 
@@ -63,18 +62,18 @@ try
             Context 'Test Get-UserRightsAssignment' {
                 $ini = "$PSScriptRoot..\..\..\Misc\TestHelpers\TestIni.txt"
 
-                 $results = Get-UserRightsAssignment $ini
+                 $result = Get-UserRightsAssignment $ini
 
                  It 'Should match INI Section' {
-                     $results.Keys | Should Be 'section'
+                     $result.Keys | Should Be 'section'
                  }
                  
                  It 'Should match INI Comment' {
-                     $results.section.Comment1 | Should Be '; this is a comment'
+                     $result.section.Comment1 | Should Be '; this is a comment'
                  }
 
                  It 'Should be Value1' {
-                     $results.section.Key1 | Should be 'Value1'
+                     $result.section.Key1 | Should be 'Value1'
                  }
             }
         } 
