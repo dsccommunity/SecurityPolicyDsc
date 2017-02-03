@@ -4,9 +4,10 @@ Configuration CompareInfs
 
     node localhost
     {
-        SecInf TrustedCredentialAccess
+        SecurityTemplate TrustedCredentialAccess
         {
-            Path = "C:\scratch\UserRights.inf"
+            Path = "C:\scratch\SecurityPolicyBackup.inf"
+            IsSingleInstance = 'Yes'
         }
     }
 }

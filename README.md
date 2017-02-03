@@ -9,20 +9,20 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ## Resources
 *  **UserRightsAssignment** configures user rights assignments in local security policies.
-*  **SecInf** configures user rights assignments that are defined in an INF file
+*  **SecurityTemplate** configures user rights assignments that are defined in an INF file
 
 ## UserRightsAssignment
-* **Policy**: The policy name of the user right assignment to be configured.
-* **Identity**: The identity of the user or group to be added or removed from the user right assignment.
+* **Policy**: The policy name of the user rights assignment to be configured.
+* **Identity**: The identity of the user or group to be added or removed from the user rights assignment.
 
-## SecInf
-* **Path**: Path to Inf the defines the desired security policies.
+## SecurityTemplate
+* **Path**: Path to Inf that defines the desired security policies.
 
 ## Versions
 
-## Unreleased
+### Unreleased
 
-1.0.0.0
-* Initial release with the following resource:
+### 1.0.0.0
+* Initial release with the following resources:
  * UserRightsAssignment
- * SecInf
+ * SecurityTemplate

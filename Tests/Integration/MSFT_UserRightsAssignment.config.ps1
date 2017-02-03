@@ -2,21 +2,21 @@
 $rule = @{
 
     Policy   = 'Access_Credential_Manager_as_a_trusted_caller'
-    Identity = 'builtin\Administrators','contoso\testuser1'
+    Identity = 'builtin\Administrators'
 }
 
 $removeAll = @{
     
     Policy = 'Act_as_part_of_the_operating_system'
-    Identity = 'NULL'
+    Identity = ""
 }
 
 configuration MSFT_UserRightsAssignment_config {
     Import-DscResource -ModuleName SecurityPolicyDsc
     
-    xUserRightsAssignment AccessCredentialManagerAsaTrustedCaller
+    UserRightsAssignment AccessCredentialManagerAsaTrustedCaller
     {
-        #Assign shutdown privileges to only Builtin\Administrators
+        # Assign shutdown privileges to only Builtin\Administrators
         Policy   = $rule.Policy
         Identity = $rule.Identity
     }
