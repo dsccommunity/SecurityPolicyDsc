@@ -70,8 +70,9 @@ function Get-TargetResource
         [System.String]
         $Policy,
 
-        [parameter(Mandatory = $false)]
-        [AllowEmptyCollection()]        
+        [parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [AllowEmptyString()]      
         [System.String[]]
         $Identity
     )
@@ -150,8 +151,9 @@ function Set-TargetResource
         [System.String]
         $Policy,
 
-        [parameter(Mandatory = $false)]
+        [parameter(Mandatory = $true)]
         [AllowEmptyCollection()]
+        [AllowEmptyString()]
         [System.String[]]
         $Identity
     )
@@ -256,19 +258,14 @@ function Test-TargetResource
         [System.String]
         $Policy,
 
-        [parameter(Mandatory = $false)]
-        [AllowEmptyCollection()]        
+        [parameter(Mandatory = $true)]
+        [AllowEmptyCollection()] 
+        [AllowEmptyString()]               
         [System.String[]]
         $Identity
     )
-
-    if (-not $PSBoundParameters.ContainsKey('Identity'))
-    {
-        throw $($script:localizedData.IdentityNotSpecified)
-    }
         
-    $userRights = Get-USRPolicy -Policy $Policy -Areas USER_Rights
-    
+    $userRights = Get-USRPolicy -Policy $Policy -Areas USER_Rights    
 
     if ($null -eq $Identity -or [System.String]::IsNullOrWhiteSpace($Identity))
     {

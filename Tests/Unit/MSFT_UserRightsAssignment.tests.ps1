@@ -56,6 +56,7 @@ try
         Describe "Get-TargetResource" {  
             Context 'Identity should match on Policy' {
                 Mock -CommandName Get-USRPolicy -MockWith {return @($testParameters)}
+                Mock -CommandName Test-TargetResource -MockWith {$false}
 
                 It 'Should not match Identity' {                    
                     $result = Get-TargetResource @testParameters
@@ -72,14 +73,6 @@ try
 
         #region Function Test-TargetResource
         Describe "Test-TargetResource" {
-            Context "Should throw if Identity not specified" {
-                $testSetParameters = @{
-                    Policy = 'Access_Credential_Manager_as_a_trusted_caller'                    
-                }
-
-                {Test-TargetResource @testSetParameters} | Should throw "An Identity must be sepcified even if it is NULL"
-            }
-
             Context 'Identity does exist and should' {
                 Mock -CommandName  Get-USRPolicy -MockWith {$mockGetUSRPolicyResult}
 
@@ -120,14 +113,14 @@ try
             Context 'Identity is NULL and should be' {
                 It 'Should return true' {
                     Mock -CommandName Get-USRPolicy -MockWith {$mockNullIdentity}
-                    $testResult = Test-TargetResource -Policy Access_Credential_Manager_as_a_trusted_caller -Identity $null
+                    $testResult = Test-TargetResource -Policy Access_Credential_Manager_as_a_trusted_caller -Identity ""
 
                     $testResult | Should be $true
                 }
 
                 It 'Should return false' {
                     Mock -CommandName Get-USRPolicy -MockWith {$mockGetUSRPolicyResult}
-                    $testResult = Test-TargetResource -Policy Access_Credential_Manager_as_a_trusted_caller -Identity $null
+                    $testResult = Test-TargetResource -Policy Access_Credential_Manager_as_a_trusted_caller -Identity ""
 
                     $testResult | Should be $false
                 }
@@ -162,7 +155,7 @@ try
                     Mock -CommandName Test-TargetResource -MockWith {$true}            
                     $setParameters = @{
                         Policy = 'Access_Credential_Manager_as_a_trusted_caller'
-                        Identity = $null
+                        Identity = ""
                     }               
                     {Set-TargetResource @setParameters} | Should Not Throw
                 }
