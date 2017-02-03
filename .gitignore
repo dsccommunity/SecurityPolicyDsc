@@ -1,6 +1,8 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
 
 /.vs/xSecedit/v14/.suo
 /xSecedit.sln
+DSCResource.Tests
+.vscode
+/Misc/Generate_SecurityTemplate.ps1
+/Misc/Generate_UserRightsAssignment.ps1
+/Tests/Integration/output.txt
