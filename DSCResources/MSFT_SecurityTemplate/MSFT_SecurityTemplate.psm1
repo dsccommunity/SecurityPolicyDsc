@@ -95,7 +95,6 @@ function Set-TargetResource
     }
     else
     {
-        $seceditResult = Get-Content $seceditOutput
         Write-Error -Message ($script:localizedData.TaskFail)        
     }
 }
