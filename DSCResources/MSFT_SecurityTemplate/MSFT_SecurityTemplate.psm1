@@ -153,7 +153,7 @@ function Test-TargetResource
 
         if ($null -eq $currentPolicies[$policy] -or $null -eq $desiredPolicies[$policy])
         {
-            $policiesMatch = $null -eq $currentPolicies[$policy] -and $null -eq $desiredPolicies[$policy]
+            $policiesMatch = [String]::IsNullOrEmpty($currentPolicies[$policy]) -and [String]::IsNullOrEmpty($desiredPolicies[$policy])
         }
         else
         {

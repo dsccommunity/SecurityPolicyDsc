@@ -158,7 +158,7 @@ function ConvertTo-LocalFriendlyName
     )
     
     $localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
-    $domainRole = (Get-WmiObject -Class Win32_ComputerSystem).DomainRole
+    $domainRole = (Get-CimAssociatedInstance -ClassName Win32_ComputerSystem).DomainRole
     $friendlyNames = [String[]]@()
     foreach ($id in $SID)
     {        
