@@ -11,7 +11,7 @@ Configuration UserRights
             Identity = "Builtin\Administrators"
         }
 
-        #Assign access from the network privileges to "contoso\TestUser1" and "whlab\TestUser2"
+        #Assign access from the network privileges to "contoso\TestUser1" and "contoso\TestUser2"
         UserRightsAssignment AccessComputerFromNetwork
         {
             Policy = "Access_this_computer_from_the_network"
