@@ -9,7 +9,7 @@
 @{
 
 # Version number of this module.
-ModuleVersion = '1.0.0.0'
+ModuleVersion = '1.1.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'e2b73194-69ef-4fa6-b949-9f62ebe04989'
@@ -47,10 +47,15 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* SecurityPolicyDsc: Initial Release.'
+        ReleaseNotes = '* SecurityTemplate:
+  * Made SecurityTemplate compatible with Nano Server
+  * Fixed bug in which Path parameter failed when no User section was present
+
+'
 
     } # End of PSData hashtable
 
 } # End of PrivateData hashtable
 
 }
+
