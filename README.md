@@ -23,6 +23,8 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ### Unreleased
 
+### 1.1.0.0
+
 * SecurityTemplate:
   * Made SecurityTemplate compatible with Nano Server
   * Fixed bug in which Path parameter failed when no User section was present
