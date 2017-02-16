@@ -1,4 +1,5 @@
 # SecurityPolicyDsc
+
 A wrapper around secedit.exe to allow you to configure local security policies.  This resource requires a Windows OS with secedit.exe.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
@@ -22,7 +23,12 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ### Unreleased
 
+* SecurityTemplate:
+  * Made SecurityTemplate compatible with Nano Server
+  * Fixed bug in which Path parameter failed when no User section was present
+
 ### 1.0.0.0
+
 * Initial release with the following resources:
  * UserRightsAssignment
  * SecurityTemplate
