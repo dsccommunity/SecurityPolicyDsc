@@ -34,12 +34,12 @@ try
                 }
 
                 It "Should return $env:USERDOMAIN\user1" {                    
-                    Mock -CommandName Get-WmiObject -MockWith {return @{DomainRole=4}} -ModuleName SecurityPolicyResourceHelper
+                    Mock -CommandName Get-CimInstance -MockWith {return @{DomainRole=4}} -ModuleName SecurityPolicyResourceHelper
                     ConvertTo-LocalFriendlyName -SID 'user1' | Should be "$env:USERDOMAIN\user1"
                 }
 
                 It 'Should ignore SID translation' {
-                    Mock -CommandName Get-WmiObject -MockWith {return @{DomainRole=2}} -ModuleName SecurityPolicyResourceHelper
+                    Mock -CommandName Get-CimInstance -MockWith {return @{DomainRole=2}} -ModuleName SecurityPolicyResourceHelper
                     ConvertTo-LocalFriendlyName -SID 'user1' | Should be 'user1'
                 }
             }
