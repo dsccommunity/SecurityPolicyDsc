@@ -18,7 +18,6 @@ function Get-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [ValidateSet('Yes')]
         [String]
         $IsSingleInstance,
@@ -63,7 +62,6 @@ function Set-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [ValidateSet('Yes')]
         [String]
         $IsSingleInstance,
@@ -112,7 +110,6 @@ function Test-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [ValidateSet('Yes')]
         [String]
         $IsSingleInstance, 
