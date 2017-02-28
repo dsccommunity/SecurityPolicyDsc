@@ -5,7 +5,7 @@ Configuration UserRights
     Node localhost
     {
         #Assign shutdown privileges to only Builtin\Administrators
-        UserRightsAssignment AssignShutdownPrivlegesToAdmins
+        UserRightsAssignment AssignShutdownPrivilegesToAdmins
         {            
             Policy = "Shut_down_the_system"
             Identity = "Builtin\Administrators"
