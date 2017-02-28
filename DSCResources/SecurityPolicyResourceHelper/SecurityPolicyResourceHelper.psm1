@@ -62,7 +62,7 @@ function Get-LocalizedData
     .SYNOPSIS
         Wrapper around secedit.exe used to make changes
     .PARAMETER UserRightsToAddInf
-        Inf with desired user rights assignment policy configuration
+        Path to an INF file with desired user rights assignment policy configuration
     .PARAMETER SeceditOutput
         Path to secedit log file output
     .EXAMPLE
@@ -98,9 +98,9 @@ function Invoke-Secedit
 
 <#
     .SYNOPSIS
-        Parses Inf produced by 'secedit.exe /export' and returns an object of identites assigned to a user rights assignment policy
+        Parses an INF file produced by 'secedit.exe /export' and returns an object of identites assigned to a user rights assignment policy
     .PARAMETER FilePath
-        Path to Inf
+        Path to an INF file
     .EXAMPLE
         Get-UserRightsAssignment -FilePath C:\seceditOutput.inf
 #>
@@ -141,9 +141,9 @@ function Get-UserRightsAssignment
 
 <#
     .SYNOPSIS
-        Converts SID to friendly name
+        Converts SID to a friendly name
     .PARAMETER SID
-        SID of identity being converted
+        SID of an identity being converted
     .EXAMPLE
         ConvertTo-LocalFriendlyName -SID 'S-1-5-21-3623811015-3361044348-30300820-1013'
 #>
