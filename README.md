@@ -21,11 +21,16 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ## SecurityTemplate
 
-* **Path**: Path to Inf that defines the desired security policies.
+* **Path**: Path to an INF file that defines the desired security policies.
 
 ## Versions
 
 ### Unreleased
+
+### 1.2.0.0
+
+* SecurityTemplate: Remove [ValidateNotNullOrEmpty()] attribute for IsSingleInstance parameter
+* Fixed typos
 
 ### 1.1.0.0
 
