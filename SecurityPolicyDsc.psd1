@@ -9,7 +9,7 @@
 @{
 
 # Version number of this module.
-ModuleVersion = '1.1.0.0'
+ModuleVersion = '1.2.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'e2b73194-69ef-4fa6-b949-9f62ebe04989'
@@ -47,9 +47,8 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* SecurityTemplate:
-  * Made SecurityTemplate compatible with Nano Server
-  * Fixed bug in which Path parameter failed when no User section was present
+        ReleaseNotes = '* SecurityTemplate: Remove [ValidateNotNullOrEmpty()] attribute for IsSingleInstance parameter
+* Fixed typos
 
 '
 
@@ -58,4 +57,5 @@ PrivateData = @{
 } # End of PrivateData hashtable
 
 }
+
 
