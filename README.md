@@ -27,6 +27,9 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ### Unreleased
 
+* SecurityTemplate: Remove [ValidateNotNullOrEmpty()] attribute for IsSingleInstance parameter
+* Fixed typos
+
 ### 1.1.0.0
 
 * SecurityTemplate:
