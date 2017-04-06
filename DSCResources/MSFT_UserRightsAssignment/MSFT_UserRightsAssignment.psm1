@@ -74,7 +74,12 @@ function Get-TargetResource
         [AllowEmptyCollection()]
         [AllowEmptyString()]      
         [System.String[]]
-        $Identity
+        $Identity,
+
+        [ValidateSet("Present", "Absent")]
+        [string]$Ensure = "Present",
+
+        [bool]$Force = $false
     )
     
     $usrResult = Get-USRPolicy -Policy $Policy -Areas USER_RIGHTS
@@ -155,15 +160,19 @@ function Set-TargetResource
         [AllowEmptyCollection()]
         [AllowEmptyString()]
         [System.String[]]
-        $Identity
+        $Identity,
+
+        [ValidateSet("Present", "Absent")]
+        [string]$Ensure = "Present",
+
+        [bool]$Force = $false
     )
     
     $policyList = Get-AssignmentFriendlyNames
     $policyName = $policyList[$Policy]
     $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
     $userRightsToAddInf = "$env:TEMP\userRightsToAdd.inf" 
-    $idsToAdd = $Identity -join ","
-
+    
     if ($null -eq $Identity)
     {
         Write-Verbose -Message ($script:localizedData.IdentityIsNullRemovingAll -f $Policy)
@@ -172,11 +181,47 @@ function Set-TargetResource
     else
     {
         Write-Verbose -Message ($script:localizedData.GrantingPolicyRightsToIds -f $Policy, $idsToAdd)
-    }
+        
+        $Accounts = @()
+        switch ($Identity)
+        {
+            "[Local Account]" { $Accounts += (Get-WmiObject win32_useraccount -Filter "LocalAccount='True'").SID }
+            "[Local Account|Administrator]" 
+            {
+                $AdministratorsGroup = Get-WmiObject -class win32_group -filter "SID='S-1-5-32-544'"
+                $GroupUsers = get-wmiobject -query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($AdministratorsGroup.name)'`""
+                [array]$UsersList = $GroupUsers.partcomponent | %{ (($_ -replace '.*Win32_UserAccount.Domain="', "") -replace '",Name="', "\") -replace '"', '' }
+                $users += $UsersList | ?{$_ -match $env:COMPUTERNAME}
+                $Accounts += $users | %{(Get-WmiObject win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
+            }
+            Default { $Accounts += $_} 
+        }
+        
+        $currRights = Get-TargetResource -Policy $Policy -Identity $Identity
+        if ($Ensure -eq "Present")
+        {
+            if (!$Force)
+            {   
+                foreach ($id in $currRights.Identity)
+                {
+                    if ($id -notin $Accounts)
+                    {
+                        $Accounts += $id
+                    }
+                }
+            }
+        }
+        else
+        {
+            $Accounts = $Accounts | ?{$_ -notin $currRights.Identity}
+        }
+        
+        $idsToAdd = $Accounts -join ","
+    }   
        
     Out-UserRightsInf -InfPolicy $policyName -UserList $idsToAdd -FilePath $userRightsToAddInf
     Write-Debug -Message ($script:localizedData.EchoDebugInf -f $userRightsToAddInf)
-
+    
     Invoke-Secedit -UserRightsToAddInf $userRightsToAddInf -SecEditOutput $seceditOutput
     
     # Verify secedit command was successful
@@ -262,10 +307,16 @@ function Test-TargetResource
         [AllowEmptyCollection()] 
         [AllowEmptyString()]               
         [System.String[]]
-        $Identity
+        $Identity,
+
+        [ValidateSet("Present", "Absent")]
+        [string]$Ensure = "Present",
+
+        [bool]$Force = $false
     )
         
     $userRights = Get-USRPolicy -Policy $Policy -Areas USER_Rights    
+    $returnValue = $false
 
     if ($null -eq $Identity -or [System.String]::IsNullOrWhiteSpace($Identity))
     {
@@ -285,17 +336,55 @@ function Test-TargetResource
 
     Write-Verbose -Message ($script:localizedData.TestIdentityIsPresentOnPolicy -f $($Identity -join","), $Policy)
 
-    foreach ($id in $Identity)
+    $Accounts = @()
+    switch ($Identity)
     {
-        if ($userRights.Identity -notcontains $id)
+        "[Local Account]" { $Accounts += (Get-WmiObject win32_useraccount -Filter "LocalAccount='True'").SID }
+        "[Local Account|Administrator]" 
         {
-            Write-Verbose -Message ($script:localizedData.IdNotFoundOnPolicy -f $id, $Policy)
+            $AdministratorsGroup = Get-WmiObject -class win32_group -filter "SID='S-1-5-32-544'"
+            $GroupUsers = get-wmiobject -query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($AdministratorsGroup.name)'`""
+            [array]$UsersList = $GroupUsers.partcomponent | %{ (($_ -replace '.*Win32_UserAccount.Domain="', "") -replace '",Name="', "\") -replace '"', '' }
+            $users += $UsersList | ?{$_ -match $env:COMPUTERNAME}
+            $Accounts += $users | %{(Get-WmiObject win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
+        }
+        Default { $Accounts += $_} 
+    }
+        
+    if ($Ensure -eq "Present")
+    {
+        $usersWithoutRight = $Accounts | ?{$_ -notin $userRights}
+        if ($usersWithoutRight)
+        {
+            Write-Verbose "$($usersWithoutRight -join ",") do not have Privilege ($Policy)"
             return $false
-        }      
-    }    
+        }
 
-    # If the code made it this far all identities have the desired user rights
-    return $true
+        if ($Force)
+        {
+            $effectiveUsers = $userRights | ?{$_ -notin $Accounts}
+            if ($effectiveUsers.Count -gt 0)
+            {
+                Write-Verbose "$($effectiveUsers -join ",") are extraneous users with Privilege ($Policy)"
+                return $false
+            }
+        }
+
+        $returnValue = $true
+    }
+    else
+    {
+        $UsersWithRight = $Accounts | ?{$_ -in $userRights}
+        if ($UsersWithRight.Count -gt 0)
+        {
+            Write-Verbose "$($UsersWithRight) should NOT have Privilege ($Policy)"
+            return $false
+        }
+
+        $returnValue = $true
+    }
+    
+    return $returnValue
 }
 
 <#

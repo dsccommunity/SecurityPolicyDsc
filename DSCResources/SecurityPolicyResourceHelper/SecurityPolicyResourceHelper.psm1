@@ -62,7 +62,7 @@ function Get-LocalizedData
     .SYNOPSIS
         Wrapper around secedit.exe used to make changes
     .PARAMETER UserRightsToAddInf
-        Path to an INF file with desired user rights assignment policy configuration
+        Inf with desired user rights assignment policy configuration
     .PARAMETER SeceditOutput
         Path to secedit log file output
     .EXAMPLE
@@ -98,9 +98,9 @@ function Invoke-Secedit
 
 <#
     .SYNOPSIS
-        Parses an INF file produced by 'secedit.exe /export' and returns an object of identites assigned to a user rights assignment policy
+        Parses Inf produced by 'secedit.exe /export' and returns an object of identites assigned to a user rights assignment policy
     .PARAMETER FilePath
-        Path to an INF file
+        Path to Inf
     .EXAMPLE
         Get-UserRightsAssignment -FilePath C:\seceditOutput.inf
 #>
@@ -141,9 +141,9 @@ function Get-UserRightsAssignment
 
 <#
     .SYNOPSIS
-        Converts SID to a friendly name
+        Converts SID to friendly name
     .PARAMETER SID
-        SID of an identity being converted
+        SID of identity being converted
     .EXAMPLE
         ConvertTo-LocalFriendlyName -SID 'S-1-5-21-3623811015-3361044348-30300820-1013'
 #>
@@ -158,7 +158,7 @@ function ConvertTo-LocalFriendlyName
     )
     
     $localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
-    $domainRole = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
+    $domainRole = (Get-WmiObject -Class Win32_ComputerSystem).DomainRole
     $friendlyNames = [String[]]@()
     foreach ($id in $SID)
     {        
