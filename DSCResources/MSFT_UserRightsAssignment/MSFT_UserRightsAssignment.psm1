@@ -76,9 +76,6 @@ function Get-TargetResource
         [System.String[]]
         $Identity,
 
-        [ValidateSet("Present", "Absent")]
-        [string]$Ensure = "Present",
-
         [bool]$Force = $false
     )
     
@@ -162,9 +159,6 @@ function Set-TargetResource
         [System.String[]]
         $Identity,
 
-        [ValidateSet("Present", "Absent")]
-        [string]$Ensure = "Present",
-
         [bool]$Force = $false
     )
     
@@ -172,7 +166,8 @@ function Set-TargetResource
     $policyName = $policyList[$Policy]
     $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
     $userRightsToAddInf = "$env:TEMP\userRightsToAdd.inf" 
-    
+    $idsToAdd = $Identity -join ","
+
     if ($null -eq $Identity)
     {
         Write-Verbose -Message ($script:localizedData.IdentityIsNullRemovingAll -f $Policy)
@@ -180,24 +175,23 @@ function Set-TargetResource
     }
     else
     {
-        Write-Verbose -Message ($script:localizedData.GrantingPolicyRightsToIds -f $Policy, $idsToAdd)
-        
+        $currRights = Get-TargetResource -Policy $Policy -Identity $Identity
+
         $Accounts = @()
         switch ($Identity)
         {
-            "[Local Account]" { $Accounts += (Get-WmiObject win32_useraccount -Filter "LocalAccount='True'").SID }
+            "[Local Account]" { $Accounts += (Get-CimInstance win32_useraccount -Filter "LocalAccount='True'").SID }
             "[Local Account|Administrator]" 
             {
-                $AdministratorsGroup = Get-WmiObject -class win32_group -filter "SID='S-1-5-32-544'"
+                $AdministratorsGroup = Get-CimInstance -class win32_group -filter "SID='S-1-5-32-544'"
                 $GroupUsers = get-wmiobject -query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($AdministratorsGroup.name)'`""
                 [array]$UsersList = $GroupUsers.partcomponent | %{ (($_ -replace '.*Win32_UserAccount.Domain="', "") -replace '",Name="', "\") -replace '"', '' }
                 $users += $UsersList | ?{$_ -match $env:COMPUTERNAME}
-                $Accounts += $users | %{(Get-WmiObject win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
+                $Accounts += $users | %{(Get-CimInstance win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
             }
             Default { $Accounts += $_} 
         }
         
-        $currRights = Get-TargetResource -Policy $Policy -Identity $Identity
         if ($Ensure -eq "Present")
         {
             if (!$Force)
@@ -217,11 +211,13 @@ function Set-TargetResource
         }
         
         $idsToAdd = $Accounts -join ","
-    }   
+        
+        Write-Verbose -Message ($script:localizedData.GrantingPolicyRightsToIds -f $Policy, $idsToAdd)
+    }
        
     Out-UserRightsInf -InfPolicy $policyName -UserList $idsToAdd -FilePath $userRightsToAddInf
     Write-Debug -Message ($script:localizedData.EchoDebugInf -f $userRightsToAddInf)
-    
+
     Invoke-Secedit -UserRightsToAddInf $userRightsToAddInf -SecEditOutput $seceditOutput
     
     # Verify secedit command was successful
@@ -309,14 +305,10 @@ function Test-TargetResource
         [System.String[]]
         $Identity,
 
-        [ValidateSet("Present", "Absent")]
-        [string]$Ensure = "Present",
-
         [bool]$Force = $false
     )
         
     $userRights = Get-USRPolicy -Policy $Policy -Areas USER_Rights    
-    $returnValue = $false
 
     if ($null -eq $Identity -or [System.String]::IsNullOrWhiteSpace($Identity))
     {
@@ -339,14 +331,14 @@ function Test-TargetResource
     $Accounts = @()
     switch ($Identity)
     {
-        "[Local Account]" { $Accounts += (Get-WmiObject win32_useraccount -Filter "LocalAccount='True'").SID }
+        "[Local Account]" { $Accounts += (Get-CimInstance win32_useraccount -Filter "LocalAccount='True'").SID }
         "[Local Account|Administrator]" 
         {
-            $AdministratorsGroup = Get-WmiObject -class win32_group -filter "SID='S-1-5-32-544'"
+            $AdministratorsGroup = Get-CimInstance -class win32_group -filter "SID='S-1-5-32-544'"
             $GroupUsers = get-wmiobject -query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($AdministratorsGroup.name)'`""
             [array]$UsersList = $GroupUsers.partcomponent | %{ (($_ -replace '.*Win32_UserAccount.Domain="', "") -replace '",Name="', "\") -replace '"', '' }
             $users += $UsersList | ?{$_ -match $env:COMPUTERNAME}
-            $Accounts += $users | %{(Get-WmiObject win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
+            $Accounts += $users | %{(Get-CimInstance win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
         }
         Default { $Accounts += $_} 
     }
@@ -383,7 +375,8 @@ function Test-TargetResource
 
         $returnValue = $true
     }
-    
+
+    # If the code made it this far all identities have the desired user rights
     return $returnValue
 }
 
