@@ -30,13 +30,13 @@ try
             }
 
             $mockGetUSRPolicyResult = [PSObject]@{
-                Policy = 'SeTrustedCredManAccessPrivilege'
+                Policy = 'Access_Credential_Manager_as_a_trusted_caller'
                 Identity = 'contoso\testUser1','contoso\TestUser2'
                 PolicyFriendlyName = $testParameters.Policy
             }
 
             $mockUSRDoesNotExist = [PSObject]@{
-                Policy = 'SeTrustedCredManAccessPrivilege'
+                Policy = 'Access_Credential_Manager_as_a_trusted_caller'
                 Identity = 'contoso\testUser3','contoso\TestUser2'
                 PolicyFriendlyName = $testParameters.Policy
             }

@@ -184,10 +184,10 @@ function Set-TargetResource
             "[Local Account|Administrator]" 
             {
                 $AdministratorsGroup = Get-CimInstance -class win32_group -filter "SID='S-1-5-32-544'"
-                $GroupUsers = get-wmiobject -query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($AdministratorsGroup.name)'`""
-                [array]$UsersList = $GroupUsers.partcomponent | %{ (($_ -replace '.*Win32_UserAccount.Domain="', "") -replace '",Name="', "\") -replace '"', '' }
-                $users += $UsersList | ?{$_ -match $env:COMPUTERNAME}
-                $Accounts += $users | %{(Get-CimInstance win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
+                $GroupUsers = get-ciminstance -query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($AdministratorsGroup.name)'`""
+                [array]$UsersList = $GroupUsers.partcomponent | ForEach-Object { (($_ -replace '.*Win32_UserAccount.Domain="', "") -replace '",Name="', "\") -replace '"', '' }
+                $users += $UsersList | Where-Object {$_ -match $env:COMPUTERNAME}
+                $Accounts += $users | ForEach-Object {(Get-CimInstance win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
             }
             Default { $Accounts += $_} 
         }
@@ -207,7 +207,7 @@ function Set-TargetResource
         }
         else
         {
-            $Accounts = $Accounts | ?{$_ -notin $currRights.Identity}
+            $Accounts = $Accounts | Where-Object {$_ -notin $currRights.Identity}
         }
         
         $idsToAdd = $Accounts -join ","
@@ -335,17 +335,17 @@ function Test-TargetResource
         "[Local Account|Administrator]" 
         {
             $AdministratorsGroup = Get-CimInstance -class win32_group -filter "SID='S-1-5-32-544'"
-            $GroupUsers = get-wmiobject -query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($AdministratorsGroup.name)'`""
-            [array]$UsersList = $GroupUsers.partcomponent | %{ (($_ -replace '.*Win32_UserAccount.Domain="', "") -replace '",Name="', "\") -replace '"', '' }
-            $users += $UsersList | ?{$_ -match $env:COMPUTERNAME}
-            $Accounts += $users | %{(Get-CimInstance win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
+            $GroupUsers = get-ciminstance -query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($AdministratorsGroup.name)'`""
+            [array]$UsersList = $GroupUsers.partcomponent | ForEach-Object { (($_ -replace '.*Win32_UserAccount.Domain="', "") -replace '",Name="', "\") -replace '"', '' }
+            $users += $UsersList | Where-Object {$_ -match $env:COMPUTERNAME}
+            $Accounts += $users | ForEach-Object {(Get-CimInstance win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
         }
         Default { $Accounts += $_} 
     }
         
     if ($Ensure -eq "Present")
     {
-        $usersWithoutRight = $Accounts | ?{$_ -notin $userRights}
+        $usersWithoutRight = $Accounts | Where-Object {$_ -notin $userRights}
         if ($usersWithoutRight)
         {
             Write-Verbose "$($usersWithoutRight -join ",") do not have Privilege ($Policy)"
@@ -354,7 +354,7 @@ function Test-TargetResource
 
         if ($Force)
         {
-            $effectiveUsers = $userRights | ?{$_ -notin $Accounts}
+            $effectiveUsers = $userRights | Where-Object {$_ -notin $Accounts}
             if ($effectiveUsers.Count -gt 0)
             {
                 Write-Verbose "$($effectiveUsers -join ",") are extraneous users with Privilege ($Policy)"
@@ -366,7 +366,7 @@ function Test-TargetResource
     }
     else
     {
-        $UsersWithRight = $Accounts | ?{$_ -in $userRights}
+        $UsersWithRight = $Accounts | Where-Object {$_ -in $userRights}
         if ($UsersWithRight.Count -gt 0)
         {
             Write-Verbose "$($UsersWithRight) should NOT have Privilege ($Policy)"
