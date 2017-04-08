@@ -1,4 +1,4 @@
-﻿function IsNumeric
+function IsNumeric
 {
     param($Value)
     try
