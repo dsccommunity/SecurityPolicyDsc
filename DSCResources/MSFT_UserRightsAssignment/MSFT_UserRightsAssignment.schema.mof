@@ -1,4 +1,4 @@
-﻿
+
 [ClassVersion("1.0.0.0"), FriendlyName("UserRightsAssignment")]
 class MSFT_UserRightsAssignment : OMI_BaseResource
 {

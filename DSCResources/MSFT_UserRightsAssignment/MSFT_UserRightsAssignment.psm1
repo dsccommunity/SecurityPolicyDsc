@@ -1,4 +1,4 @@
-﻿
+
 Import-Module -Name (Join-Path -Path ( Split-Path $PSScriptRoot -Parent ) `
                                -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
                                -Force

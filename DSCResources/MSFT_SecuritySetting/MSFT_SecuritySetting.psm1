@@ -1,4 +1,4 @@
-﻿function IsNumeric
+function IsNumeric
 {
     param($Value)
     try
@@ -46,7 +46,7 @@ TicketValidateClient = "Kerberos Policy"
 
 function Get-IniContent 
 {
-    [CmdletBinding()]
+??? [CmdletBinding()]
     param
     (
         [Parameter(Mandatory=$true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName=$true)]
@@ -55,37 +55,37 @@ function Get-IniContent
     )
 
     $ini = @{}
-    switch -regex -file $Path
-    {
-        “^\[(.+)\]” # Section
-        {
-            $section = $matches[1]
-            $ini[$section] = @{}
-            $CommentCount = 0
-        }
-        “^(;.*)$” # Comment
-        {
-            $value = $matches[1]
-            $CommentCount = $CommentCount + 1
-            $name = “Comment” + $CommentCount
-            $ini[$section][$name] = $value
+??? switch -regex -file $Path
+??? {
+??????? ?^\[(.+)\]? # Section
+??????? {
+??????????? $section = $matches[1]
+??????????? $ini[$section] = @{}
+??????????? $CommentCount = 0
+??????? }
+??????? ?^(;.*)$? # Comment
+??????? {
+??????????? $value = $matches[1]
+??????????? $CommentCount = $CommentCount + 1
+??????????? $name = ?Comment? + $CommentCount
+??????????? $ini[$section][$name] = $value
             continue
-        } 
-        “(.+?)\s*=(.*)” # Key
-        {
-            $name,$value = $matches[1..2]
-            $ini[$section][$name] = $value
+??????? } 
+??????? ?(.+?)\s*=(.*)? # Key
+??????? {
+??????????? $name,$value = $matches[1..2]
+??????????? $ini[$section][$name] = $value
             # Need to replace double quotes with `"
             continue
-        }
+??????? }
         "\`"(.*)`",(.*)$" 
         { 
             $name, $value = $matches[1..2]
             $ini[$section][$name] = $value
             continue
         }
-    }
-    return $ini
+??? }
+??? return $ini
 }
 
 function Get-TargetResource
@@ -249,7 +249,7 @@ function Set-TargetResource
 function Test-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([System.Boolean])]
+    [OutputType([Boolean])]
     param
     (
         [ValidateRange(-1, 999)]
