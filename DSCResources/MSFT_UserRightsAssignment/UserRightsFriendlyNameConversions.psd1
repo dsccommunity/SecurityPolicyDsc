@@ -1,4 +1,4 @@
-Access_Credential_Manager_as_a_trusted_caller = SeTrustedCredManAccessPrivilege
+﻿Access_Credential_Manager_as_a_trusted_caller = SeTrustedCredManAccessPrivilege
 Access_this_computer_from_the_network         = SeNetworkLogonRight
 Act_as_part_of_the_operating_system           = SeTcbPrivilege
 Add_workstations_to_domain                    = SeMachineAccountPrivilege
