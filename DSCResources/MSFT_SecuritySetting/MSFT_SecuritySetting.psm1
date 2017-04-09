@@ -127,42 +127,42 @@ function Set-TargetResource
     (
         [ValidateRange(-1, 999)]
         [ValidateScript({$_ -ne 0})]
-        [int]$MinimumPasswordAge,
+        [sint16]$MinimumPasswordAge,
         
         [ValidateRange(0,999)]
-        [int]$MaximumPasswordAge,
+        [uint16]$MaximumPasswordAge,
 
-        [int]$MinimumPasswordLength,
-        [int]$PasswordComplexity,
-        [int]$PasswordHistorySize,
+        [uint16]$MinimumPasswordLength,
+        [uint16]$PasswordComplexity,
+        [uint16]$PasswordHistorySize,
     
-        [int]$LockoutBadCount,
-        [int]$ForceLogoffWhenHourExpire,
+        [uint16]$LockoutBadCount,
+        [uint16]$ForceLogoffWhenHourExpire,
         [String]$NewAdministratorName,
         [String]$NewGuestName,
-        [int]$ClearTextPassword,
-        [int]$LSAAnonymousNameLookup,
-        [int]$EnableAdminAccount,
-        [int]$EnableGuestAccount,
+        [uint16]$ClearTextPassword,
+        [uint16]$LSAAnonymousNameLookup,
+        [uint16]$EnableAdminAccount,
+        [UInt16]$EnableGuestAccount,
 
-        [int]$ResetLockoutCount,
+        [sint16]$ResetLockoutCount,
         
         [ValidateRange(-1, 99999)]
         [ValidateScript({$_ -ne 0})]
-        [int]$LockoutDuration,
+        [sint16]$LockoutDuration,
         
         [ValidateScript({$_ -ge 10})]
-        [int]$MaxServiceAge,
+        [uint16]$MaxServiceAge,
         
         [ValidateRange(0,99999)]
-        [int]$MaxTicketAge,
+        [uint16]$MaxTicketAge,
         
         [ValidateRange(0,99999)]
-        [int]$MaxRenewAge,
+        [uint16]$MaxRenewAge,
         
         [ValidateRange(0,99999)]
-        [int]$MaxClockSkew,
-        [int]$TicketValidateClient,
+        [uint16]$MaxClockSkew,
+        [uint16]$TicketValidateClient,
 
         [ValidateSet("Present","Absent")]
         [string]$Ensure = "Present",
@@ -253,43 +253,43 @@ function Test-TargetResource
     (
         [ValidateRange(-1, 999)]
         [ValidateScript({$_ -ne 0})]
-        [int]$MinimumPasswordAge,
+        [sint16]$MinimumPasswordAge,
         
         [ValidateRange(0,999)]
-        [int]$MaximumPasswordAge,
+        [uint16]$MaximumPasswordAge,
 
-        [int]$MinimumPasswordLength,
-        [int]$PasswordComplexity,
-        [int]$PasswordHistorySize,
+        [uint16]$MinimumPasswordLength,
+        [uint16]$PasswordComplexity,
+        [uint16]$PasswordHistorySize,
     
-        [int]$LockoutBadCount,
-        [int]$ForceLogoffWhenHourExpire,
+        [uint16]$LockoutBadCount,
+        [uint16]$ForceLogoffWhenHourExpire,
         [String]$NewAdministratorName,
         [String]$NewGuestName,
-        [int]$ClearTextPassword,
-        [int]$LSAAnonymousNameLookup,
-        [int]$EnableAdminAccount,
-        [int]$EnableGuestAccount,
+        [uint16]$ClearTextPassword,
+        [uint16]$LSAAnonymousNameLookup,
+        [uint16]$EnableAdminAccount,
+        [UInt16]$EnableGuestAccount,
 
-        [int]$ResetLockoutCount,
+        [sint16]$ResetLockoutCount,
         
         [ValidateRange(-1, 99999)]
         [ValidateScript({$_ -ne 0})]
-        [int]$LockoutDuration,
+        [sint16]$LockoutDuration,
         
         [ValidateScript({$_ -ge 10})]
-        [int]$MaxServiceAge,
+        [uint16]$MaxServiceAge,
         
         [ValidateRange(0,99999)]
-        [int]$MaxTicketAge,
+        [uint16]$MaxTicketAge,
         
         [ValidateRange(0,99999)]
-        [int]$MaxRenewAge,
+        [uint16]$MaxRenewAge,
         
         [ValidateRange(0,99999)]
-        [int]$MaxClockSkew,
-        [int]$TicketValidateClient,
-
+        [uint16]$MaxClockSkew,
+        [uint16]$TicketValidateClient,
+        
         [ValidateSet("Present","Absent")]
         [string]$Ensure = "Present",
         
