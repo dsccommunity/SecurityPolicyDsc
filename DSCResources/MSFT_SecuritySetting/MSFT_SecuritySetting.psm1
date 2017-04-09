@@ -248,7 +248,7 @@ function Set-TargetResource
 function Test-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([Boolean])]
+    [OutputType([System.Boolean])]
     param
     (
         [ValidateRange(-1, 999)]
@@ -288,7 +288,7 @@ function Test-TargetResource
         
         [ValidateRange(0,99999)]
         [int]$MaxClockSkew,
-        [intl]$TicketValidateClient,
+        [int]$TicketValidateClient,
 
         [ValidateSet("Present","Absent")]
         [string]$Ensure = "Present",
