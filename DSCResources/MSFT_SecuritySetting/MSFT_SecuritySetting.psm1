@@ -123,7 +123,6 @@ function Get-TargetResource
 function Set-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([boolean])]
     param
     (
         [ValidateRange(-1, 999)]
