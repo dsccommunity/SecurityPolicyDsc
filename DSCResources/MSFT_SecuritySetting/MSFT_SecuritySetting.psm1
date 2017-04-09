@@ -133,11 +133,11 @@ function Set-TargetResource
         [int]$MaximumPasswordAge,
 
         [int]$MinimumPasswordLength,
-        [intl]$PasswordComplexity,
+        [int]$PasswordComplexity,
         [int]$PasswordHistorySize,
     
         [int]$LockoutBadCount,
-        [intl]$ForceLogoffWhenHourExpire,
+        [int]$ForceLogoffWhenHourExpire,
         [String]$NewAdministratorName,
         [String]$NewGuestName,
         [int]$ClearTextPassword,
@@ -162,7 +162,7 @@ function Set-TargetResource
         
         [ValidateRange(0,99999)]
         [int]$MaxClockSkew,
-        [intl]$TicketValidateClient,
+        [int]$TicketValidateClient,
 
         [ValidateSet("Present","Absent")]
         [string]$Ensure = "Present",
@@ -259,11 +259,11 @@ function Test-TargetResource
         [int]$MaximumPasswordAge,
 
         [int]$MinimumPasswordLength,
-        [intl]$PasswordComplexity,
+        [int]$PasswordComplexity,
         [int]$PasswordHistorySize,
     
         [int]$LockoutBadCount,
-        [intl]$ForceLogoffWhenHourExpire,
+        [int]$ForceLogoffWhenHourExpire,
         [String]$NewAdministratorName,
         [String]$NewGuestName,
         [int]$ClearTextPassword,
