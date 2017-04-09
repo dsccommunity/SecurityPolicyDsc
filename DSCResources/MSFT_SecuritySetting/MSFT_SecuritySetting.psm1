@@ -57,13 +57,13 @@ function Get-IniContent
     $ini = @{}
     switch -regex -file $Path
     {
-        ^\[(.+)\]  # Section
+        "^\[(.+)\]"  # Section
         {
             $section = $matches[1]
             $ini[$section] = @{}
             $CommentCount = 0
         }
-        ^(;.*)$  # Comment
+        "^(;.*)$"  # Comment
         {
             $value = $matches[1]
             $CommentCount = $CommentCount + 1
@@ -71,7 +71,7 @@ function Get-IniContent
             $ini[$section][$name] = $value
             continue
         } 
-        (.+ )\s*=(.*)  # Key
+        "(.+ )\s*=(.*)"  # Key
         {
             $name,$value = $matches[1..2]
             $ini[$section][$name] = $value
