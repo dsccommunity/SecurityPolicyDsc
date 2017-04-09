@@ -127,7 +127,7 @@ function Set-TargetResource
     (
         [ValidateRange(-1, 999)]
         [ValidateScript({$_ -ne 0})]
-        [sint16]$MinimumPasswordAge,
+        [int16]$MinimumPasswordAge,
         
         [ValidateRange(0,999)]
         [uint16]$MaximumPasswordAge,
@@ -145,11 +145,11 @@ function Set-TargetResource
         [uint16]$EnableAdminAccount,
         [UInt16]$EnableGuestAccount,
 
-        [sint16]$ResetLockoutCount,
+        [int16]$ResetLockoutCount,
         
         [ValidateRange(-1, 99999)]
         [ValidateScript({$_ -ne 0})]
-        [sint16]$LockoutDuration,
+        [int16]$LockoutDuration,
         
         [ValidateScript({$_ -ge 10})]
         [uint16]$MaxServiceAge,
@@ -253,7 +253,7 @@ function Test-TargetResource
     (
         [ValidateRange(-1, 999)]
         [ValidateScript({$_ -ne 0})]
-        [sint16]$MinimumPasswordAge,
+        [int16]$MinimumPasswordAge,
         
         [ValidateRange(0,999)]
         [uint16]$MaximumPasswordAge,
@@ -271,11 +271,11 @@ function Test-TargetResource
         [uint16]$EnableAdminAccount,
         [UInt16]$EnableGuestAccount,
 
-        [sint16]$ResetLockoutCount,
+        [int16]$ResetLockoutCount,
         
         [ValidateRange(-1, 99999)]
         [ValidateScript({$_ -ne 0})]
-        [sint16]$LockoutDuration,
+        [int16]$LockoutDuration,
         
         [ValidateScript({$_ -ge 10})]
         [uint16]$MaxServiceAge,
@@ -289,7 +289,7 @@ function Test-TargetResource
         [ValidateRange(0,99999)]
         [uint16]$MaxClockSkew,
         [uint16]$TicketValidateClient,
-        
+
         [ValidateSet("Present","Absent")]
         [string]$Ensure = "Present",
         
