@@ -76,11 +76,15 @@ function Get-TargetResource
         [System.String[]]
         $Identity,
 
+        [ValidateSet("Present","Absent")]
+        [string]$Ensure = "Present",
+
         [bool]$Force = $false
     )
     
     $usrResult = Get-USRPolicy -Policy $Policy -Areas USER_RIGHTS
 
+    Write-Verbose "Policy: $($usrResult.PolicyFriendlyName). Identity: $($usrResult.Identity)"
     $returnValue = @{
         Policy         = $usrResult.PolicyFriendlyName
         Identity       = $usrResult.Identity
@@ -159,6 +163,9 @@ function Set-TargetResource
         [System.String[]]
         $Identity,
 
+        [ValidateSet("Present","Absent")]
+        [string]$Ensure = "Present",
+
         [bool]$Force = $false
     )
     
@@ -218,6 +225,7 @@ function Set-TargetResource
     Out-UserRightsInf -InfPolicy $policyName -UserList $idsToAdd -FilePath $userRightsToAddInf
     Write-Debug -Message ($script:localizedData.EchoDebugInf -f $userRightsToAddInf)
 
+    Write-Verbose "Attempting to Set ($($idstoAdd -join ",")) for Policy $($Policy))"
     Invoke-Secedit -UserRightsToAddInf $userRightsToAddInf -SecEditOutput $seceditOutput
     
     # Verify secedit command was successful
@@ -225,6 +233,7 @@ function Set-TargetResource
     if (Test-TargetResource -Identity $Identity -Policy $Policy)
     {
         Write-Verbose -Message ($script:localizedData.TaskSuccess)
+        Write-Verbose "$(($idsToAdd -join ",")) successfully given Rights ($Policy)"
     }
     else
     {
@@ -305,6 +314,9 @@ function Test-TargetResource
         [System.String[]]
         $Identity,
 
+        [ValidateSet("Present","Absent")]
+        [string]$Ensure = "Present",
+
         [bool]$Force = $false
     )
         
@@ -345,7 +357,7 @@ function Test-TargetResource
         
     if ($Ensure -eq "Present")
     {
-        $usersWithoutRight = $Accounts | Where-Object {$_ -notin $userRights}
+        $usersWithoutRight = $Accounts | Where-Object {$_ -notin $userRights.Identity}
         if ($usersWithoutRight)
         {
             Write-Verbose "$($usersWithoutRight -join ",") do not have Privilege ($Policy)"
@@ -354,7 +366,7 @@ function Test-TargetResource
 
         if ($Force)
         {
-            $effectiveUsers = $userRights | Where-Object {$_ -notin $Accounts}
+            $effectiveUsers = $userRights.Identity | Where-Object {$_ -notin $Accounts}
             if ($effectiveUsers.Count -gt 0)
             {
                 Write-Verbose "$($effectiveUsers -join ",") are extraneous users with Privilege ($Policy)"
@@ -366,7 +378,7 @@ function Test-TargetResource
     }
     else
     {
-        $UsersWithRight = $Accounts | Where-Object {$_ -in $userRights}
+        $UsersWithRight = $Accounts | Where-Object {$_ -in $userRights.Identity}
         if ($UsersWithRight.Count -gt 0)
         {
             Write-Verbose "$($UsersWithRight) should NOT have Privilege ($Policy)"

@@ -160,15 +160,19 @@ function ConvertTo-LocalFriendlyName
     $localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
     $domainRole = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
     $friendlyNames = [String[]]@()
+
     foreach ($id in $SID)
     {        
+        Write-Verbose "Received Identity ($id)"
         if ($null -ne $id -and $id -match 'S-')
         {
             try
             {
+                Write-Verbose "Translating Identity: $id"
                 $securityIdentifier = [System.Security.Principal.SecurityIdentifier]($id.trim())
                 $user = $securityIdentifier.Translate([System.Security.Principal.NTAccount])
                 $friendlyNames += $user.value
+                Write-Verbose "Identity ($id) is equal to $($user.Value)"
             }
             catch
             {
