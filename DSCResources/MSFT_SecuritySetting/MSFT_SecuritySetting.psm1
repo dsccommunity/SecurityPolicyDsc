@@ -77,7 +77,7 @@ function Get-TargetResource
     )
     
     $file = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\temppol.inf"
-    Write-Verbose "Creating temp Security Settings file: $file"
+    Write-Verbose -Message ($script:localizedData.CreatingTmpFile -f $file)
     
     $outHash = @{}
 
@@ -189,21 +189,22 @@ function Set-TargetResource
     
     $INI = Get-TargetResource -Name $Name
     $tmpFile = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\temppol.inf"
-    $new_secdb = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\tmpsecedit.sdb"
+    $newSecDB = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\tmpsecedit.sdb"
     
-    Write-Verbose "Ceating tmp Security Settings file: $tmpfile"
-    Write-Verbose "Ceating tmp Security Settings file: $file"
+    Write-Verbose -Message ($script:localizedData.CreatingTmpFile -f $tmpFile)
+    Write-Verbose -Message ($script:localizedData.CreatingTmpFile -f $newSecDB)
+
     foreach ($header in $headers)
     {
-        foreach ($KeyPair in $PSBoundParameters.GetEnumerator())
+        foreach ($keyPair in $PSBoundParameters.GetEnumerator())
         {
             try
             {
-                $INI[$header][$KeyPair.Key] = $KeyPair.Value
+                $INI[$header][$keyPair.Key] = $keyPair.Value
             }
             catch
             {
-                Write-Error "Unable to set $($KeyPair.Key) to $($KeyPair.Value)."
+                Write-Error "Unable to set $($keyPair.Key) to $($keyPair.Value)."
                 continue
             }
         }    
@@ -220,16 +221,16 @@ function Set-TargetResource
     {
         "[$header]" | Out-File $tmpfile -Append
     
-        foreach ($KeyPair in $INI[$header].GetEnumerator())
+        foreach ($keyPair in $INI[$header].GetEnumerator())
         {
             $Value = 1
-            if ([System.Int]::TryParse($KeyPair.value, [ref]$Value))
+            if ([System.Int]::TryParse($keyPair.value, [ref]$Value))
             {
-                "$($KeyPair.Name) = $Value" | Out-File $tmpFile -Append
+                "$($keyPair.Name) = $Value" | Out-File $tmpFile -Append
             }
             else
             {
-                "$($KeyPair.Name) = `"$($KeyPair.Value)`"" | Out-File $tmpFile -Append 
+                "$($keyPair.Name) = `"$($keyPair.Value)`"" | Out-File $tmpFile -Append 
             }
         }
     }
@@ -240,7 +241,7 @@ function Set-TargetResource
     
     $PowerShellProcess = new-object System.Diagnostics.Process
     $PowerShellProcess.StartInfo.Filename = "secedit.exe"
-    $PowerShellProcess.StartInfo.Arguments = " /configure /db $new_secdb /cfg $tmpfile /overwrite /quiet"
+    $PowerShellProcess.StartInfo.Arguments = " /configure /db $newSecDB /cfg $tmpfile /overwrite /quiet"
     $PowerShellProcess.StartInfo.RedirectStandardOutput = $True
     $PowerShellProcess.StartInfo.UseShellExecute = $false
     $PowerShellProcess.start() | Out-Null
@@ -348,23 +349,23 @@ function Test-TargetResource
     $returnValue = $true
     foreach ($header in $headers)
     {
-        foreach ($KeyPair in ($PSBoundParameters.GetEnumerator() | Where-Object {$headerSettings[$_.Key] -eq $header}))
+        foreach ($keyPair in ($PSBoundParameters.GetEnumerator() | Where-Object {$headerSettings[$_.Key] -eq $header}))
         {
             if ($ini.ContainsKey($header))
             {
-                if ($ini[$header][$KeyPair.Key] -eq $KeyPair.Value)
+                if ($ini[$header][$keyPair.Key] -eq $keyPair.Value)
                 {
-                    Write-Verbose "Tested $($KeyPair.Key) expecting $($KeyPair.Value): SUCCESS!"
+                    Write-Verbose -Message ($script:localizedData.TestSuccess -f $keyPair.Key, $keyPair.Value) 
                 }
                 else
                 {
-                    Write-Verbose "Tested $($KeyPair.Key) expecting $($KeyPair.Value): FAILURE!"
+                    Write-Verbose -Message ($script:localizedData.TestFailure -f $keyPair.Key, $keyPair.Value) 
                     $returnValue = $false
                 }
             }
             else
             {
-                Write-Verbose "Could not find section ($header)"
+                Write-Verbose -Message ($script:localizedData.SectionError -f $header) 
                 $returnValue = $false
             }
         }
