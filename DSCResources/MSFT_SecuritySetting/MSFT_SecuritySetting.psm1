@@ -1,47 +1,24 @@
-function IsNumeric
-{
-    param($Value)
-    try
-    {
-        0 + $Value | Out-Null
-        $IsNumeric = 1
-    }
-    catch
-    {
-        $IsNumeric = 0
-    }
-
-    if($IsNumeric){
-        $IsNumeric = 1
-        if($Boolean) { $Isnumeric = $True }
-    }else{
-        $IsNumeric = 0
-        if($Boolean) { $IsNumeric = $False }
-    }
-    return $IsNumeric
-}
-
 $headerSettings = @{
-MinimumPasswordAge = "System Access"
-MaximumPasswordAge = "System Access"
-MinimumPasswordLength = "System Access"
-PasswordComplexity = "System Access"
-PasswordHistorySize = "System Access"
-LockoutBadCount = "System Access"
-ForceLogoffWhenHourExpire = "System Access"
-NewAdministratorName = "System Access"
-NewGuestName = "System Access"
-ClearTextPassword = "System Access"
-LSAAnonymousNameLookup = "System Access"
-EnableAdminAccount = "System Access"
-EnableGuestAccount = "System Access"
-ResetLockoutCount = "System Access"
-LockoutDuration = "System Access"
-MaxServiceAge = "Keberos Policy"
-MaxTicketAge = "Kerberos Policy"
-MaxRenewAge = "Kerberos Policy"
-MaxClockSkew = "Kerberos Policy"
-TicketValidateClient = "Kerberos Policy"
+    MinimumPasswordAge = "System Access"
+    MaximumPasswordAge = "System Access"
+    MinimumPasswordLength = "System Access"
+    PasswordComplexity = "System Access"
+    PasswordHistorySize = "System Access"
+    LockoutBadCount = "System Access"
+    ForceLogoffWhenHourExpire = "System Access"
+    NewAdministratorName = "System Access"
+    NewGuestName = "System Access"
+    ClearTextPassword = "System Access"
+    LSAAnonymousNameLookup = "System Access"
+    EnableAdminAccount = "System Access"
+    EnableGuestAccount = "System Access"
+    ResetLockoutCount = "System Access"
+    LockoutDuration = "System Access"
+    MaxServiceAge = "Keberos Policy"
+    MaxTicketAge = "Kerberos Policy"
+    MaxRenewAge = "Kerberos Policy"
+    MaxClockSkew = "Kerberos Policy"
+    TicketValidateClient = "Kerberos Policy"
 }
 
 function Get-IniContent 
@@ -51,7 +28,7 @@ function Get-IniContent
     (
         [Parameter(Mandatory=$true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName=$true)]
         [ValidateScript({Test-Path $_})]
-        [string]$Path
+        [System.String]$Path
     )
 
     $ini = @{}
@@ -96,22 +73,22 @@ function Get-TargetResource
     (
         [Parameter(Mandatory=$true)]
         [ValidateSet("MinimumPasswordAge","MaximumPasswordAge","MinimumPasswordLength","PasswordComplexity","PasswordHistorySize","LockoutBadCount","ForceLogoffWhenHourExpire","NewAdministratorName","NewGuestName","ClearTextPassword","LSAAnonymousNameLookup","EnableAdminAccount","EnableGuestAccount","ResetLockoutCount","LockoutDuration","MaxServiceAge","MaxTicketAge","MaxRenewAge","MaxClockSkew","TicketValidateClient")]
-        [string]$Name
+        [System.String]$Name
     )
     
-    $file = "C:\Windows\security\database\temppol.inf"
+    $file = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\temppol.inf"
     Write-Verbose "Creating temp Security Settings file: $file"
     
     $outHash = @{}
 
-    $ps = new-object System.Diagnostics.Process
-    $ps.StartInfo.Filename = "secedit.exe"
-    $ps.StartInfo.Arguments = " /export /cfg $file /areas securitypolicy"
-    $ps.StartInfo.RedirectStandardOutput = $True
-    $ps.StartInfo.UseShellExecute = $false
-    [void]$ps.start() | Out-Null
-    [void]$ps.WaitForExit('10') | Out-Null
-    [string] $process = $ps.StandardOutput.ReadToEnd();
+    $PowerShellProcess = new-object System.Diagnostics.Process
+    $PowerShellProcess.StartInfo.Filename = "secedit.exe"
+    $PowerShellProcess.StartInfo.Arguments = " /export /cfg $file /areas securitypolicy"
+    $PowerShellProcess.StartInfo.RedirectStandardOutput = $True
+    $PowerShellProcess.StartInfo.UseShellExecute = $false
+    $PowerShellProcess.start() | Out-Null
+    $PowerShellProcess.WaitForExit('10') | Out-Null
+    [System.String] $process = $PowerShellProcess.StandardOutput.ReadToEnd();
 
     $ini = Get-IniContent -Path $file
     Remove-Item $file -Force
@@ -119,57 +96,85 @@ function Get-TargetResource
     return $ini
 }
 
-# This will run ONLY if Test-TargetResource is $false
 function Set-TargetResource
 {
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [ValidateRange(-1, 999)]
         [ValidateScript({$_ -ne 0})]
-        [int16]$MinimumPasswordAge,
+        [System.Int16]$MinimumPasswordAge,
         
+        [Parameter()]
         [ValidateRange(0,999)]
-        [uint16]$MaximumPasswordAge,
+        [System.UInt16]$MaximumPasswordAge,
 
-        [uint16]$MinimumPasswordLength,
-        [uint16]$PasswordComplexity,
-        [uint16]$PasswordHistorySize,
-    
-        [uint16]$LockoutBadCount,
-        [uint16]$ForceLogoffWhenHourExpire,
-        [String]$NewAdministratorName,
-        [String]$NewGuestName,
-        [uint16]$ClearTextPassword,
-        [uint16]$LSAAnonymousNameLookup,
-        [uint16]$EnableAdminAccount,
-        [UInt16]$EnableGuestAccount,
-
-        [int16]$ResetLockoutCount,
+        [Parameter()]
+        [System.UInt16]$MinimumPasswordLength,
         
+        [Parameter()]
+        [System.UInt16]$PasswordComplexity,
+        
+        [Parameter()]
+        [System.UInt16]$PasswordHistorySize,
+        
+        [Parameter()]
+        [System.UInt16]$LockoutBadCount,
+        
+        [Parameter()]
+        [System.UInt16]$ForceLogoffWhenHourExpire,
+        
+        [Parameter()]
+        [System.String]$NewAdministratorName,
+        
+        [Parameter()]
+        [System.String]$NewGuestName,
+
+        [Parameter()]
+        [System.UInt16]$ClearTextPassword,
+        
+        [Parameter()]
+        [System.UInt16]$LSAAnonymousNameLookup,
+        
+        [Parameter()]
+        [System.UInt16]$EnableAdminAccount,
+        
+        [Parameter()]
+        [System.UInt16]$EnableGuestAccount,
+
+        [Parameter()]
+        [System.Int16]$ResetLockoutCount,
+        
+        [Parameter()]
         [ValidateRange(-1, 99999)]
         [ValidateScript({$_ -ne 0})]
-        [int16]$LockoutDuration,
+        [System.Int16]$LockoutDuration,
         
+        [Parameter()]
         [ValidateScript({$_ -ge 10})]
-        [uint16]$MaxServiceAge,
+        [System.UInt16]$MaxServiceAge,
         
+        [Parameter()]
         [ValidateRange(0,99999)]
-        [uint16]$MaxTicketAge,
+        [System.UInt16]$MaxTicketAge,
         
+        [Parameter()]
         [ValidateRange(0,99999)]
-        [uint16]$MaxRenewAge,
+        [System.UInt16]$MaxRenewAge,
         
+        [Parameter()]
         [ValidateRange(0,99999)]
-        [uint16]$MaxClockSkew,
-        [uint16]$TicketValidateClient,
+        [System.UInt16]$MaxClockSkew,
+        [System.UInt16]$TicketValidateClient,
 
+        [Parameter()]
         [ValidateSet("Present","Absent")]
-        [string]$Ensure = "Present",
+        [System.String]$Ensure = "Present",
 
         [Parameter(Mandatory=$true)]
         [ValidateSet("MinimumPasswordAge","MaximumPasswordAge","MinimumPasswordLength","PasswordComplexity","PasswordHistorySize","LockoutBadCount","ForceLogoffWhenHourExpire","NewAdministratorName","NewGuestName","ClearTextPassword","LSAAnonymousNameLookup","EnableAdminAccount","EnableGuestAccount","ResetLockoutCount","LockoutDuration","MaxServiceAge","MaxTicketAge","MaxRenewAge","MaxClockSkew","TicketValidateClient")]
-        [string]$Name
+        [System.String]$Name
     )
     
     if (@($PSBoundParameters.Keys.Where({$_ -notin "Name", "Ensure"})).Count -eq 0)
@@ -183,8 +188,8 @@ function Set-TargetResource
     $headers = ($PSBoundParameters.GetEnumerator() | ForEach-Object { $headerSettings[$_.Key] } | Group-Object).Name
     
     $INI = Get-TargetResource -Name $Name
-    $tmpFile = "C:\Windows\security\database\tmppol.inf"
-    $new_secdb = "C:\Windows\security\database\tmpsecedit.sdb"
+    $tmpFile = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\temppol.inf"
+    $new_secdb = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\tmpsecedit.sdb"
     
     Write-Verbose "Ceating tmp Security Settings file: $tmpfile"
     Write-Verbose "Ceating tmp Security Settings file: $file"
@@ -218,7 +223,7 @@ function Set-TargetResource
         foreach ($KeyPair in $INI[$header].GetEnumerator())
         {
             $Value = 1
-            if ([int]::TryParse($KeyPair.value, [ref]$Value))
+            if ([System.Int]::TryParse($KeyPair.value, [ref]$Value))
             {
                 "$($KeyPair.Name) = $Value" | Out-File $tmpFile -Append
             }
@@ -233,14 +238,14 @@ function Set-TargetResource
     "signature=`"`$CHICAGO`$`"" | Out-File $tmpfile -Append
     "Revision=1" | Out-File $tmpfile -Append
     
-    $ps = new-object System.Diagnostics.Process
-    $ps.StartInfo.Filename = "secedit.exe"
-    $ps.StartInfo.Arguments = " /configure /db $new_secdb /cfg $tmpfile /overwrite /quiet"
-    $ps.StartInfo.RedirectStandardOutput = $True
-    $ps.StartInfo.UseShellExecute = $false
-    [void]$ps.start() | Out-Null
-    [void]$ps.WaitForExit('10') | Out-Null
-    [string] $process = $ps.StandardOutput.ReadToEnd();
+    $PowerShellProcess = new-object System.Diagnostics.Process
+    $PowerShellProcess.StartInfo.Filename = "secedit.exe"
+    $PowerShellProcess.StartInfo.Arguments = " /configure /db $new_secdb /cfg $tmpfile /overwrite /quiet"
+    $PowerShellProcess.StartInfo.RedirectStandardOutput = $True
+    $PowerShellProcess.StartInfo.UseShellExecute = $false
+    $PowerShellProcess.start() | Out-Null
+    $PowerShellProcess.WaitForExit('10') | Out-Null
+    [System.String] $process = $PowerShellProcess.StandardOutput.ReadToEnd();
     
     Remove-Item $tmpfile -Force
 }
@@ -251,51 +256,80 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter()]
         [ValidateRange(-1, 999)]
         [ValidateScript({$_ -ne 0})]
-        [int16]$MinimumPasswordAge,
+        [System.Int16]$MinimumPasswordAge,
         
+        [Parameter()]
         [ValidateRange(0,999)]
-        [uint16]$MaximumPasswordAge,
+        [System.UInt16]$MaximumPasswordAge,
 
-        [uint16]$MinimumPasswordLength,
-        [uint16]$PasswordComplexity,
-        [uint16]$PasswordHistorySize,
-    
-        [uint16]$LockoutBadCount,
-        [uint16]$ForceLogoffWhenHourExpire,
-        [String]$NewAdministratorName,
-        [String]$NewGuestName,
-        [uint16]$ClearTextPassword,
-        [uint16]$LSAAnonymousNameLookup,
-        [uint16]$EnableAdminAccount,
-        [UInt16]$EnableGuestAccount,
-
-        [int16]$ResetLockoutCount,
+        [Parameter()]
+        [System.UInt16]$MinimumPasswordLength,
         
+        [Parameter()]
+        [System.UInt16]$PasswordComplexity,
+        
+        [Parameter()]
+        [System.UInt16]$PasswordHistorySize,
+        
+        [Parameter()]
+        [System.UInt16]$LockoutBadCount,
+        
+        [Parameter()]
+        [System.UInt16]$ForceLogoffWhenHourExpire,
+        
+        [Parameter()]
+        [System.String]$NewAdministratorName,
+        
+        [Parameter()]
+        [System.String]$NewGuestName,
+
+        [Parameter()]
+        [System.UInt16]$ClearTextPassword,
+        
+        [Parameter()]
+        [System.UInt16]$LSAAnonymousNameLookup,
+        
+        [Parameter()]
+        [System.UInt16]$EnableAdminAccount,
+        
+        [Parameter()]
+        [System.UInt16]$EnableGuestAccount,
+
+        [Parameter()]
+        [System.Int16]$ResetLockoutCount,
+        
+        [Parameter()]
         [ValidateRange(-1, 99999)]
         [ValidateScript({$_ -ne 0})]
-        [int16]$LockoutDuration,
+        [System.Int16]$LockoutDuration,
         
+        [Parameter()]
         [ValidateScript({$_ -ge 10})]
-        [uint16]$MaxServiceAge,
+        [System.UInt16]$MaxServiceAge,
         
+        [Parameter()]
         [ValidateRange(0,99999)]
-        [uint16]$MaxTicketAge,
+        [System.UInt16]$MaxTicketAge,
         
+        [Parameter()]
         [ValidateRange(0,99999)]
-        [uint16]$MaxRenewAge,
+        [System.UInt16]$MaxRenewAge,
         
+        [Parameter()]
         [ValidateRange(0,99999)]
-        [uint16]$MaxClockSkew,
-        [uint16]$TicketValidateClient,
+        [System.UInt16]$MaxClockSkew,
+        [System.UInt16]$TicketValidateClient,
 
+        [Parameter()]
         [ValidateSet("Present","Absent")]
-        [string]$Ensure = "Present",
-        
+        [System.String]$Ensure = "Present",
+
         [Parameter(Mandatory=$true)]
         [ValidateSet("MinimumPasswordAge","MaximumPasswordAge","MinimumPasswordLength","PasswordComplexity","PasswordHistorySize","LockoutBadCount","ForceLogoffWhenHourExpire","NewAdministratorName","NewGuestName","ClearTextPassword","LSAAnonymousNameLookup","EnableAdminAccount","EnableGuestAccount","ResetLockoutCount","LockoutDuration","MaxServiceAge","MaxTicketAge","MaxRenewAge","MaxClockSkew","TicketValidateClient")]
-        [string]$Name
+        [System.String]$Name
     )
 
     if (@($PSBoundParameters.Keys.Where({$_ -notin "Name", "Ensure"})).Count -eq 0)
@@ -309,16 +343,16 @@ function Test-TargetResource
     $PSBoundParameters.Remove("Name") | Out-Null
     $headers = ($PSBoundParameters.GetEnumerator() | ForEach-Object { $headerSettings[$_.Key] } | Group-Object).Name
     
-    $INI = Get-TargetResource -Name $Name
+    $ini = Get-TargetResource -Name $Name
 
     $returnValue = $true
     foreach ($header in $headers)
     {
         foreach ($KeyPair in ($PSBoundParameters.GetEnumerator() | Where-Object {$headerSettings[$_.Key] -eq $header}))
         {
-            if ($INI.ContainsKey($header))
+            if ($ini.ContainsKey($header))
             {
-                if ($INI[$header][$KeyPair.Key] -eq $KeyPair.Value)
+                if ($ini[$header][$KeyPair.Key] -eq $KeyPair.Value)
                 {
                     Write-Verbose "Tested $($KeyPair.Key) expecting $($KeyPair.Value): SUCCESS!"
                 }
