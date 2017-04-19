@@ -1,3 +1,5 @@
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SecuritySetting'
+
 $headerSettings = @{
     MinimumPasswordAge = "System Access"
     MaximumPasswordAge = "System Access"
