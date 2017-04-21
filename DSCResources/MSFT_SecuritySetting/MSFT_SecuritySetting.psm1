@@ -1,3 +1,7 @@
+Import-Module -Name (Join-Path -Path ( Split-Path $PSScriptRoot -Parent ) `
+                               -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
+                               -Force
+
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SecuritySetting'
 
 $headerSettings = @{
@@ -105,7 +109,6 @@ function Set-TargetResource
     (
         [Parameter()]
         [ValidateRange(-1, 999)]
-        [ValidateScript({$_ -ne 0})]
         [System.Int16]$MinimumPasswordAge,
         
         [Parameter()]
@@ -261,7 +264,6 @@ function Test-TargetResource
     (
         [Parameter()]
         [ValidateRange(-1, 999)]
-        [ValidateScript({$_ -ne 0})]
         [System.Int16]$MinimumPasswordAge,
         
         [Parameter()]
