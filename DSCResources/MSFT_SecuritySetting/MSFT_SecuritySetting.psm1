@@ -57,17 +57,39 @@ function Get-IniContent
         "(.+ )\s*=(.*)"  # Key
         {
             $name,$value = $matches[1..2]
-            $ini[$section][$name] = $value
+            $ini[$section][$name.Trim()] = $value
             # Need to replace double quotes with `"
             continue
         }
         "\`"(.*)`",(.*)$" 
         { 
             $name, $value = $matches[1..2]
-            $ini[$section][$name] = $value
+            $ini[$section][$name.Trim()] = $value
             continue
         }
     }
+    return $ini
+}
+
+Function Get-SecuritySettings
+{
+    [CmdletBinding()]
+    param()
+    
+    $file = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\temppol.inf"
+    Write-Verbose -Message ($script:localizedData.CreatingTmpFile -f $file)
+    
+    $PowerShellProcess = new-object System.Diagnostics.Process
+    $PowerShellProcess.StartInfo.Filename = "secedit.exe"
+    $PowerShellProcess.StartInfo.Arguments = " /export /cfg $file /areas securitypolicy"
+    $PowerShellProcess.StartInfo.RedirectStandardOutput = $True
+    $PowerShellProcess.StartInfo.UseShellExecute = $false
+    $PowerShellProcess.start() | Out-Null
+    $PowerShellProcess.WaitForExit('10') | Out-Null
+    [System.String] $process = $PowerShellProcess.StandardOutput.ReadToEnd();
+
+    $ini = Get-IniContent -Path $file
+    Remove-Item $file -Force
     return $ini
 }
 
@@ -82,24 +104,18 @@ function Get-TargetResource
         [System.String]$Name
     )
     
-    $file = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\temppol.inf"
-    Write-Verbose -Message ($script:localizedData.CreatingTmpFile -f $file)
+    $ini = Get-SecuritySettings
     
-    $outHash = @{}
-
-    $PowerShellProcess = new-object System.Diagnostics.Process
-    $PowerShellProcess.StartInfo.Filename = "secedit.exe"
-    $PowerShellProcess.StartInfo.Arguments = " /export /cfg $file /areas securitypolicy"
-    $PowerShellProcess.StartInfo.RedirectStandardOutput = $True
-    $PowerShellProcess.StartInfo.UseShellExecute = $false
-    $PowerShellProcess.start() | Out-Null
-    $PowerShellProcess.WaitForExit('10') | Out-Null
-    [System.String] $process = $PowerShellProcess.StandardOutput.ReadToEnd();
-
-    $ini = Get-IniContent -Path $file
-    Remove-Item $file -Force
+    $returnHash = @{}
+    $values = "MinimumPasswordAge","MaximumPasswordAge","MinimumPasswordLength","PasswordComplexity","PasswordHistorySize","LockoutBadCount","ForceLogoffWhenHourExpire","NewAdministratorName","NewGuestName","ClearTextPassword","LSAAnonymousNameLookup","EnableAdminAccount","EnableGuestAccount","ResetLockoutCount","LockoutDuration","MaxServiceAge","MaxTicketAge","MaxRenewAge","MaxClockSkew","TicketValidateClient"
+    foreach ($value in $values)
+    {
+        $returnHash.$value = $ini[$headerSettings[$value]].$value
+    }
     
-    return $ini
+    $returnHash.Name = $Name
+    
+    return $returnHash
 }
 
 function Set-TargetResource
@@ -192,7 +208,7 @@ function Set-TargetResource
     $PSBoundParameters.Remove("Name")
     $headers = ($PSBoundParameters.GetEnumerator() | ForEach-Object { $headerSettings[$_.Key] } | Group-Object).Name
     
-    $INI = Get-TargetResource -Name $Name
+    $INI = Get-SecuritySettings
     $tmpFile = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\temppol.inf"
     $newSecDB = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\tmpsecedit.sdb"
     
@@ -229,7 +245,7 @@ function Set-TargetResource
         foreach ($keyPair in $INI[$header].GetEnumerator())
         {
             $Value = 1
-            if ([System.Int]::TryParse($keyPair.value, [ref]$Value))
+            if ([System.Int32]::TryParse($keyPair.value, [ref]$Value))
             {
                 "$($keyPair.Name) = $Value" | Out-File $tmpFile -Append
             }
@@ -348,7 +364,7 @@ function Test-TargetResource
     $PSBoundParameters.Remove("Name") | Out-Null
     $headers = ($PSBoundParameters.GetEnumerator() | ForEach-Object { $headerSettings[$_.Key] } | Group-Object).Name
     
-    $ini = Get-TargetResource -Name $Name
+    $ini = Get-SecuritySettings
 
     $returnValue = $true
     foreach ($header in $headers)
