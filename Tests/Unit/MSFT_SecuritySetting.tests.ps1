@@ -137,6 +137,7 @@ try
                     return $object
                 }
                 Mock -CommandName Get-SecuritySettings -MockWith {return @($mockSecuritySettings)}
+                Mock -CommandName Set-SecuritySettings -MockWith { } 
                 Mock -CommandName Test-TargetResource -MockWith {$false}
                                 
                 It 'Should not throw' { 
@@ -144,13 +145,13 @@ try
                 }                
                                 
                 It 'Should call expected mocks' {
-                    Assert-MockCalled -CommandName New-Object -Exactly 1
+                    Assert-MockCalled -CommandName Set-SecuritySettings -Exactly 1
                     Assert-MockCalled -CommandName Get-SecuritySettings -Exactly 1
                 }
             }
         }
         #endregion
-        #region Function Get-USRPolicy
+        #region Function Get-IniContent
         Describe "Get-IniContent" {
             
             $iniPath = (Join-Path -Path $PSScriptRoot -ChildPath "sample.inf")
@@ -164,6 +165,75 @@ try
             }
         }
         #endregion    
+        #region Function Set-SecuritySettings
+        Describe "Set-SecuritySettings" {
+            
+            $tmpFile = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\temppol.inf"
+            $secDB = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\tmpsecedit.sdb"
+
+            Mock -CommandName New-Object -ParameterFilter {$TypeName -eq "System.Diagnostics.Process" } -MockWith {
+                     $object = [pscustomobject]@{
+                                                StartInfo=[pscustomobject]@{
+                                                                            FileName="secedit.exe";
+                                                                            Arguments=" /configure /db $newSecDB /cfg $tmpfile /overwrite /quiet";
+                                                                            RedirectStandardOutput=$true;
+                                                                            UseShellExecute=$false;
+                                                                           };
+                                                StandardOutput=[pscustomobject]@{
+                                                                                 
+                                                                                }
+                                            }
+                    $object = $object | Add-member -MemberType ScriptMethod -Name Start -Value { param() } -Force -PassThru
+                    $object = $object | Add-member -MemberType ScriptMethod -Name WaitForExit -Value { param() } -Force -PassThru
+                    $object.StandardOutput = $object.StandardOutput | Add-member -MemberType ScriptMethod -Name ReadToEnd -Value { param() } -Force -PassThru
+                    return $object
+                }
+
+            It 'Should not Throw' {
+                { Set-SecuritySettings -secDb $secDB -tmpFile $tmpFile } | Should Not Throw
+            }
+            
+            It 'Should Call Expected Mocks' {
+                Assert-MockCalled -CommandName New-Object -Exactly 1
+            }
+        }
+        #endregion  
+        #region Function Get-SecuritySettings
+        Describe "Get-SecuritySettings" {
+            
+            $tmpFile = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\temppol.inf"
+            $secDB = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\tmpsecedit.sdb"
+
+            Mock -CommandName New-Object -ParameterFilter {$TypeName -eq "System.Diagnostics.Process" } -MockWith {
+                     $object = [pscustomobject]@{
+                                                StartInfo=[pscustomobject]@{
+                                                                            FileName="secedit.exe";
+                                                                            Arguments=" /configure /db $newSecDB /cfg $tmpfile /overwrite /quiet";
+                                                                            RedirectStandardOutput=$true;
+                                                                            UseShellExecute=$false;
+                                                                           };
+                                                StandardOutput=[pscustomobject]@{
+                                                                                 
+                                                                                }
+                                            }
+                    $object = $object | Add-member -MemberType ScriptMethod -Name Start -Value { param() } -Force -PassThru
+                    $object = $object | Add-member -MemberType ScriptMethod -Name WaitForExit -Value { param() } -Force -PassThru
+                    $object.StandardOutput = $object.StandardOutput | Add-member -MemberType ScriptMethod -Name ReadToEnd -Value { param() } -Force -PassThru
+                    return $object
+                }
+            Mock Get-IniContent -MockWith { return $mockSecuritySettings } -ParameterFilter {$Path -eq "C:\WINDOWS\security\database\temppol.inf" }
+            Mock Remove-Item -MockWith { } -ParameterFilter { $Path -eq "C:\WINDOWS\security\database\temppol.inf" }
+
+            It 'Should not Throw' {
+                { Get-SecuritySettings } | Should Not Throw
+            }
+            
+            It 'Should Call Expected Mocks' {
+                Assert-MockCalled -CommandName New-Object -Exactly 1
+                Assert-MockCalled -CommandName Get-IniContent -Exactly 1
+            }
+        }
+        #endregion  
     }
     #endregion
 }

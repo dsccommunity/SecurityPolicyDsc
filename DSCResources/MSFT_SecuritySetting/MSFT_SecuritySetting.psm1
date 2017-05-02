@@ -33,7 +33,6 @@ function Get-IniContent
     param
     (
         [Parameter(Mandatory=$true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName=$true)]
-        [ValidateScript({Test-Path $_})]
         [System.String]$Path
     )
 
@@ -71,7 +70,7 @@ function Get-IniContent
     return $ini
 }
 
-Function Get-SecuritySettings
+function Get-SecuritySettings
 {
     [CmdletBinding()]
     param()
@@ -84,13 +83,35 @@ Function Get-SecuritySettings
     $PowerShellProcess.StartInfo.Arguments = " /export /cfg $file /areas securitypolicy"
     $PowerShellProcess.StartInfo.RedirectStandardOutput = $True
     $PowerShellProcess.StartInfo.UseShellExecute = $false
-    $PowerShellProcess.start() | Out-Null
+    $PowerShellProcess.Start() | Out-Null
     $PowerShellProcess.WaitForExit('10') | Out-Null
     [System.String] $process = $PowerShellProcess.StandardOutput.ReadToEnd();
 
     $ini = Get-IniContent -Path $file
     Remove-Item $file -Force
     return $ini
+}
+
+function Set-SecuritySettings
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [string]$secDB,
+
+        [Parameter(Mandatory=$true)]
+        [string]$tmpFile
+    )
+    
+    $PowerShellProcess = new-object System.Diagnostics.Process
+    $PowerShellProcess.StartInfo.Filename = "secedit.exe"
+    $PowerShellProcess.StartInfo.Arguments = " /configure /db $secDB /cfg $tmpfile /overwrite /quiet"
+    $PowerShellProcess.StartInfo.RedirectStandardOutput = $True
+    $PowerShellProcess.StartInfo.UseShellExecute = $false
+    $PowerShellProcess.Start() | Out-Null
+    $PowerShellProcess.WaitForExit('10') | Out-Null
+    [System.String] $process = $PowerShellProcess.StandardOutput.ReadToEnd();
 }
 
 function Get-TargetResource
@@ -200,7 +221,7 @@ function Set-TargetResource
     
     if (@($PSBoundParameters.Keys.Where({$_ -notin "Name", "Ensure"})).Count -eq 0)
     {
-        Write-Error "No Values Specified!"
+        Write-Error $script:localizedData.NoValuesSpecified
     }
 
     # Find out what sections we are setting.
@@ -208,7 +229,7 @@ function Set-TargetResource
     $PSBoundParameters.Remove("Name")
     $headers = ($PSBoundParameters.GetEnumerator() | ForEach-Object { $headerSettings[$_.Key] } | Group-Object).Name
     
-    $INI = Get-SecuritySettings
+    $ini = Get-SecuritySettings
     $tmpFile = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\temppol.inf"
     $newSecDB = Join-Path -Path $env:SystemRoot -ChildPath "\security\database\tmpsecedit.sdb"
     
@@ -221,11 +242,11 @@ function Set-TargetResource
         {
             try
             {
-                $INI[$header][$keyPair.Key] = $keyPair.Value
+                $ini[$header][$keyPair.Key] = $keyPair.Value
             }
             catch
             {
-                Write-Error "Unable to set $($keyPair.Key) to $($keyPair.Value)."
+                Write-Error $script:localizedData.FailureSettingKey -f $keyPair.Key, $keyPair.Value
                 continue
             }
         }    
@@ -242,7 +263,7 @@ function Set-TargetResource
     {
         "[$header]" | Out-File $tmpfile -Append
     
-        foreach ($keyPair in $INI[$header].GetEnumerator())
+        foreach ($keyPair in $ini[$header].GetEnumerator())
         {
             $Value = 1
             if ([System.Int32]::TryParse($keyPair.value, [ref]$Value))
@@ -260,15 +281,8 @@ function Set-TargetResource
     "signature=`"`$CHICAGO`$`"" | Out-File $tmpfile -Append
     "Revision=1" | Out-File $tmpfile -Append
     
-    $PowerShellProcess = new-object System.Diagnostics.Process
-    $PowerShellProcess.StartInfo.Filename = "secedit.exe"
-    $PowerShellProcess.StartInfo.Arguments = " /configure /db $newSecDB /cfg $tmpfile /overwrite /quiet"
-    $PowerShellProcess.StartInfo.RedirectStandardOutput = $True
-    $PowerShellProcess.StartInfo.UseShellExecute = $false
-    $PowerShellProcess.start() | Out-Null
-    $PowerShellProcess.WaitForExit('10') | Out-Null
-    [System.String] $process = $PowerShellProcess.StandardOutput.ReadToEnd();
-    
+    Set-SecuritySettings -secDB $newSecDB -tmpFile $tmpFile
+
     Remove-Item $tmpfile -Force
 }
 
@@ -355,7 +369,7 @@ function Test-TargetResource
 
     if (@($PSBoundParameters.Keys.Where({$_ -notin "Name", "Ensure"})).Count -eq 0)
     {
-        Write-Error "No Values Specified!"
+        Write-Error $script:localizedData.NoValuesSpecified
         return $false
     }
         
