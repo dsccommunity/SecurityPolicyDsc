@@ -74,11 +74,17 @@ function Get-TargetResource
         [AllowEmptyCollection()]
         [AllowEmptyString()]      
         [System.String[]]
-        $Identity
+        $Identity,
+
+        [ValidateSet("Present","Absent")]
+        [System.String]$Ensure = "Present",
+
+        [System.Boolean]$Force = $false
     )
     
     $usrResult = Get-USRPolicy -Policy $Policy -Areas USER_RIGHTS
 
+    Write-Verbose "Policy: $($usrResult.PolicyFriendlyName). Identity: $($usrResult.Identity)"
     $returnValue = @{
         Policy         = $usrResult.PolicyFriendlyName
         Identity       = $usrResult.Identity
@@ -155,7 +161,12 @@ function Set-TargetResource
         [AllowEmptyCollection()]
         [AllowEmptyString()]
         [System.String[]]
-        $Identity
+        $Identity,
+
+        [ValidateSet("Present","Absent")]
+        [System.String]$Ensure = "Present",
+
+        [System.Boolean]$Force = $false
     )
     
     $policyList = Get-AssignmentFriendlyNames
@@ -171,12 +182,50 @@ function Set-TargetResource
     }
     else
     {
+        $currentRights = Get-TargetResource -Policy $Policy -Identity $Identity
+
+        $accounts = @()
+        switch ($Identity)
+        {
+            "[Local Account]" { $accounts += (Get-CimInstance win32_useraccount -Filter "LocalAccount='True'").SID }
+            "[Local Account|Administrator]" 
+            {
+                $administratorsGroup = Get-CimInstance -class win32_group -filter "SID='S-1-5-32-544'"
+                $groupUsers = Get-CimInstance -query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($administratorsGroup.name)'`""
+                [array]$usersList = $groupUsers.partcomponent | ForEach-Object { (($_ -replace '.*Win32_UserAccount.Domain="', "") -replace '",Name="', "\") -replace '"', '' }
+                $users += $usersList | Where-Object {$_ -match $env:COMPUTERNAME}
+                $accounts += $users | ForEach-Object {(Get-CimInstance win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
+            }
+            Default { $accounts += $_} 
+        }
+        
+        if ($Ensure -eq "Present")
+        {
+            if (!$Force)
+            {   
+                foreach ($id in $currentRights.Identity)
+                {
+                    if ($id -notin $accounts)
+                    {
+                        $accounts += $id
+                    }
+                }
+            }
+        }
+        else
+        {
+            $accounts = $accounts | Where-Object {$_ -notin $currentRights.Identity}
+        }
+        
+        $idsToAdd = $accounts -join ","
+        
         Write-Verbose -Message ($script:localizedData.GrantingPolicyRightsToIds -f $Policy, $idsToAdd)
     }
        
     Out-UserRightsInf -InfPolicy $policyName -UserList $idsToAdd -FilePath $userRightsToAddInf
     Write-Debug -Message ($script:localizedData.EchoDebugInf -f $userRightsToAddInf)
 
+    Write-Verbose "Attempting to Set ($($idstoAdd -join ",")) for Policy $($Policy))"
     Invoke-Secedit -UserRightsToAddInf $userRightsToAddInf -SecEditOutput $seceditOutput
     
     # Verify secedit command was successful
@@ -184,6 +233,7 @@ function Set-TargetResource
     if (Test-TargetResource -Identity $Identity -Policy $Policy)
     {
         Write-Verbose -Message ($script:localizedData.TaskSuccess)
+        Write-Verbose "$(($idsToAdd -join ",")) successfully given Rights ($Policy)"
     }
     else
     {
@@ -262,7 +312,12 @@ function Test-TargetResource
         [AllowEmptyCollection()] 
         [AllowEmptyString()]               
         [System.String[]]
-        $Identity
+        $Identity,
+
+        [ValidateSet("Present","Absent")]
+        [System.String]$Ensure = "Present",
+
+        [System.Boolean]$Force = $false
     )
         
     $userRights = Get-USRPolicy -Policy $Policy -Areas USER_Rights    
@@ -285,17 +340,56 @@ function Test-TargetResource
 
     Write-Verbose -Message ($script:localizedData.TestIdentityIsPresentOnPolicy -f $($Identity -join","), $Policy)
 
-    foreach ($id in $Identity)
+    $accounts = @()
+    switch ($Identity)
     {
-        if ($userRights.Identity -notcontains $id)
+        "[Local Account]" { $accounts += (Get-CimInstance win32_useraccount -Filter "LocalAccount='True'").SID }
+        "[Local Account|Administrator]" 
         {
-            Write-Verbose -Message ($script:localizedData.IdNotFoundOnPolicy -f $id, $Policy)
+            $administratorsGroup = Get-CimInstance -class win32_group -filter "SID='S-1-5-32-544'"
+            $groupUsers = Get-CimInstance -query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($administratorsGroup.name)'`""
+            [array]$usersList = $groupUsers.partcomponent | ForEach-Object { (($_ -replace '.*Win32_UserAccount.Domain="', "") -replace '",Name="', "\") -replace '"', '' }
+            $users += $usersList | Where-Object {$_ -match $env:COMPUTERNAME}
+            $accounts += $users | ForEach-Object {(Get-CimInstance win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
+        }
+        Default { $accounts += $_} 
+    }
+        
+    if ($Ensure -eq "Present")
+    {
+        $usersWithoutRight = $accounts | Where-Object {$_ -notin $userRights.Identity}
+        if ($usersWithoutRight)
+        {
+            Write-Verbose "$($usersWithoutRight -join ",") do not have Privilege ($Policy)"
             return $false
-        }      
-    }    
+        }
+
+        if ($Force)
+        {
+            $effectiveUsers = $userRights.Identity | Where-Object {$_ -notin $accounts}
+            if ($effectiveUsers.Count -gt 0)
+            {
+                Write-Verbose "$($effectiveUsers -join ",") are extraneous users with Privilege ($Policy)"
+                return $false
+            }
+        }
+
+        $returnValue = $true
+    }
+    else
+    {
+        $UsersWithRight = $accounts | Where-Object {$_ -in $userRights.Identity}
+        if ($UsersWithRight.Count -gt 0)
+        {
+            Write-Verbose "$($UsersWithRight) should NOT have Privilege ($Policy)"
+            return $false
+        }
+
+        $returnValue = $true
+    }
 
     # If the code made it this far all identities have the desired user rights
-    return $true
+    return $returnValue
 }
 
 <#
