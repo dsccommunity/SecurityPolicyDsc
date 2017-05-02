@@ -13,6 +13,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 * **UserRightsAssignment**: Configures user rights assignments in local security policies.
 * **SecurityTemplate**: Configures user rights assignments that are defined in an INF file.
+* **SecuritySetting**: Configures additional Security Settings typically associated with SecurityPolicy.
 
 ## UserRightsAssignment
 
@@ -23,9 +24,42 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 * **Path**: Path to an INF file that defines the desired security policies.
 
+## SecuritySetting
+
+* **Name**: Name of Security Setting you are changing. Required to allow setting of any value without having to specify a hashtable or array while ensuring that resource has a KEY parameter.
+## For explanation of below settings, please consult Security Policy Reference.
+## https://technet.microsoft.com/en-us/library/dn452423(v=ws.11).aspx
+* **ClearTextPassword**:
+* **DependsOn**:
+* **EnableAdminAccount**:
+* **EnableGuestAccount**:
+* **ForceLogoffWhenHourExpire**:
+* **LockoutBadCount**:
+* **LockoutDuration**:
+* **LSAAnonymousNameLookup**:
+* **MaxClockSkew**:
+* **MaximumPasswordAge**:
+* **MaxRenewAge**:
+* **MaxServiceAge**:
+* **MaxTicketAge**:
+* **MinimumPasswordAge**:
+* **MinimumPasswordLength**:
+* **NewAdministratorName**:
+* **NewGuestName**:
+* **PasswordComplexity**:
+* **PasswordHistorySize**:
+* **PsDscRunAsCredential**:
+* **ResetLockoutCount**:
+* **TicketValidateClient**:
+
 ## Versions
 
 ### Unreleased
+
+### 1.3.0.0
+
+* Updated UserRightsAssignment resource to respect dynamic local accounts.
+* Added SecuritySetting resource to process additional INF settings.
 
 ### 1.2.0.0
 
