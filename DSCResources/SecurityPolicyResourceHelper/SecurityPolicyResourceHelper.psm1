@@ -164,7 +164,7 @@ function ConvertTo-LocalFriendlyName
     foreach ($id in $SID)
     {        
         Write-Verbose "Received Identity ($id)"
-        if ($null -ne $id -and $id -match 'S-')
+        if ($null -ne $id -and $id -match '^(S-[0-9-]{3,})')
         {
             try
             {
