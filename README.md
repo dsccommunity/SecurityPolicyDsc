@@ -56,6 +56,8 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ### Unreleased
 
+* Fixed bug in which friendly name translation may fail if user or group contains 'S-'.
+
 ### 1.3.0.0
 
 * Updated UserRightsAssignment resource to respect dynamic local accounts.
