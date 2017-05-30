@@ -27,9 +27,10 @@ $headerSettings = @{
     TicketValidateClient = "Kerberos Policy"
 }
 
-function Get-IniContent 
+function Get-IniContent
 {
-  [CmdletBinding()]
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
     param
     (
         [Parameter(Mandatory=$true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName=$true)]
