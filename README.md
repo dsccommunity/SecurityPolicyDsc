@@ -56,12 +56,9 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ### Unreleased
 
-### 1.4.0.0
-
-- Added functionality to support BaselineManagement Module.
-
 ### 1.3.0.0
 
+* Added functionality to support BaselineManagement Module.
 * Updated UserRightsAssignment resource to respect dynamic local accounts.
 * Added SecuritySetting resource to process additional INF settings.
 
