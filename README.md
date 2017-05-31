@@ -77,5 +77,5 @@ If you would like to contribute to this repository, please read the DSC Resource
 ### 1.0.0.0
 
 * Initial release with the following resources:
- * UserRightsAssignment
- * SecurityTemplate
+  * UserRightsAssignment
+  * SecurityTemplate
