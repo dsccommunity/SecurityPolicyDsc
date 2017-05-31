@@ -46,7 +46,6 @@ try
             Import-Module "$PSScriptRoot\..\..\DSCResources\MSFT_UserRightsAssignment\MSFT_UserRightsAssignment.psm1"
             It 'Should have set the resource and all the parameters should match' {
                 $getResults = Get-TargetResource -Policy $rule.Policy -Identity $rule.Identity
-                 
                 foreach ($Id in $rule.Identity)
                 {
                     $getResults.Identity | where {$_ -eq $Id} | Should Be $Id
@@ -55,7 +54,7 @@ try
                 $rule.Policy | Should Be $getResults.Policy
             }
         }
-
+        
         Context 'Verify Success on Act as OS remove all' {
 
             It 'Should have set the resource and all the parameters should match' {

@@ -1,0 +1,26 @@
+[ClassVersion("1.0.0.0"), FriendlyName("SecuritySetting")]
+class MSFT_SecuritySetting : OMI_BaseResource
+{
+    [Key, Description("This is just here to avoid conflicts"), ValueMap{"MinimumPasswordAge","MaximumPasswordAge","MinimumPasswordLength","PasswordComplexity","PasswordHistorySize","LockoutBadCount","ForceLogoffWhenHourExpire","NewAdministratorName","NewGuestName","ClearTextPassword","LSAAnonymousNameLookup","EnableAdminAccount","EnableGuestAccount","ResetLockoutCount","LockoutDuration","MaxServiceAge","MaxTicketAge","MaxRenewAge","MaxClockSkew","TicketValidateClient"}, Values{"MinimumPasswordAge","MaximumPasswordAge","MinimumPasswordLength","PasswordComplexity","PasswordHistorySize","LockoutBadCount","ForceLogoffWhenHourExpire","NewAdministratorName","NewGuestName","ClearTextPassword","LSAAnonymousNameLookup","EnableAdminAccount","EnableGuestAccount","ResetLockoutCount","LockoutDuration","MaxServiceAge","MaxTicketAge","MaxRenewAge","MaxClockSkew","TicketValidateClient"}] String Name;
+    [Write, Description("Desired state of resource."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write] SInt16 MinimumPasswordAge;
+    [Write] UInt16 MaximumPasswordAge;
+    [Write] UInt16 MinimumPasswordLength;
+    [Write] Uint16 PasswordComplexity;
+    [Write] UInt16 PasswordHistorySize;
+    [Write] UInt16 LockoutBadCount;
+    [Write] Uint16 ForceLogoffWhenHourExpire;
+    [Write] String NewAdministratorName;
+    [Write] String NewGuestName;
+    [Write] Uint16 ClearTextPassword;
+    [Write] Uint16 LSAAnonymousNameLookup;
+    [Write] Uint16 EnableAdminAccount;
+    [Write] Uint16 EnableGuestAccount;
+    [Write] SInt16 ResetLockoutCount;
+    [Write] SInt16 LockoutDuration;
+    [Write] UInt16 MaxServiceAge;
+    [Write] Uint16 MaxTicketAge;
+    [Write] Uint16 MaxRenewAge;
+    [Write] Uint16 MaxClockSkew;
+    [Write] Uint16 TicketValidateClient;
+};
