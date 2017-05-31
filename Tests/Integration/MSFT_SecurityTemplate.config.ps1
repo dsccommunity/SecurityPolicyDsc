@@ -1,6 +1,6 @@
 ﻿
 # create test user and security template
-$userName = "TestUser1" # + ([guid]::NewGuid().guid).substring(0,6)
+$userName = "TestUser" + ([guid]::NewGuid().guid).substring(0,6)
 $policy = 'SeTrustedCredManAccessPrivilege'
 $directoryEntry = [ADSI]"WinNT://$env:COMPUTERNAME,Computer"
 $user = $directoryEntry.Create("User", $userName)
