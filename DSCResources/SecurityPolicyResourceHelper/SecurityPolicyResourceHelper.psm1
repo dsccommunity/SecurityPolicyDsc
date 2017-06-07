@@ -162,14 +162,16 @@ function ConvertTo-LocalFriendlyName
     $friendlyNames = [String[]]@()
 
     foreach ($id in $SID)
-    {        
+    {
+        $id = $id.Trim();
+        
         Write-Verbose "Received Identity ($id)"
-        if ($null -ne $id -and $id -match 'S-')
+        if ($null -ne $id -and $id -match '^(S-[0-9-]{3,})')
         {
             try
             {
                 Write-Verbose "Translating Identity: $id"
-                $securityIdentifier = [System.Security.Principal.SecurityIdentifier]($id.trim())
+                $securityIdentifier = [System.Security.Principal.SecurityIdentifier]($id)
                 $user = $securityIdentifier.Translate([System.Security.Principal.NTAccount])
                 $friendlyNames += $user.value
                 Write-Verbose "Identity ($id) is equal to $($user.Value)"
@@ -181,11 +183,11 @@ function ConvertTo-LocalFriendlyName
         }
         elseIf ($domainRole -eq 4 -or $domainRole -eq 5)
         {
-            $friendlyNames += "$($env:USERDOMAIN + '\' + $($id.trim()))"
+            $friendlyNames += "$($env:USERDOMAIN + '\' + $($id))"
         }
         elseIf ($id -notmatch '^S-')
         {
-            $friendlyNames += "$($id.trim())"
+            $friendlyNames += "$($id)"
         }
     }
 
