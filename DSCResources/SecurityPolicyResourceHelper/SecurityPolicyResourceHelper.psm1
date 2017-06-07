@@ -165,16 +165,16 @@ function ConvertTo-LocalFriendlyName
     {
         $id = $id.Trim();
         
-        Write-Verbose "Received Identity ($id)"
+        Write-Verbose  "Received Identity ($id)"
         if ($null -ne $id -and $id -match '^(S-[0-9-]{3,})')
         {
             try
             {
-                Write-Verbose "Translating Identity: $id"
+                Write-Verbose -Message ($localizedData:TranslateID -f $id)
                 $securityIdentifier = [System.Security.Principal.SecurityIdentifier]($id)
                 $user = $securityIdentifier.Translate([System.Security.Principal.NTAccount])
                 $friendlyNames += $user.value
-                Write-Verbose "Identity ($id) is equal to $($user.Value)"
+                Write-Verbose -Message ($localizedData:IdTranslatesTo -f $id,$user.Value)
             }
             catch
             {
