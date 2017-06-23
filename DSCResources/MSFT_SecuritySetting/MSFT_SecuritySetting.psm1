@@ -387,7 +387,7 @@ function Test-TargetResource
         {
             if ($ini.ContainsKey($header))
             {
-                if ($ini[$header][$keyPair.Key] -eq $keyPair.Value)
+                if ([int]$ini[$header][$keyPair.Key] -eq $keyPair.Value)
                 {
                     Write-Verbose -Message ($script:localizedData.TestSuccess -f $keyPair.Key, $keyPair.Value) 
                 }
