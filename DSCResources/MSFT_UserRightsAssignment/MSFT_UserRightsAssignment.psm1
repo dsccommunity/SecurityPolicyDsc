@@ -483,7 +483,7 @@ function Get-USRPolicy
     $policyList = Get-AssignmentFriendlyNames
     $policyName = $policyList[$Policy]
 
-    $currentUserRights = ([System.IO.Path]::GetTempFileName()).Replace('tmp','inf')    
+    $currentUserRights = Join-Path -Path $env:temp -ChildPath 'CurrentUserRights.inf'   
     Write-Debug -Message ($localizedData.EchoDebugInf -f $currentUserRights)
 
     $secedit = secedit.exe /export /cfg $currentUserRights /areas $areas
