@@ -57,6 +57,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 ### Unreleased
 
 * Fixed bug in which friendly name translation may fail if user or group contains 'S-'.
+* Fixed bug identified in issue 33 and 34 where Test-TargetResource would return false but was true
 
 ### 1.3.0.0
 

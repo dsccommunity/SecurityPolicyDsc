@@ -31,7 +31,7 @@ try
 
             $mockGetUSRPolicyResult = [PSObject]@{
                 Policy = 'Access_Credential_Manager_as_a_trusted_caller'
-                Identity = 'contoso\testUser1','contoso\TestUser2'
+                Identity = 'testUser1','contoso\TestUser2'
                 PolicyFriendlyName = $testParameters.Policy
             }
 
@@ -46,10 +46,6 @@ try
                 Identity = $null
             }
 
-            $mockGetTargetResult = [PSObject] @{
-                Policy = 'Access_Credential_Manager_as_a_trusted_caller'
-                Identity = 'contoso\TestUser2'
-            }
         #endregion
 
         #region Function Get-TargetResource
@@ -123,6 +119,29 @@ try
                     $testResult = Test-TargetResource -Policy Access_Credential_Manager_as_a_trusted_caller -Identity ""
 
                     $testResult | Should be $false
+                }
+            }
+
+            Context 'Tests for when Identity is a local account or SID' {
+                $mockGetUSRPolicyResult = $mockGetUSRPolicyResult.Clone()          
+                
+                Mock -CommandName Test-IsLocalAccount -MockWith {$true}
+                
+
+                It 'Should return True when a computerName is specified with a local account' {   
+                                 
+                    $mockGetUSRPolicyResult.Identity = 'testuser1'
+                    Mock -CommandName Get-USRPolicy -MockWith {$mockGetUSRPolicyResult}
+                    $testResult = Test-TargetResource -Policy 'Access_Credential_Manager_as_a_trusted_caller' -Identity 'localhost\testuser1'
+                    $testResult | Should be $true
+                }
+
+                It 'Should return True when a SID is used for Identity' {
+
+                    $mockGetUSRPolicyResult.Identity = "BUILTIN\Administrators"
+                    Mock -CommandName Get-USRPolicy -MockWith {$mockGetUSRPolicyResult}
+                    $testResult = Test-TargetResource -Policy 'Access_Credential_Manager_as_a_trusted_caller' -Identity "*S-1-5-32-544"
+                    $testResult | Should be $true
                 }
             }
         }
