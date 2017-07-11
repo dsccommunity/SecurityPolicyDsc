@@ -18,7 +18,6 @@ function Get-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [ValidateSet('Yes')]
         [String]
         $IsSingleInstance,
@@ -63,7 +62,6 @@ function Set-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [ValidateSet('Yes')]
         [String]
         $IsSingleInstance,
@@ -95,7 +93,6 @@ function Set-TargetResource
     }
     else
     {
-        $seceditResult = Get-Content $seceditOutput
         Write-Error -Message ($script:localizedData.TaskFail)        
     }
 }
@@ -113,7 +110,6 @@ function Test-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [ValidateSet('Yes')]
         [String]
         $IsSingleInstance, 
@@ -153,7 +149,7 @@ function Test-TargetResource
 
         if ($null -eq $currentPolicies[$policy] -or $null -eq $desiredPolicies[$policy])
         {
-            $policiesMatch = $null -eq $currentPolicies[$policy] -and $null -eq $desiredPolicies[$policy]
+            $policiesMatch = [String]::IsNullOrEmpty($currentPolicies[$policy]) -and [String]::IsNullOrEmpty($desiredPolicies[$policy])
         }
         else
         {

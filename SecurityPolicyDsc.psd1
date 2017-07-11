@@ -47,9 +47,9 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* SecurityTemplate: Remove [ValidateNotNullOrEmpty()] attribute for IsSingleInstance parameter
-* Fixed typos
-
+        ReleaseNotes = '* Added functionality to support BaselineManagement Module.
+* Updated UserRightsAssignment resource to respect dynamic local accounts.
+* Added SecuritySetting resource to process additional INF settings.
 '
 
     } # End of PSData hashtable
@@ -57,5 +57,6 @@ PrivateData = @{
 } # End of PrivateData hashtable
 
 }
+
 
 
