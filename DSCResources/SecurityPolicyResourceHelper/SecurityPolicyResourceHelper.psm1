@@ -157,7 +157,7 @@ function ConvertTo-LocalFriendlyName
         $SID        
     )
     
-    $localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
+    $localizedData = Import-LocalizedData -BaseDirectory C:\Users\robreed\Documents\WindowsPowerShell\Modules\SecurityPolicyDSC\DSCResources\SecurityPolicyResourceHelper\en-US\ -FileName SecurityPolicyResourceHelper.strings.psd1
     $domainRole = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
     $friendlyNames = [String[]]@()
 
