@@ -56,6 +56,11 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ### Unreleased
 
+### 1.4.0.0
+
+* Fixed bug in which friendly name translation may fail if user or group contains 'S-'.
+* Fixed bug identified in issue 33 and 34 where Test-TargetResource would return false but was true
+
 ### 1.3.0.0
 
 * Added functionality to support BaselineManagement Module.
@@ -76,5 +81,5 @@ If you would like to contribute to this repository, please read the DSC Resource
 ### 1.0.0.0
 
 * Initial release with the following resources:
- * UserRightsAssignment
- * SecurityTemplate
+  * UserRightsAssignment
+  * SecurityTemplate

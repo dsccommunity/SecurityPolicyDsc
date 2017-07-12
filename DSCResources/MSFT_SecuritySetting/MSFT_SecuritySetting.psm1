@@ -27,9 +27,10 @@ $headerSettings = @{
     TicketValidateClient = "Kerberos Policy"
 }
 
-function Get-IniContent 
+function Get-IniContent
 {
-  [CmdletBinding()]
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
     param
     (
         [Parameter(Mandatory=$true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName=$true)]
@@ -50,20 +51,20 @@ function Get-IniContent
             $value = $matches[1]
             $CommentCount = $CommentCount + 1
             $name = "Comment" + $CommentCount
-            $ini[$section][$name] = $value
+            $ini[$section][$name] = $value.Trim()
             continue
         } 
         "(.+ )\s*=(.*)"  # Key
         {
             $name,$value = $matches[1..2]
-            $ini[$section][$name.Trim()] = $value
+            $ini[$section][$name.Trim()] = $value.Trim()
             # Need to replace double quotes with `"
             continue
         }
         "\`"(.*)`",(.*)$" 
         { 
             $name, $value = $matches[1..2]
-            $ini[$section][$name.Trim()] = $value
+            $ini[$section][$name.Trim()] = $value.Trim()
             continue
         }
     }
