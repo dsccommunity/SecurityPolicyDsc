@@ -230,7 +230,7 @@ function Set-TargetResource
     
     # Verify secedit command was successful
 
-    if (Test-TargetResource -Identity $Identity -Policy $Policy)
+    if ( Test-TargetResource -Identity $Identity -Policy $Policy -Ensure $Ensure )
     {
         Write-Verbose -Message ($script:localizedData.TaskSuccess)
         Write-Verbose "$(($idsToAdd -join ",")) successfully given Rights ($Policy)"
@@ -361,6 +361,10 @@ function Test-TargetResource
                 if ( Test-IsLocalAccount -Identity $_ )
                 {
                     $accounts += ( $_ -split '\\' )[-1]
+                }
+                else
+                {
+                    $accounts += ConvertTo-LocalFriendlyName $_
                 }
             }
             else
