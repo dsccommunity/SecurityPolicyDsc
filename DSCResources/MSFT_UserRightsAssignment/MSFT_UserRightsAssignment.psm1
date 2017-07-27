@@ -570,7 +570,7 @@ function Test-IsLocalAccount
     }
     else
     {
-        return $true
+        return $false
     }
 }
 
