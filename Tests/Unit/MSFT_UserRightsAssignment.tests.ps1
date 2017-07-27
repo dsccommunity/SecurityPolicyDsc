@@ -41,6 +41,12 @@ try
                 PolicyFriendlyName = $testParameters.Policy
             }
 
+            $mockUSRDoesExist = [PSObject]@{
+                Policy = 'Access_Credential_Manager_as_a_trusted_caller'
+                Identity = 'contoso\testUser1','contoso\TestUser2'
+                PolicyFriendlyName = $testParameters.Policy
+            }
+
             $mockNullIdentity = [PSObject] @{
                 Policy = 'Access_Credential_Manager_as_a_trusted_caller'
                 Identity = $null
@@ -70,7 +76,7 @@ try
         #region Function Test-TargetResource
         Describe "Test-TargetResource" {
             Context 'Identity does exist and should' {
-                Mock -CommandName  Get-USRPolicy -MockWith {$mockGetUSRPolicyResult}
+                Mock -CommandName  Get-USRPolicy -MockWith {$mockUSRDoesExist}
 
                 It 'Should return true' {
                     $testResult = Test-TargetResource @testParameters
@@ -218,3 +224,4 @@ finally
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
     #endregion
 }
+
