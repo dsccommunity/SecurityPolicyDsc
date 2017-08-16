@@ -290,6 +290,8 @@ function Get-DomainRole
 <#
     .SYNOPSIS
         Tests if the provided Identity is null
+    .PARAMETER Identity
+        The identity string to test
 #>
 function Test-IdentityIsNull
 {

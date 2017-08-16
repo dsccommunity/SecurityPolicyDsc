@@ -211,6 +211,14 @@ try
                 Assert-MockCalled -CommandName Get-SecurityPolicy
             }
         }
+
+        Describe 'Get-UserRightConstant' {
+
+            $constant = Get-UserRightConstant -Policy 'Access_Credential_Manager_as_a_trusted_caller'
+            It 'Should match policy' {
+                $constant | Should Be 'SeTrustedCredManAccessPrivilege'
+            }
+        }
         #endregion    
     }
     #endregion

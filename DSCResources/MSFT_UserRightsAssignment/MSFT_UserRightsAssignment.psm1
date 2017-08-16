@@ -420,10 +420,10 @@ function Test-TargetResource
 <#
     .SYNOPSIS
         Returns an object of the identities assigned to a user rights assignment
-    .PARAMETER Policy
+    .PARAMETER Name
         Name of the policy to inspect
     .EXAMPLE
-        Get-UserRightPolicy -Policy Create_a_token_object
+        Get-UserRightPolicy -Name Create_a_token_object
 #>
 function Get-UserRightPolicy
 {
@@ -581,4 +581,3 @@ function Test-IsLocalAccount
 }
 
 Export-ModuleMember -Function *-TargetResource
-
