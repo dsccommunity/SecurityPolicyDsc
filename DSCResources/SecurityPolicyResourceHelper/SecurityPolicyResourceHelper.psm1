@@ -113,7 +113,7 @@ function Get-UserRightsAssignment
         [System.String]
         $FilePath
     )
-
+    
     $policyConfiguration = @{}
     switch -regex -file $FilePath
     {
@@ -154,16 +154,16 @@ function ConvertTo-LocalFriendlyName
     param
     (
         [System.String[]]
-        $SID        
+        $SID
     )
     
     $localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
-    $domainRole = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
+
     $friendlyNames = [String[]]@()
 
     foreach ($id in $SID)
     {
-        $id = $id.Trim();
+        $id = $id.Trim()
         
         Write-Verbose  "Received Identity ($id)"
         if ($null -ne $id -and $id -match '^(S-[0-9-]{3,})')
@@ -181,7 +181,7 @@ function ConvertTo-LocalFriendlyName
                 Write-Warning -Message ($localizedData.ErrorCantTranslateSID -f $id, $($_.Exception.Message) )
             }
         }
-        elseIf ($domainRole -eq 4 -or $domainRole -eq 5)
+        elseIf ( ( Get-DomainRole ) -eq 'DomainController')
         {
             $friendlyNames += "$($env:USERDOMAIN + '\' + $($id))"
         }
@@ -194,3 +194,63 @@ function ConvertTo-LocalFriendlyName
     return $friendlyNames
 }
 
+<#
+    .SYNOPSIS
+        Converts int value from the Win32_ComputerSystem class into its text equivalent
+#>
+function Get-DomainRole
+{
+    [OutputType([String])]
+    [CmdletBinding()]
+    param( )
+
+    $domainRoleInt = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
+
+    if ($domainRoleInt -eq 0)
+    {
+        $domainRole = 'StandaloneWorkstation'
+    }
+    elseif($domainRoleInt -eq 1)
+    {
+        $domainRole = 'MemberWorkstation'
+    }
+    elseif($domainRoleInt -eq 2)
+    {
+        $domainRole = 'StandaloneServer'
+    }
+    elseif($domainRoleInt -eq 3)
+    {
+        $domainRole = 'MemberServer'
+    }
+    else
+    {
+        $domainRole = 'DomainController'
+    }
+
+    return $domainRole
+}
+
+
+<#
+    .SYNOPSIS
+        Tests if the provided Identity is null
+#>
+function Test-IdentityIsNull
+{
+    [OutputType([bool])]
+    [CmdletBinding()]
+    param
+    ( 
+        [System.String]
+        $Identity
+    )
+
+    if ( $null -eq $Identity -or [System.String]::IsNullOrWhiteSpace($Identity) )
+    {
+        return $true
+    }
+    else 
+    {
+        return $false
+    }
+}
