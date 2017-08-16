@@ -92,16 +92,16 @@ try
             }
             Context 'Test Test-IdentityIsNull' {
                 
-                It 'Should return true when null' {
+                It 'Should return true when Identity is null' {
                     $IdentityIsNull = Test-IdentityIsNull -Identity $null
                     $IdentityIsNull | Should Be $true
                 }
-                It 'Should return true when empty' {
+                It 'Should return true when Identity is empty' {
                     $IdentityIsNull = Test-IdentityIsNull -Identity ''
                     $IdentityIsNull | Should Be $true
                 }
-                It 'Should return false when not null' {
-                    $IdentityIsNull = Test-IdentityIsNull -Identity $null
+                It 'Should return false when Identity is Guest' {
+                    $IdentityIsNull = Test-IdentityIsNull -Identity 'Guest'
                     $IdentityIsNull | Should Be $false
                 }
             }
