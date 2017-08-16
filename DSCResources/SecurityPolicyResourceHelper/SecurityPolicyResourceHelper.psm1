@@ -133,8 +133,7 @@ function Get-SecurityPolicy
         "(.+?)\s*=(.*)" # Key
         {
             $name,$value =  $matches[1..2] -replace "\*"
-            $policyConfiguration[$section][$name] = $value -split ','
-            #$policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
+            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
         }
     }
 
