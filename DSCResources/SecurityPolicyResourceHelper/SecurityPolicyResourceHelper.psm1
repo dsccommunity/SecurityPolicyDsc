@@ -70,6 +70,7 @@ function Get-LocalizedData
 #>
 function Invoke-Secedit
 {
+    [OutputType([void])]
     [CmdletBinding()]
     param
     (
