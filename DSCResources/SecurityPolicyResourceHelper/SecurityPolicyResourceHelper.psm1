@@ -297,7 +297,7 @@ function Test-IdentityIsNull
     [CmdletBinding()]
     param
     ( 
-        [System.String]
+        [System.String[]]
         $Identity
     )
 

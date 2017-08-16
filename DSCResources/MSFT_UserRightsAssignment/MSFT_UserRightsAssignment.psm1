@@ -84,12 +84,12 @@ function Get-TargetResource
         $Force
     )
     
-    $usrResult = Get-UserRightsPolicy -Policy $Policy
+    $userRightPolicy = Get-UserRightPolicy -Name $Policy
 
-    Write-Verbose "Policy: $($usrResult.PolicyFriendlyName). Identity: $($usrResult.Identity)"
+    Write-Verbose -Message "Policy: $($userRightPolicy.FriendlyName). Identity: $($userRightPolicy.Identity)"
     $returnValue = @{
-        Policy         = $usrResult.PolicyFriendlyName
-        Identity       = $usrResult.Identity
+        Policy         = $userRightPolicy.FriendlyName
+        Identity       = $userRightPolicy.Identity
     }
 
     $returnValue
@@ -325,14 +325,14 @@ function Test-TargetResource
         [System.Boolean]
         $Force
     )
-    
-    $currentUserRights = Get-UserRightsPolicy -Policy $Policy
+
+    $currentUserRights = Get-UserRightPolicy -Name $Policy
 
     if ( Test-IdentityIsNull -Identity $Identity )
     {
         Write-Verbose -Message ($script:localizedData.TestIdentityIsPresentOnPolicy -f "NULL", $Policy)
 
-        if ($null -eq $currentUserRights.Identity)
+        if ( $null -eq $currentUserRights.Identity )
         {
             Write-Verbose -Message ($script:localizedData.NoIdentitiesFoundOnPolicy -f $Policy)
             return $true
@@ -353,7 +353,7 @@ function Test-TargetResource
         "[Local Account|Administrator]" 
         {
             $administratorsGroup = Get-CimInstance -class Win32_Group -filter "SID='S-1-5-32-544'"
-            $groupUsers = Get-CimInstance -query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($administratorsGroup.name)'`""
+            $groupUsers = Get-CimInstance -Query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($administratorsGroup.name)'`""
             [array]$usersList = $groupUsers.partcomponent | ForEach-Object { (($_ -replace '.*Win32_UserAccount.Domain="', "") -replace '",Name="', "\") -replace '"', '' }
             $users += $usersList | Where-Object {$_ -match $env:COMPUTERNAME}
             $accounts += $users | ForEach-Object {(Get-CimInstance Win32_UserAccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
@@ -423,9 +423,9 @@ function Test-TargetResource
     .PARAMETER Policy
         Name of the policy to inspect
     .EXAMPLE
-        Get-UserRightsPolicy -Policy Create_a_token_object
+        Get-UserRightPolicy -Policy Create_a_token_object
 #>
-function Get-UserRightsPolicy
+function Get-UserRightPolicy
 {
     [OutputType([PSObject])]
     [CmdletBinding()]
@@ -480,17 +480,17 @@ function Get-UserRightsPolicy
             "Create_permanent_shared_objects"
         )]
         [System.String]
-        $Policy
+        $Name
     )
 
-    $userRightConstant = Get-UserRightConstant -Policy $Policy
+    $userRightConstant = Get-UserRightConstant -Policy $Name
 
     $userRights = Get-SecurityPolicy -Area 'USER_RIGHTS'  
 
     [PSObject]@{
-        Policy = $userRightConstant
-        PolicyFriendlyName = $Policy
-        Identity = $userRights[$userRightConstant]
+        Constant     = $userRightConstant
+        FriendlyName = $Name
+        Identity     = $userRights[$userRightConstant]
     }
 }
 
