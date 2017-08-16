@@ -193,11 +193,11 @@ try
         }
         #endregion
         #region Function Get-USRPolicy
-        Describe "Get-USRPolicy" {
-            Mock -CommandName Get-AssignmentFriendlyNames -MockWith { @{'Access_Credential_Manager_as_a_trusted_caller' = 'SeTrustedCredManAccessPrivilege'}}
-            Mock -CommandName Get-UserRightsAssignment -MockWith {@{'Privilege Rights' = @{'SeTrustedCredManAccessPrivilege' = "foo"}}}
+        Describe "Get-UserRightsPolicy" {
+            Mock -CommandName Get-UserRightsFriendlyName -MockWith { 'Access_Credential_Manager_as_a_trusted_caller' }
+            Mock -CommandName Get-UserRightsAssignment   -MockWith { 'SeTrustedCredManAccessPrivilege' = "foo" }
 
-            $getUsrResult = Get-USRPolicy -Policy 'Access_Credential_Manager_as_a_trusted_caller' -Areas USER_Rights
+            $getUsrResult = Get-UserRightsPolicy -Policy 'Access_Credential_Manager_as_a_trusted_caller'
 
             It 'Should match policy' {
                 $getUsrResult.Policy | Should Be 'SeTrustedCredManAccessPrivilege'
@@ -210,7 +210,7 @@ try
             }
 
             It 'Should call expected mnocks' {
-                Assert-MockCalled -CommandName Get-AssignmentFriendlyNames
+                Assert-MockCalled -CommandName Get-UserRightsFriendlyName
                 Assert-MockCalled -CommandName Get-UserRightsAssignment
             }
         }
