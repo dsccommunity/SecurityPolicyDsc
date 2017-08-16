@@ -94,15 +94,15 @@ try
                 
                 It 'Should return true when null' {
                     $IdentityIsNull = Test-IdentityIsNull -Identity $null
-                    $domainRole | Should Be $true
+                    $IdentityIsNull | Should Be $true
                 }
                 It 'Should return true when empty' {
                     $IdentityIsNull = Test-IdentityIsNull -Identity ''
-                    $domainRole | Should Be $true
+                    $IdentityIsNull | Should Be $true
                 }
                 It 'Should return false when not null' {
                     $IdentityIsNull = Test-IdentityIsNull -Identity $null
-                    $domainRole | Should Be $true
+                    $IdentityIsNull | Should Be $false
                 }
             }
         } 
