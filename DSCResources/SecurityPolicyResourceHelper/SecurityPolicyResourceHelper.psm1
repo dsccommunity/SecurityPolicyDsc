@@ -154,6 +154,49 @@ function Get-SecurityPolicy
 
 <#
     .SYNOPSIS
+        Parses an INF file produced by 'secedit.exe /export' and returns an object of identites assigned to a user rights assignment policy
+    .PARAMETER FilePath
+        Path to an INF file
+    .EXAMPLE
+        Get-UserRightsAssignment -FilePath C:\seceditOutput.inf
+#>
+function Get-UserRightsAssignment
+{
+    [OutputType([Hashtable])]
+    [CmdletBinding()]
+    param
+    (
+        [System.String]
+        $FilePath
+    )
+
+    $policyConfiguration = @{}
+    switch -regex -file $FilePath
+    {
+        "^\[(.+)\]" # Section
+        {
+            $section = $matches[1]
+            $policyConfiguration[$section] = @{}
+            $CommentCount = 0
+        }
+        "^(;.*)$" # Comment
+        {
+            $value = $matches[1]
+            $commentCount = $commentCount + 1
+            $name = "Comment" + $commentCount
+            $policyConfiguration[$section][$name] = $value
+        } 
+        "(.+?)\s*=(.*)" # Key
+        {
+            $name,$value =  $matches[1..2] -replace "\*"
+            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
+        }
+    }
+    return $policyConfiguration
+}
+
+<#
+    .SYNOPSIS
         Converts SID to a friendly name
     .PARAMETER SID
         SID of an identity being converted
