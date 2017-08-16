@@ -77,12 +77,14 @@ function Get-TargetResource
         $Identity,
 
         [ValidateSet("Present","Absent")]
-        [System.String]$Ensure = "Present",
+        [System.String]
+        $Ensure = "Present",
 
-        [System.Boolean]$Force = $false
+        [System.Boolean]
+        $Force
     )
     
-    $usrResult = Get-USRPolicy -Policy $Policy -Areas USER_RIGHTS
+    $usrResult = Get-UserRightsPolicy -Policy $Policy
 
     Write-Verbose "Policy: $($usrResult.PolicyFriendlyName). Identity: $($usrResult.Identity)"
     $returnValue = @{
