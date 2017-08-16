@@ -25,7 +25,6 @@ function Get-LocalizedData
         [ValidateNotNullOrEmpty()]
         [String]
         $HelperName
-
     )
 
     # With the helper module just update the name and path variables as if it were a resource. 
@@ -70,15 +69,19 @@ function Get-LocalizedData
 #>
 function Invoke-Secedit
 {
+    [OutputType([void])]
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $UserRightsToAddInf,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SeceditOutput,
 
+        [Parameter()]
         [System.Management.Automation.SwitchParameter]
         $OverWrite
     )
@@ -96,6 +99,61 @@ function Invoke-Secedit
     Start-Process -FilePath secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput -NoNewWindow -Wait
 }
 
+function Get-SecurityPolicy
+{
+    [OutputType([Hashtable])]
+    [CmdletBinding()]
+    param
+    (       
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES")]
+        [System.String]
+        $Area
+    )
+
+    $currentSecurityPolicyFilePath = Join-Path -Path $env:temp -ChildPath 'SecurityPolicy.inf'   
+    Write-Debug -Message ($localizedData.EchoDebugInf -f $currentSecurityPolicyFilePath)
+
+    secedit.exe /export /cfg $currentSecurityPolicyFilePath /areas $Area | Out-Null
+    
+    $policyConfiguration = @{}
+    switch -regex -file $currentSecurityPolicyFilePath
+    {
+        "^\[(.+)\]" # Section
+        {
+            $section = $matches[1]
+            $policyConfiguration[$section] = @{}
+            $CommentCount = 0
+        }
+        "^(;.*)$" # Comment
+        {
+            $value = $matches[1]
+            $commentCount = $commentCount + 1
+            $name = "Comment" + $commentCount
+            $policyConfiguration[$section][$name] = $value
+        } 
+        "(.+?)\s*=(.*)" # Key
+        {
+            $name,$value =  $matches[1..2] -replace "\*"
+            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
+        }
+    }
+
+    Switch($Area)
+    {
+        "USER_RIGHTS" 
+        {
+            $returnValue = $policyConfiguration.'Privilege Rights'
+            continue
+        }
+    }
+
+    # Cleanup the temp file
+    Remove-Item -Path $currentSecurityPolicyFilePath
+
+    return $returnValue
+}
+
 <#
     .SYNOPSIS
         Parses an INF file produced by 'secedit.exe /export' and returns an object of identites assigned to a user rights assignment policy
@@ -110,6 +168,7 @@ function Get-UserRightsAssignment
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $FilePath
     )
@@ -153,17 +212,18 @@ function ConvertTo-LocalFriendlyName
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.String[]]
-        $SID        
+        $SID
     )
     
     $localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
-    $domainRole = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
+
     $friendlyNames = [String[]]@()
 
     foreach ($id in $SID)
     {
-        $id = $id.Trim();
+        $id = $id.Trim()
         
         Write-Verbose  "Received Identity ($id)"
         if ($null -ne $id -and $id -match '^(S-[0-9-]{3,})')
@@ -181,7 +241,7 @@ function ConvertTo-LocalFriendlyName
                 Write-Warning -Message ($localizedData.ErrorCantTranslateSID -f $id, $($_.Exception.Message) )
             }
         }
-        elseIf ($domainRole -eq 4 -or $domainRole -eq 5)
+        elseIf ( ( Get-DomainRole ) -eq 'DomainController')
         {
             $friendlyNames += "$($env:USERDOMAIN + '\' + $($id))"
         }
@@ -194,3 +254,69 @@ function ConvertTo-LocalFriendlyName
     return $friendlyNames
 }
 
+<#
+    .SYNOPSIS
+        Converts int value from the Win32_ComputerSystem class into its text equivalent
+#>
+function Get-DomainRole
+{
+    [OutputType([String])]
+    [CmdletBinding()]
+    param()
+
+    $domainRoleInt = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
+
+    if ($domainRoleInt -eq 0)
+    {
+        $domainRole = 'StandaloneWorkstation'
+    }
+    elseif($domainRoleInt -eq 1)
+    {
+        $domainRole = 'MemberWorkstation'
+    }
+    elseif($domainRoleInt -eq 2)
+    {
+        $domainRole = 'StandaloneServer'
+    }
+    elseif($domainRoleInt -eq 3)
+    {
+        $domainRole = 'MemberServer'
+    }
+    else
+    {
+        $domainRole = 'DomainController'
+    }
+
+    return $domainRole
+}
+
+
+<#
+    .SYNOPSIS
+        Tests if the provided Identity is null
+    .PARAMETER Identity
+        The identity string to test
+#>
+function Test-IdentityIsNull
+{
+    [OutputType([bool])]
+    [CmdletBinding()]
+    param
+    ( 
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()] 
+        [AllowEmptyString()]
+        [AllowNull()]
+        [System.String[]]
+        $Identity
+    )
+
+    if ( $null -eq $Identity -or [System.String]::IsNullOrWhiteSpace($Identity) )
+    {
+        return $true
+    }
+    else 
+    {
+        return $false
+    }
+}
