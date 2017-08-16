@@ -85,8 +85,8 @@ try
                 {                        
                     $mockFalseResults = Set-HashValue -HashTable $modifiedMockResults -Key $key -NewValue NoIdentity
                     
-                    Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockResults} -ParameterFilter {$FilePath -like "*Temp*inf*inf"}
-                    Mock -CommandName Get-UserRightsAssignment -MockWith {return $mockFalseResults} -ParameterFilter {$FilePath -eq $testParameters.Path} 
+                    Mock -CommandName Get-SecurityPolicy -MockWith {return $mockResults} -ParameterFilter {$FilePath -like "*Temp*inf*inf"}
+                    Mock -CommandName Get-SecurityPolicy -MockWith {return $mockFalseResults} -ParameterFilter {$FilePath -eq $testParameters.Path} 
                     Mock -CommandName Test-Path -MockWith {$true}
 
                     It "Test method should return false when testing $key" {  
@@ -119,10 +119,10 @@ try
                 $mockResults = Import-Clixml -Path "$PSScriptRoot..\..\..\Misc\MockObjects\MockResults.xml"
 
                 It 'Should return true when in a desired state' {
-                    Mock -CommandName Get-UserRightsAssignment -MockWith {$mockResults}
+                    Mock -CommandName Get-SecurityPolicy -MockWith {$mockResults}
                     Mock -CommandName Get-SecurityTemplate -MockWith {}
                     Mock -CommandName Test-Path -MockWith {$true}
-                    Mock -CommandName Get-UserRightsAssignment -MockWith {}
+                    Mock -CommandName Get-SecurityPolicy -MockWith {}
                     Mock -CommandName Get-Module -MockWith {}
                     
                     if($securityModulePresent)
