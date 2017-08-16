@@ -179,6 +179,7 @@ function Format-SecurityPolicyFile
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Path
     )
@@ -208,6 +209,7 @@ function Get-SecurityTemplate
     [CmdletBinding()]   
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Path
     )

@@ -304,6 +304,8 @@ function Test-IdentityIsNull
     param
     ( 
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()] 
+        [AllowEmptyString()]
         [System.String[]]
         $Identity
     )

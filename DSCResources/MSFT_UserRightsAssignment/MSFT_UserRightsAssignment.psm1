@@ -317,7 +317,7 @@ function Test-TargetResource
 
         [Parameter(Mandatory = $true)]
         [AllowEmptyCollection()] 
-        [AllowEmptyString()]               
+        [AllowEmptyString()]
         [System.String[]]
         $Identity,
 
@@ -574,7 +574,9 @@ function Test-IsLocalAccount
 {
     param
     (
-        [string]$Identity
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Identity
     )
 
     $localAccounts = Get-CimInstance Win32_UserAccount -Filter "LocalAccount='True'"
