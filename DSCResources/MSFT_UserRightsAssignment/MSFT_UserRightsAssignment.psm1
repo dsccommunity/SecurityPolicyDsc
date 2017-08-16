@@ -544,6 +544,8 @@ function Out-UserRightsInf
         $InfPolicy,
 
         [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [AllowNull()]
         [System.String]
         $UserList,
 
