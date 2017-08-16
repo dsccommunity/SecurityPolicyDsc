@@ -173,7 +173,7 @@ function Set-TargetResource
         $Force = $false
     )
     
-    $UserRightsFriendlyName = Get-UserRightsFriendlyName -Policy $Policy
+    $userRightConstant = Get-UserRightConstant -Policy $Policy
 
     $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
     $userRightsToAddInf   = "$env:TEMP\userRightsToAdd.inf" 
@@ -226,7 +226,7 @@ function Set-TargetResource
         Write-Verbose -Message ($script:localizedData.GrantingPolicyRightsToIds -f $Policy, $idsToAdd)
     }
        
-    Out-UserRightsInf -InfPolicy $UserRightsFriendlyName -UserList $idsToAdd -FilePath $userRightsToAddInf
+    Out-UserRightsInf -InfPolicy $userRightConstant -UserList $idsToAdd -FilePath $userRightsToAddInf
     Write-Debug -Message ($script:localizedData.EchoDebugInf -f $userRightsToAddInf)
 
     Write-Verbose "Attempting to Set ($($idstoAdd -join ",")) for Policy $($Policy))"
@@ -483,14 +483,14 @@ function Get-UserRightsPolicy
         $Policy
     )
 
-    $userRightsFriendlyName = Get-UserRightsFriendlyName -Policy $Policy
+    $userRightConstant = Get-UserRightConstant -Policy $Policy
 
     $userRights = Get-SecurityPolicy -Area 'USER_RIGHTS'  
 
     [PSObject]@{
-        Policy = $Policy
-        PolicyFriendlyName = $userRightsFriendlyName
-        Identity = $userRights[$userRightsFriendlyName]
+        Policy = $userRightConstant
+        PolicyFriendlyName = $Policy
+        Identity = $userRights[$userRightConstant]
     }
 }
 
@@ -500,7 +500,7 @@ function Get-UserRightsPolicy
     .PARAMETER Policy
         Name of the policy to get friendly name for. 
 #>
-function Get-UserRightsFriendlyName
+function Get-UserRightConstant
 {
     [OutputType([string])]
     [CmdletBinding()]
