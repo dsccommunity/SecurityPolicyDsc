@@ -326,7 +326,7 @@ function Test-TargetResource
         $Force
     )
     
-    $currentUserRights = Get-USRPolicy -Policy $Policy
+    $currentUserRights = Get-UserRightsPolicy -Policy $Policy
 
     if ( Test-IdentityIsNull -Identity $Identity )
     {

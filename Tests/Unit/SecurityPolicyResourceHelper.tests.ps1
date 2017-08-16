@@ -64,10 +64,10 @@ try
                     Assert-MockCalled -CommandName Start-Process -Exactly 1 -Scope Context -ModuleName SecurityPolicyResourceHelper
                 }
             }
-            Context 'Test Get-UserRightsAssignment' {
+            Context 'Test Get-SecurityPolicy' {
                 $ini = "$PSScriptRoot..\..\..\Misc\TestHelpers\TestIni.txt"
 
-                 $result = Get-UserRightsAssignment $ini
+                 $result = Get-SecurityPolicy $ini
 
                  It 'Should match INI Section' {
                      $result.Keys | Should Be 'section'

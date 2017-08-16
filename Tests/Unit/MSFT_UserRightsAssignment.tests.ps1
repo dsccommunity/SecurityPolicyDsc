@@ -195,7 +195,7 @@ try
         #region Function Get-USRPolicy
         Describe "Get-UserRightsPolicy" {
             Mock -CommandName Get-UserRightsFriendlyName -MockWith { 'Access_Credential_Manager_as_a_trusted_caller' }
-            Mock -CommandName Get-UserRightsAssignment   -MockWith { @{'SeTrustedCredManAccessPrivilege' = "foo" }}
+            Mock -CommandName Get-SecurityPolicy   -MockWith { @{'SeTrustedCredManAccessPrivilege' = "foo" }}
 
             $getUsrResult = Get-UserRightsPolicy -Policy 'Access_Credential_Manager_as_a_trusted_caller'
 
@@ -210,7 +210,7 @@ try
             }
             It 'Should call expected mocks' {
                 Assert-MockCalled -CommandName Get-UserRightsFriendlyName
-                Assert-MockCalled -CommandName Get-UserRightsAssignment
+                Assert-MockCalled -CommandName Get-SecurityPolicy
             }
         }
         #endregion    
