@@ -97,26 +97,25 @@ function Invoke-Secedit
     Start-Process -FilePath secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput -NoNewWindow -Wait
 }
 
-<#
-    .SYNOPSIS
-        Parses an INF file produced by 'secedit.exe /export' and returns an object of identites assigned to a user rights assignment policy
-    .PARAMETER FilePath
-        Path to an INF file
-    .EXAMPLE
-        Get-UserRightsAssignment -FilePath C:\seceditOutput.inf
-#>
-function Get-UserRightsAssignment
+function Get-SecurityPolicy
 {
     [OutputType([Hashtable])]
     [CmdletBinding()]
     param
-    (
+    (       
+        [parameter(Mandatory = $true)]
+        [ValidateSet("SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES")]
         [System.String]
-        $FilePath
+        $Area
     )
+
+    $currentSecurityPolicyFilePath = Join-Path -Path $env:temp -ChildPath 'SecurityPolicy.inf'   
+    Write-Debug -Message ($localizedData.EchoDebugInf -f $currentSecurityPolicyFilePath)
+
+    secedit.exe /export /cfg $currentSecurityPolicyFilePath /areas $Area | Out-Null
     
     $policyConfiguration = @{}
-    switch -regex -file $FilePath
+    switch -regex -file $currentSecurityPolicyFilePath
     {
         "^\[(.+)\]" # Section
         {
@@ -134,10 +133,24 @@ function Get-UserRightsAssignment
         "(.+?)\s*=(.*)" # Key
         {
             $name,$value =  $matches[1..2] -replace "\*"
-            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
+            $policyConfiguration[$section][$name] = $value -split ','
+            #$policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
         }
     }
-    return $policyConfiguration
+
+    Switch($Area)
+    {
+        "USER_RIGHTS" 
+        {
+            $returnValue = $policyConfiguration.'Privilege Rights'
+            continue
+        }
+    }
+
+    # Cleanup the temp file
+    Remove-Item -Path $currentSecurityPolicyFilePath
+
+    return $returnValue
 }
 
 <#
