@@ -25,7 +25,6 @@ function Get-LocalizedData
         [ValidateNotNullOrEmpty()]
         [String]
         $HelperName
-
     )
 
     # With the helper module just update the name and path variables as if it were a resource. 
@@ -74,12 +73,15 @@ function Invoke-Secedit
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $UserRightsToAddInf,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SeceditOutput,
 
+        [Parameter()]
         [System.Management.Automation.SwitchParameter]
         $OverWrite
     )
@@ -103,7 +105,7 @@ function Get-SecurityPolicy
     [CmdletBinding()]
     param
     (       
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet("SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES")]
         [System.String]
         $Area
@@ -166,6 +168,7 @@ function Get-UserRightsAssignment
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $FilePath
     )
@@ -209,6 +212,7 @@ function ConvertTo-LocalFriendlyName
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $SID
     )
@@ -258,7 +262,7 @@ function Get-DomainRole
 {
     [OutputType([String])]
     [CmdletBinding()]
-    param( )
+    param()
 
     $domainRoleInt = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
 
@@ -299,6 +303,7 @@ function Test-IdentityIsNull
     [CmdletBinding()]
     param
     ( 
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $Identity
     )

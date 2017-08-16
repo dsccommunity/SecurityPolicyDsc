@@ -70,16 +70,18 @@ function Get-TargetResource
         [System.String]
         $Policy,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [AllowEmptyCollection()]
         [AllowEmptyString()]      
         [System.String[]]
         $Identity,
 
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
+        [Parameter()]
         [System.Boolean]
         $Force
     )
@@ -87,12 +89,11 @@ function Get-TargetResource
     $userRightPolicy = Get-UserRightPolicy -Name $Policy
 
     Write-Verbose -Message "Policy: $($userRightPolicy.FriendlyName). Identity: $($userRightPolicy.Identity)"
-    $returnValue = @{
-        Policy         = $userRightPolicy.FriendlyName
-        Identity       = $userRightPolicy.Identity
+    
+    return  @{
+        Policy   = $userRightPolicy.FriendlyName
+        Identity = $userRightPolicy.Identity
     }
-
-    $returnValue
 }
 
 <#
@@ -159,16 +160,18 @@ function Set-TargetResource
         [System.String]
         $Policy,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [AllowEmptyCollection()]
         [AllowEmptyString()]
         [System.String[]]
         $Identity,
 
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
+        [Parameter()]
         [System.Boolean]
         $Force = $false
     )
@@ -312,16 +315,18 @@ function Test-TargetResource
         [System.String]
         $Policy,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [AllowEmptyCollection()] 
         [AllowEmptyString()]               
         [System.String[]]
         $Identity,
 
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
+        [Parameter()]
         [System.Boolean]
         $Force
     )
@@ -504,7 +509,8 @@ function Get-UserRightConstant
 {
     [OutputType([string])]
     [CmdletBinding()]
-    Param (
+    Param 
+    (
         [Parameter(Mandatory = $true)]
         [System.String]
         $Policy
@@ -533,12 +539,15 @@ function Out-UserRightsInf
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InfPolicy,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
         $UserList,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
         $FilePath
     )
