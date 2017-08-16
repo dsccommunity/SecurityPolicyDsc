@@ -405,8 +405,9 @@ function Test-TargetResource
         [System.UInt16]
         $MaxClockSkew,
 
+        [Parameter()]
         [System.UInt16]
-        TicketValidateClient,
+        $TicketValidateClient,
 
         [Parameter()]
         [ValidateSet("Present","Absent")]
