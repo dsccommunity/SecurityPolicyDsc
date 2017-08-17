@@ -378,6 +378,10 @@ function Test-TargetResource
                     $accounts += ConvertTo-LocalFriendlyName $_
                 }
             }
+            elseif( ($_ -match 'Builtin\\') -or ($_ -match 'NT Authority\\') -or ($_ -match 'NT Service\\') -or ($_ -match 'Window Manager\\') )
+            {
+                $accounts += $_
+            }
             else
             {
                 $accounts += ConvertTo-LocalFriendlyName $(($_) -replace '\*')
