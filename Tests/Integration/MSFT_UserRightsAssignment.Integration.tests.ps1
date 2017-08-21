@@ -1,6 +1,6 @@
 
-$script:DSCModuleName      = 'SecurityPolicyDsc'
-$script:DSCResourceName    = 'MSFT_UserRightsAssignment'
+$script:DSCModuleName   = 'SecurityPolicyDsc'
+$script:DSCResourceName = 'MSFT_UserRightsAssignment'
 
 #region HEADER
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -48,7 +48,8 @@ try
                 $getResults = Get-TargetResource -Policy $rule.Policy -Identity $rule.Identity
                 foreach ($Id in $rule.Identity)
                 {
-                    $getResults.Identity | where {$_ -eq $Id} | Should Be $Id
+                    $Id = ConvertTo-LocalFriendlyName -Identity $Id
+                    $getResults.Identity | Where-Object {$_ -eq $Id} | Should Be $Id
                 }
 
                 $rule.Policy | Should Be $getResults.Policy
@@ -62,7 +63,7 @@ try
                  
                 foreach ($Id in $removeAll.Identity)
                 {
-                    $getResults.Identity | where {$_ -eq $Id} | Should Be $null
+                    $getResults.Identity | Where-Object {$_ -eq $Id} | Should Be $null
                 }
 
                 $removeAll.Policy | Should Be $getResults.Policy
@@ -77,5 +78,4 @@ finally
     #region FOOTER
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
     #endregion
-
 }
