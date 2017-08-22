@@ -224,7 +224,13 @@ function Set-TargetResource
         }
         else
         {
-            $accounts = $accounts | Where-Object {$_ -notin $currentRights.Identity}
+            [collections.arraylist]$currentIdentities = $currentRights.Identity
+
+            foreach ($account in $accounts)
+            {
+                $currentIdentities.Remove($account)
+            }
+            $accounts = $currentIdentities
         }
 
         $idsToAdd = $accounts -join ","
