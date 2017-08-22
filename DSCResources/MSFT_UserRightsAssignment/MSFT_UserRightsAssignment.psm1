@@ -180,9 +180,8 @@ function Set-TargetResource
 
     $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
     $userRightsToAddInf   = "$env:TEMP\userRightsToAdd.inf" 
-    $idsToAdd = $Identity -join ","
-
-    if ($null -eq $Identity)
+    
+    if (Test-IdentityIsNull -Identity $Identity)
     {
         Write-Verbose -Message ($script:localizedData.IdentityIsNullRemovingAll -f $Policy)
         $idsToAdd = $null
@@ -224,13 +223,17 @@ function Set-TargetResource
         }
         else
         {
-            [collections.arraylist]$currentIdentities = $currentRights.Identity
+            if ($currentRights.Identity.Count -gt 1)
+            {            
+                [collections.arraylist]$currentIdentities = $currentRights.Identity
 
-            foreach ($account in $accounts)
-            {
-                $currentIdentities.Remove($account)
+                foreach ($account in $accounts)
+                {
+                    $currentIdentities.Remove($account)
+                }
+
+                $accounts = $currentIdentities
             }
-            $accounts = $currentIdentities
         }
 
         $idsToAdd = $accounts -join ","

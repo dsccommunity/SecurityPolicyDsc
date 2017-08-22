@@ -17,7 +17,6 @@ $script:testEnvironment = Initialize-TestEnvironment `
     -TestType Integration 
 #endregion
 
-
 try
 {
     #region Integration Tests
@@ -43,7 +42,8 @@ try
         #endregion
 
         Context 'Verify Successful Configuration on Trusted Caller' {
-            Import-Module "$PSScriptRoot\..\..\DSCResources\MSFT_UserRightsAssignment\MSFT_UserRightsAssignment.psm1"
+            Import-Module "$PSScriptRoot\..\..\DSCResources\MSFT_UserRightsAssignment\MSFT_UserRightsAssignment.psm1" -Force
+            Import-Module "$PSScriptRoot\..\..\DSCResources\SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1"
             It 'Should have set the resource and all the parameters should match' {
                 $getResults = Get-TargetResource -Policy $rule.Policy -Identity $rule.Identity
                 foreach ($Id in $rule.Identity)

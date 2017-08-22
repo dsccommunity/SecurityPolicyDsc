@@ -1,3 +1,7 @@
+$script:DSCResourceName = 'MSFT_UserRightsAssignment'
+
+$resourcePath = (Get-DscResource -Name $script:DSCResourceName).Path
+Import-Module $resourcePath -Force
 
 # S-1-5-6 = NT Authority\Service
 # S-1-5-90-0 = 'window manager\window manager group'
@@ -17,6 +21,9 @@ $removeGuests = @{
     Identity = 'Guests'
 }
 
+# Add an identities to we can verify it gets removed
+Set-TargetResource -Policy $removeAll.Policy -Identity 'Administrators' -Ensure 'Present'
+Set-TargetResource -Policy $removeGuests.Policy -Identity 'Guests' -Ensure 'Present'
 
 configuration MSFT_UserRightsAssignment_config {
     Import-DscResource -ModuleName SecurityPolicyDsc
@@ -36,14 +43,7 @@ configuration MSFT_UserRightsAssignment_config {
     UserRightsAssignment DenyLogOnLocally
     {
         Policy   = $removeGuests.Policy
-        Identity = $removeGuests.IsFixedSize
-        Ensure   = 'Present'
-    }
-
-    UserRightsAssignment DenyLogOnLocally
-    {
-        Policy   = $removeGuests.Policy
-        Identity = $removeGuests.IsFixedSize
+        Identity = $removeGuests.Identity
         Ensure   = 'Absent'
     }
 }
