@@ -30,22 +30,12 @@ try
             Context 'Test ConvertTo-LocalFriendlyName' {
                 $sid = 'S-1-5-32-544'
                 It 'Should equal BUILTIN\Administrators' {
-                    ConvertTo-LocalFriendlyName -SID $sid | should be 'BUILTIN\Administrators'
+                    ConvertTo-LocalFriendlyName -Identity $sid | should be 'BUILTIN\Administrators'
                 }
 
                 It "Should return $env:USERDOMAIN\user1" {                    
-                    Mock -CommandName Get-CimInstance -MockWith {return @{DomainRole=4}} -ModuleName SecurityPolicyResourceHelper
-                    ConvertTo-LocalFriendlyName -SID 'user1' | Should be "$env:USERDOMAIN\user1"
-                }
-
-                It "Should return $env:USERDOMAIN\user-s-1" {                    
-                    Mock -CommandName Get-CimInstance -MockWith {return @{DomainRole=4}} -ModuleName SecurityPolicyResourceHelper
-                    ConvertTo-LocalFriendlyName -SID 'user-s-1' | Should be "$env:USERDOMAIN\user-s-1"
-                }
-
-                It 'Should ignore SID translation' {
-                    Mock -CommandName Get-CimInstance -MockWith {return @{DomainRole=2}} -ModuleName SecurityPolicyResourceHelper
-                    ConvertTo-LocalFriendlyName -SID 'user1' | Should be 'user1'
+                    
+                    ConvertTo-LocalFriendlyName -Identity 'administrator' | Should be "$env:USERDOMAIN\administrator"
                 }
             }
             Context 'Test Invoke-Secedit' {
@@ -66,6 +56,7 @@ try
             }
             Context 'Test Get-UserRightsAssignment' {
                 $ini = "$PSScriptRoot..\..\..\Misc\TestHelpers\TestIni.txt"
+                Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {'Value1'}
 
                  $result = Get-UserRightsAssignment $ini
 
@@ -103,6 +94,16 @@ try
                 It 'Should return false when Identity is Guest' {
                     $IdentityIsNull = Test-IdentityIsNull -Identity 'Guest'
                     $IdentityIsNull | Should Be $false
+                }
+            }
+            Context 'Get-SecurityPolicy' {
+                $ini = "$PSScriptRoot..\..\..\Misc\TestHelpers\sample.inf"
+                $iniPath = Get-Item -Path $ini
+                Mock Join-Path -MockWith {$iniPath.FullName}
+                $securityPolicy = Get-SecurityPolicy -Area 'USER_RIGHTS'
+
+                It 'Should return Builtin\Administrators' {
+                    $securityPolicy.SeLoadDriverPrivilege | Should Be 'BUILTIN\Administrators'
                 }
             }
         } 
