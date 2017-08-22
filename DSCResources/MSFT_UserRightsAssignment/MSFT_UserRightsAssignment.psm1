@@ -205,7 +205,7 @@ function Set-TargetResource
             }
             Default 
             {
-                $accounts += $_
+                $accounts += ConvertTo-LocalFriendlyName -Identity $_
             } 
         }
 
@@ -217,7 +217,7 @@ function Set-TargetResource
                 {
                     if ($id -notin $accounts)
                     {
-                        $accounts += $id
+                        $accounts += ConvertTo-LocalFriendlyName -Identity $id
                     }
                 }
             }
@@ -395,7 +395,7 @@ function Test-TargetResource
     }
     else
     {
-        $UsersWithRight = $accounts | Where-Object {$_ -in $userRights.Identity}
+        $UsersWithRight = $accounts | Where-Object {$_ -in $currentUserRights.Identity}
         if ($UsersWithRight.Count -gt 0)
         {
             Write-Verbose -Message ($script:localizedData.ShouldNotHaveRights -f $($UsersWithRight -join ","), $Policy)

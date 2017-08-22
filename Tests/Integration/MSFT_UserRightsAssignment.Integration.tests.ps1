@@ -69,6 +69,20 @@ try
                 $removeAll.Policy | Should Be $getResults.Policy
             }
         }
+
+        Context 'Verify Guests removed from deny log on locally' {
+            Import-Module "$PSScriptRoot\..\..\DSCResources\MSFT_UserRightsAssignment\MSFT_UserRightsAssignment.psm1"
+            $getResults = Get-TargetResource -Policy $removeGuests.Policy -Identity $removeGuests.Identity
+            $testResults = Test-TargetResource -Policy $removeGuests.Policy -Identity $removeGuests.Identity -Ensure 'Absent'
+
+            It 'Should remove Guests' {
+                $getResults.Identity | Should Not Be $removeGuests.Identity
+            }
+
+            It 'Should return true when testing for ABSENT' {
+                $testResults | Should Be $true
+            }
+        }
     }
     #endregion
 }
