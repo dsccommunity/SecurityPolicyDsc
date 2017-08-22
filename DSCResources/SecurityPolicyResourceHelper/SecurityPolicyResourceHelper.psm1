@@ -45,7 +45,6 @@ function Get-LocalizedData
     if (-not (Test-Path -Path $localizedStringFileLocation))
     {
         # Fallback to en-US
-
         $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath 'en-US'
     }
 
@@ -99,6 +98,16 @@ function Invoke-Secedit
     Start-Process -FilePath secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput -NoNewWindow -Wait
 }
 
+<#
+    .SYNOPSIS
+        Returns security policies configuration settings
+
+    .PARAMETER Area
+        Specifies the security areas to be returned
+
+    .NOTES
+    General notes
+#>
 function Get-SecurityPolicy
 {
     [OutputType([Hashtable])]
@@ -202,6 +211,7 @@ function Get-UserRightsAssignment
             $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
         }
     }
+    
     return $policyConfiguration
 }
 
@@ -250,45 +260,9 @@ function ConvertTo-LocalFriendlyName
             $friendlyNames += ( ConvertTo-Sid -Identity $id | ConvertTo-NTAccount )
         }
     }
+
     return $friendlyNames
 }
-
-<#
-    .SYNOPSIS
-        Converts int value from the Win32_ComputerSystem class into its text equivalent
-#>
-function Get-DomainRole
-{
-    [OutputType([String])]
-    [CmdletBinding()]
-    param()
-
-    $domainRoleInt = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
-
-    if ($domainRoleInt -eq 0)
-    {
-        $domainRole = 'StandaloneWorkstation'
-    }
-    elseif($domainRoleInt -eq 1)
-    {
-        $domainRole = 'MemberWorkstation'
-    }
-    elseif($domainRoleInt -eq 2)
-    {
-        $domainRole = 'StandaloneServer'
-    }
-    elseif($domainRoleInt -eq 3)
-    {
-        $domainRole = 'MemberServer'
-    }
-    else
-    {
-        $domainRole = 'DomainController'
-    }
-
-    return $domainRole
-}
-
 
 <#
     .SYNOPSIS
@@ -337,13 +311,16 @@ function ConvertTo-NTAccount
         $SID 
     )
 
+    $result = @()
     foreach ($id in $SID)
     {
-        $id = $id -replace "\*"  
+        $id = ( $id -replace "\*" ).Trim()
 
         $sidId = [System.Security.Principal.SecurityIdentifier]$id
-        return $sidId.Translate([System.Security.Principal.NTAccount]).value
+        $result += $sidId.Translate([System.Security.Principal.NTAccount]).value
     }
+
+    return $result
 }
 
 <#

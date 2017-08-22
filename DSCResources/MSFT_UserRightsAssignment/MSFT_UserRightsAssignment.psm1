@@ -235,7 +235,7 @@ function Set-TargetResource
     Out-UserRightsInf -InfPolicy $userRightConstant -UserList $idsToAdd -FilePath $userRightsToAddInf
     Write-Debug -Message ($script:localizedData.EchoDebugInf -f $userRightsToAddInf)
 
-    Write-Verbose "Attempting to Set ($($idstoAdd -join ",")) for Policy $($Policy))"
+    Write-Verbose -Message  ($script:localizedData.AttemptingSetPolicy -f $($idstoAdd -join ","), $Policy)
     Invoke-Secedit -UserRightsToAddInf $userRightsToAddInf -SecEditOutput $seceditOutput
 
     # Verify secedit command was successful
@@ -243,7 +243,7 @@ function Set-TargetResource
     if ( Test-TargetResource -Identity $Identity -Policy $Policy -Ensure $Ensure )
     {
         Write-Verbose -Message ($script:localizedData.TaskSuccess)
-        Write-Verbose "$(($idsToAdd -join ",")) successfully given Rights ($Policy)"
+        Write-Verbose -Message ($script:localizedData.UserRightAppliedSuccess -f $($idsToAdd -join ","), $Policy)
     }
     else
     {
@@ -369,7 +369,7 @@ function Test-TargetResource
         Default
         {
             $accounts += ConvertTo-LocalFriendlyName $PSItem             
-        } 
+        }
     }
 
     if ($Ensure -eq "Present")
@@ -377,7 +377,7 @@ function Test-TargetResource
         $usersWithoutRight = $accounts | Where-Object { $_ -notin $currentUserRights.Identity }
         if ($usersWithoutRight)
         {
-            Write-Verbose "$($usersWithoutRight -join ",") do not have Privilege ($Policy)"
+            Write-Verbose -Message ($script:localizedData.IdentityDoesNotHaveRight -f $($usersWithoutRight -join ","), $Policy)
             return $false
         }
 
@@ -386,7 +386,7 @@ function Test-TargetResource
             $effectiveUsers = $currentUserRights.Identity | Where-Object {$_ -notin $accounts}
             if ($effectiveUsers.Count -gt 0)
             {
-                Write-Verbose "$($effectiveUsers -join ",") are extraneous users with Privilege ($Policy)"
+                Write-Verbose -Message ($script:localizedData.ShouldNotHaveRights -f $($effectiveUsers -join ","), $Policy)
                 return $false
             }
         }
@@ -398,13 +398,13 @@ function Test-TargetResource
         $UsersWithRight = $accounts | Where-Object {$_ -in $userRights.Identity}
         if ($UsersWithRight.Count -gt 0)
         {
-            Write-Verbose "$($UsersWithRight) should NOT have Privilege ($Policy)"
+            Write-Verbose -Message ($script:localizedData.ShouldNotHaveRights -f $($UsersWithRight -join ","), $Policy)
             return $false
         }
 
         $returnValue = $true
     }
-    # If the code made it this far all identities have the desired user rights
+    
     return $returnValue
 }
 
@@ -540,7 +540,7 @@ function Out-UserRightsInf
         $FilePath
     )
 
-    $infTemplate =@"
+    $infTemplate = @"
     [Unicode]
     Unicode=yes
     [Privilege Rights]
@@ -551,32 +551,6 @@ function Out-UserRightsInf
 "@
 
     $null = Out-File -InputObject $infTemplate -FilePath $FilePath -Encoding unicode
-}
-<#
-    .SYNOPSIS
-        Test if an account is a local account
-    .PARAMETER Identity
-        The identity of the user or group to be added or removed from the user rights assignment
-#>
-function Test-IsLocalAccount
-{
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity
-    )
-
-    $localAccounts = Get-CimInstance Win32_UserAccount -Filter "LocalAccount='True'"
-
-    if ( $localAccounts.Caption -contains $Identity )
-    {
-        return $true
-    }
-    else
-    {
-        return $false
-    }
 }
 
 Export-ModuleMember -Function *-TargetResource

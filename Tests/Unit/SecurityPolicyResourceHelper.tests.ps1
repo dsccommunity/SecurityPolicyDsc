@@ -18,18 +18,15 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion HEADER
 
-
 # Begin Testing
 try
 {
-
     InModuleScope 'SecurityPolicyResourceHelper' {
-
         Describe 'Test helper functions' {
             
             Context 'Test ConvertTo-LocalFriendlyName' {
                 $sid = 'S-1-5-32-544'
-                It 'Should equal BUILTIN\Administrators' {
+                It 'Should be BUILTIN\Administrators' {
                     ConvertTo-LocalFriendlyName -Identity $sid | should be 'BUILTIN\Administrators'
                 }
 
@@ -58,27 +55,18 @@ try
                 $ini = "$PSScriptRoot..\..\..\Misc\TestHelpers\TestIni.txt"
                 Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {'Value1'}
 
-                 $result = Get-UserRightsAssignment $ini
+                $result = Get-UserRightsAssignment $ini
 
-                 It 'Should match INI Section' {
-                     $result.Keys | Should Be 'section'
-                 }
-                 
-                 It 'Should match INI Comment' {
-                     $result.section.Comment1 | Should Be '; this is a comment'
-                 }
+                It 'Should match INI Section' {
+                    $result.Keys | Should Be 'section'
+                }
+                
+                It 'Should match INI Comment' {
+                    $result.section.Comment1 | Should Be '; this is a comment'
+                }
 
-                 It 'Should be Value1' {
-                     $result.section.Key1 | Should be 'Value1'
-                 }
-            }
-            Context 'Test Get-DomainRole' {
-                Mock -CommandName Get-CimInstance -MockWith {@{'DomainRole'= '4'}}
-
-                $domainRole = Get-DomainRole
-
-                It 'Should return the string "DomainController"' {
-                    $domainRole | Should Be "DomainController"
+                It 'Should be Value1' {
+                    $result.section.Key1 | Should be 'Value1'
                 }
             }
             Context 'Test Test-IdentityIsNull' {
