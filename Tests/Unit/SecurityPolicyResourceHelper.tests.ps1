@@ -87,7 +87,8 @@ try
             Context 'Get-SecurityPolicy' {
                 $ini = "$PSScriptRoot..\..\..\Misc\TestHelpers\sample.inf"
                 $iniPath = Get-Item -Path $ini
-                Mock Join-Path -MockWith {$iniPath.FullName}
+                Mock -CommandName Join-Path -MockWith {$iniPath.FullName}
+                Mock -CommandName Remove-Item -MockWith {}
                 $securityPolicy = Get-SecurityPolicy -Area 'USER_RIGHTS'
 
                 It 'Should return Builtin\Administrators' {
