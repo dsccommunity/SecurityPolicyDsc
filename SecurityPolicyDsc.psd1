@@ -9,7 +9,7 @@
 @{
 
 # Version number of this module.
-ModuleVersion = '1.4.0.0'
+ModuleVersion = '1.5.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'e2b73194-69ef-4fa6-b949-9f62ebe04989'
@@ -47,8 +47,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Fixed bug in which friendly name translation may fail if user or group contains "S-".
-* Fixed bug identified in issue 33 and 34 where Test-TargetResource would return false but was true
+        ReleaseNotes = '* Refactored user rights assignment to read and test easier. 
 
 '
 
@@ -57,6 +56,7 @@ PrivateData = @{
 } # End of PrivateData hashtable
 
 }
+
 
 
 

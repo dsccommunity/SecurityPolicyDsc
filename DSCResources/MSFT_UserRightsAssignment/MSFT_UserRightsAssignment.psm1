@@ -70,27 +70,30 @@ function Get-TargetResource
         [System.String]
         $Policy,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [AllowEmptyCollection()]
         [AllowEmptyString()]      
         [System.String[]]
         $Identity,
 
+        [Parameter()]
         [ValidateSet("Present","Absent")]
-        [System.String]$Ensure = "Present",
+        [System.String]
+        $Ensure = "Present",
 
-        [System.Boolean]$Force = $false
+        [Parameter()]
+        [System.Boolean]
+        $Force
     )
     
-    $usrResult = Get-USRPolicy -Policy $Policy -Areas USER_RIGHTS
+    $userRightPolicy = Get-UserRightPolicy -Name $Policy
 
-    Write-Verbose "Policy: $($usrResult.PolicyFriendlyName). Identity: $($usrResult.Identity)"
-    $returnValue = @{
-        Policy         = $usrResult.PolicyFriendlyName
-        Identity       = $usrResult.Identity
+    Write-Verbose -Message "Policy: $($userRightPolicy.FriendlyName). Identity: $($userRightPolicy.Identity)"
+    
+    return  @{
+        Policy   = $userRightPolicy.FriendlyName
+        Identity = $userRightPolicy.Identity
     }
-
-    $returnValue
 }
 
 <#
@@ -157,22 +160,26 @@ function Set-TargetResource
         [System.String]
         $Policy,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [AllowEmptyCollection()]
         [AllowEmptyString()]
         [System.String[]]
         $Identity,
 
+        [Parameter()]
         [ValidateSet("Present","Absent")]
-        [System.String]$Ensure = "Present",
+        [System.String]
+        $Ensure = "Present",
 
-        [System.Boolean]$Force = $false
+        [Parameter()]
+        [System.Boolean]
+        $Force = $false
     )
     
-    $policyList = Get-AssignmentFriendlyNames
-    $policyName = $policyList[$Policy]
+    $userRightConstant = Get-UserRightConstant -Policy $Policy
+
     $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
-    $userRightsToAddInf = "$env:TEMP\userRightsToAdd.inf" 
+    $userRightsToAddInf   = "$env:TEMP\userRightsToAdd.inf" 
     $idsToAdd = $Identity -join ","
 
     if ($null -eq $Identity)
@@ -222,7 +229,7 @@ function Set-TargetResource
         Write-Verbose -Message ($script:localizedData.GrantingPolicyRightsToIds -f $Policy, $idsToAdd)
     }
        
-    Out-UserRightsInf -InfPolicy $policyName -UserList $idsToAdd -FilePath $userRightsToAddInf
+    Out-UserRightsInf -InfPolicy $userRightConstant -UserList $idsToAdd -FilePath $userRightsToAddInf
     Write-Debug -Message ($script:localizedData.EchoDebugInf -f $userRightsToAddInf)
 
     Write-Verbose "Attempting to Set ($($idstoAdd -join ",")) for Policy $($Policy))"
@@ -230,7 +237,7 @@ function Set-TargetResource
     
     # Verify secedit command was successful
 
-    if (Test-TargetResource -Identity $Identity -Policy $Policy)
+    if ( Test-TargetResource -Identity $Identity -Policy $Policy -Ensure $Ensure )
     {
         Write-Verbose -Message ($script:localizedData.TaskSuccess)
         Write-Verbose "$(($idsToAdd -join ",")) successfully given Rights ($Policy)"
@@ -308,25 +315,29 @@ function Test-TargetResource
         [System.String]
         $Policy,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [AllowEmptyCollection()] 
-        [AllowEmptyString()]               
+        [AllowEmptyString()]
         [System.String[]]
         $Identity,
 
+        [Parameter()]
         [ValidateSet("Present","Absent")]
-        [System.String]$Ensure = "Present",
+        [System.String]
+        $Ensure = "Present",
 
-        [System.Boolean]$Force = $false
+        [Parameter()]
+        [System.Boolean]
+        $Force
     )
-        
-    $userRights = Get-USRPolicy -Policy $Policy -Areas USER_Rights    
 
-    if ($null -eq $Identity -or [System.String]::IsNullOrWhiteSpace($Identity))
+    $currentUserRights = Get-UserRightPolicy -Name $Policy
+
+    if ( Test-IdentityIsNull -Identity $Identity )
     {
         Write-Verbose -Message ($script:localizedData.TestIdentityIsPresentOnPolicy -f "NULL", $Policy)
 
-        if ($null -eq $userRights.Identity)
+        if ( $null -eq $currentUserRights.Identity )
         {
             Write-Verbose -Message ($script:localizedData.NoIdentitiesFoundOnPolicy -f $Policy)
             return $true
@@ -347,7 +358,7 @@ function Test-TargetResource
         "[Local Account|Administrator]" 
         {
             $administratorsGroup = Get-CimInstance -class Win32_Group -filter "SID='S-1-5-32-544'"
-            $groupUsers = Get-CimInstance -query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($administratorsGroup.name)'`""
+            $groupUsers = Get-CimInstance -Query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($administratorsGroup.name)'`""
             [array]$usersList = $groupUsers.partcomponent | ForEach-Object { (($_ -replace '.*Win32_UserAccount.Domain="', "") -replace '",Name="', "\") -replace '"', '' }
             $users += $usersList | Where-Object {$_ -match $env:COMPUTERNAME}
             $accounts += $users | ForEach-Object {(Get-CimInstance Win32_UserAccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
@@ -362,6 +373,14 @@ function Test-TargetResource
                 {
                     $accounts += ( $_ -split '\\' )[-1]
                 }
+                else
+                {
+                    $accounts += ConvertTo-LocalFriendlyName $_
+                }
+            }
+            elseif( ($_ -match 'Builtin\\') -or ($_ -match 'NT Authority\\') -or ($_ -match 'NT Service\\') -or ($_ -match 'Window Manager\\') )
+            {
+                $accounts += $_
             }
             else
             {
@@ -372,7 +391,7 @@ function Test-TargetResource
         
     if ($Ensure -eq "Present")
     {        
-        $usersWithoutRight = $accounts | Where-Object { $_ -notin $userRights.Identity }
+        $usersWithoutRight = $accounts | Where-Object { $_ -notin $currentUserRights.Identity }
         if ($usersWithoutRight)
         {
             Write-Verbose "$($usersWithoutRight -join ",") do not have Privilege ($Policy)"
@@ -381,7 +400,7 @@ function Test-TargetResource
 
         if ($Force)
         {
-            $effectiveUsers = $userRights.Identity | Where-Object {$_ -notin $accounts}
+            $effectiveUsers = $currentUserRights.Identity | Where-Object {$_ -notin $accounts}
             if ($effectiveUsers.Count -gt 0)
             {
                 Write-Verbose "$($effectiveUsers -join ",") are extraneous users with Privilege ($Policy)"
@@ -410,14 +429,12 @@ function Test-TargetResource
 <#
     .SYNOPSIS
         Returns an object of the identities assigned to a user rights assignment
-    .PARAMETER Policy
+    .PARAMETER Name
         Name of the policy to inspect
-    .PARAMETER Areas
-        Specifies the security areas to inspect. Possible values: "SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES"
     .EXAMPLE
-        Get-USRPolicy -Policy Create_a_token_object -Areas USER_RIGHTS
+        Get-UserRightPolicy -Name Create_a_token_object
 #>
-function Get-USRPolicy
+function Get-UserRightPolicy
 {
     [OutputType([PSObject])]
     [CmdletBinding()]
@@ -472,42 +489,41 @@ function Get-USRPolicy
             "Create_permanent_shared_objects"
         )]
         [System.String]
-        $Policy,
-        
-        [parameter(Mandatory = $true)]
-        [ValidateSet("SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES")]
-        [System.String]
-        $Areas
+        $Name
     )
 
-    $policyList = Get-AssignmentFriendlyNames
-    $policyName = $policyList[$Policy]
+    $userRightConstant = Get-UserRightConstant -Policy $Name
 
-    $currentUserRights = Join-Path -Path $env:temp -ChildPath 'CurrentUserRights.inf'   
-    Write-Debug -Message ($localizedData.EchoDebugInf -f $currentUserRights)
-
-    $secedit = secedit.exe /export /cfg $currentUserRights /areas $areas
-
-    $userRights = (Get-UserRightsAssignment $currentUserRights).'Privilege Rights'    
+    $userRights = Get-SecurityPolicy -Area 'USER_RIGHTS'  
 
     [PSObject]@{
-        Policy = $policyName
-        PolicyFriendlyName = $Policy
-        Identity = $userRights[$policyName]
-    }    
+        Constant     = $userRightConstant
+        FriendlyName = $Name
+        Identity     = $userRights[$userRightConstant]
+    }
 }
 
 <#
     .SYNOPSIS
-        Converts policy names that match the GUI to the abbreviated names used by secedit.exe 
+        Converts policy names that match the GUI to the abbreviated names used by secedit.exe
+    .PARAMETER Policy
+        Name of the policy to get friendly name for. 
 #>
-function Get-AssignmentFriendlyNames
+function Get-UserRightConstant
 {
-    [OutputType([Hashtable])]
+    [OutputType([string])]
     [CmdletBinding()]
-    Param ()
+    Param 
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Policy
+    )
     
-    Get-Content -Path $PSScriptRoot\UserRightsFriendlyNameConversions.psd1 -Raw | ConvertFrom-StringData
+    $friendlyNames = Get-Content -Path $PSScriptRoot\UserRightsFriendlyNameConversions.psd1 -Raw | 
+        ConvertFrom-StringData
+
+    $friendlyNames[$Policy]
 }
 
 <#
@@ -527,12 +543,17 @@ function Out-UserRightsInf
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InfPolicy,
 
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [AllowNull()]
         [System.String]
         $UserList,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
         $FilePath
     )
@@ -559,7 +580,9 @@ function Test-IsLocalAccount
 {
     param
     (
-        [string]$Identity
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Identity
     )
 
     $localAccounts = Get-CimInstance Win32_UserAccount -Filter "LocalAccount='True'"
@@ -570,9 +593,8 @@ function Test-IsLocalAccount
     }
     else
     {
-        return $true
+        return $false
     }
 }
 
 Export-ModuleMember -Function *-TargetResource
-

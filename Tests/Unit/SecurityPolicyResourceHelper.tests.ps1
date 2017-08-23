@@ -81,6 +81,30 @@ try
                      $result.section.Key1 | Should be 'Value1'
                  }
             }
+            Context 'Test Get-DomainRole' {
+                Mock -CommandName Get-CimInstance -MockWith {@{'DomainRole'= '4'}}
+
+                $domainRole = Get-DomainRole
+
+                It 'Should return the string "DomainController"' {
+                    $domainRole | Should Be "DomainController"
+                }
+            }
+            Context 'Test Test-IdentityIsNull' {
+                
+                It 'Should return true when Identity is null' {
+                    $IdentityIsNull = Test-IdentityIsNull -Identity $null
+                    $IdentityIsNull | Should Be $true
+                }
+                It 'Should return true when Identity is empty' {
+                    $IdentityIsNull = Test-IdentityIsNull -Identity ''
+                    $IdentityIsNull | Should Be $true
+                }
+                It 'Should return false when Identity is Guest' {
+                    $IdentityIsNull = Test-IdentityIsNull -Identity 'Guest'
+                    $IdentityIsNull | Should Be $false
+                }
+            }
         } 
     }
 }

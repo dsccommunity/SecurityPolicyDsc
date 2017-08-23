@@ -56,6 +56,9 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ### Unreleased
 
+### 1.5.0.0
+* Refactored user rights assignment to read and test easier. 
+
 ### 1.4.0.0
 
 * Fixed bug in which friendly name translation may fail if user or group contains 'S-'.
