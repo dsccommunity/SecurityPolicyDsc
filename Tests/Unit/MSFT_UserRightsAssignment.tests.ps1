@@ -147,7 +147,8 @@ try
                 Mock -CommandName Invoke-Secedit -MockWith {}
                 Mock -CommandName Test-TargetResource -MockWith {$true}
                 Mock -CommandName Get-Content -ParameterFilter {$Path -match "Secedit-OutPut.txt"} -MockWith {"Tasked Failed"}             
-
+                Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {'contoso\testuser1'}
+                
                 It 'Should not throw' { 
                     {Set-TargetResource @testParameters} | Should Not Throw
                 }
