@@ -55,6 +55,8 @@ If you would like to contribute to this repository, please read the DSC Resource
 ## Versions
 
 ### Unreleased
+
+### 1.5.0.0
 * Refactored user rights assignment to read and test easier. 
 
 ### 1.4.0.0
