@@ -117,14 +117,26 @@ function Get-SecurityPolicy
         [Parameter(Mandatory = $true)]
         [ValidateSet("SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES")]
         [System.String]
-        $Area
+        $Area,
+
+        [Parameter()]
+        [System.String]
+        $FilePath
     )
 
-    $currentSecurityPolicyFilePath = Join-Path -Path $env:temp -ChildPath 'SecurityPolicy.inf'   
-    Write-Debug -Message ($localizedData.EchoDebugInf -f $currentSecurityPolicyFilePath)
+    if ($FilePath)
+    {
+        $currentSecurityPolicyFilePath = $FilePath
+    }
+    else
+    {
+        $currentSecurityPolicyFilePath = Join-Path -Path $env:temp -ChildPath 'SecurityPolicy.inf' 
+          
+        Write-Debug -Message ($localizedData.EchoDebugInf -f $currentSecurityPolicyFilePath)
 
-    secedit.exe /export /cfg $currentSecurityPolicyFilePath /areas $Area | Out-Null
-    
+        secedit.exe /export /cfg $currentSecurityPolicyFilePath /areas $Area | Out-Null
+    }
+
     $policyConfiguration = @{}
     switch -regex -file $currentSecurityPolicyFilePath
     {
@@ -165,7 +177,7 @@ function Get-SecurityPolicy
     }
 
     # Cleanup the temp file
-    Remove-Item -Path $currentSecurityPolicyFilePath
+    #Remove-Item -Path $currentSecurityPolicyFilePath
 
     return $returnValue
 }
