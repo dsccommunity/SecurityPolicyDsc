@@ -234,6 +234,10 @@ function Set-TargetResource
 
                 $accounts = $currentIdentities
             }
+            else
+            {
+                $accounts = ""    
+            }
         }
 
         $idsToAdd = $accounts -join ","
