@@ -241,7 +241,7 @@ function ConvertTo-LocalFriendlyName
     param
     (
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
-        [string[]]
+        [System.String[]]
         $Identity
     )
 
@@ -340,7 +340,7 @@ function ConvertTo-Sid
     param
     (
         [Parameter()]
-        [string]
+        [String]
         $Identity
     )
  
