@@ -381,7 +381,7 @@ function Test-TargetResource
         }
         Default
         {
-            $accounts += ConvertTo-LocalFriendlyName $PSItem             
+            $accounts += ConvertTo-LocalFriendlyName -Identity $PSItem             
         }
     }
 

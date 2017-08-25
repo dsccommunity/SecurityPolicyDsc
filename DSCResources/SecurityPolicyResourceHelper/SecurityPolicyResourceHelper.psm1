@@ -208,7 +208,7 @@ function Get-UserRightsAssignment
         "(.+?)\s*=(.*)" # Key
         {
             $name,$value =  $matches[1..2] -replace "\*"
-            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
+            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName -Identity $($value -split ','))
         }
     }
     
@@ -240,7 +240,7 @@ function ConvertTo-LocalFriendlyName
     [CmdletBinding()] 
     param
     (
-        [parameter(mandatory=$true,ValueFromPipeline=$true)]
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [string[]]
         $Identity
     )
@@ -306,7 +306,7 @@ function ConvertTo-NTAccount
     [CmdletBinding()] 
     param
     (
-        [parameter(mandatory=$true,ValueFromPipeline=$true)]
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [System.Security.Principal.SecurityIdentifier[]]
         $SID 
     )
@@ -339,7 +339,9 @@ function ConvertTo-Sid
     [CmdletBinding()]
     param
     (
-        [string]$Identity
+        [Parameter()]
+        [string]
+        $Identity
     )
  
     $id = [System.Security.Principal.NTAccount]$Identity
