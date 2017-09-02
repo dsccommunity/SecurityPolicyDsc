@@ -174,6 +174,10 @@ function Get-SecurityPolicy
 
             continue
         }
+        Default
+        {
+            $returnValue = $policyConfiguration 
+        }
     }
 
     return $returnValue
