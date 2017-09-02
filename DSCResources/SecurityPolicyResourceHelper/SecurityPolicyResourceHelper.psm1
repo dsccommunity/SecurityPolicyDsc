@@ -168,16 +168,13 @@ function Get-SecurityPolicy
             $privilegeRights = $policyConfiguration.'Privilege Rights'
             foreach ($key in $privilegeRights.keys )
             {
-                $identity = ConvertTo-LocalFriendlyName -Identity $( $privilegeRights[$key] -split "," ).Trim()
+                $identity = ConvertTo-LocalFriendlyName -Identity $($privilegeRights[$key] -split ",").Trim()
                 $returnValue.Add( $key,$identity )                 
             }
 
             continue
         }
     }
-
-    # Cleanup the temp file
-    #Remove-Item -Path $currentSecurityPolicyFilePath
 
     return $returnValue
 }
@@ -223,7 +220,7 @@ function Get-UserRightsAssignment
             $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName -Identity $($value -split ','))
         }
     }
-    
+
     return $policyConfiguration
 }
 
@@ -231,7 +228,7 @@ function Get-UserRightsAssignment
     .SYNOPSIS
         Resolves username or SID to a NTAccount friendly name so desired and actual idnetities can be compared
 
-    .PARAMTER Identity
+    .PARAMETER Identity
         An Identity in the form of a friendly name (testUser1,contoso\testUser1) or SID
 
     .EXAMPLE
@@ -241,7 +238,7 @@ function Get-UserRightsAssignment
         This example demonstrats converting a username without a domain name specified
 
     .EXAMPLE
-        PS C:\> ConvertTo-LocalFriendlyName S-1-5-21-3084257389-385233670-139165443-1001
+        PS C:\> ConvertTo-LocalFriendlyName -Identity S-1-5-21-3084257389-385233670-139165443-1001
         Server1\TestUser1
 
         This example demonstrats converting a SID to a frendlyname
