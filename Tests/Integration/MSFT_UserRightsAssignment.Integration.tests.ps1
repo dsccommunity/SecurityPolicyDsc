@@ -1,6 +1,6 @@
 
-$script:DSCModuleName      = 'SecurityPolicyDsc'
-$script:DSCResourceName    = 'MSFT_UserRightsAssignment'
+$script:DSCModuleName   = 'SecurityPolicyDsc'
+$script:DSCResourceName = 'MSFT_UserRightsAssignment'
 
 #region HEADER
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -16,7 +16,6 @@ $script:testEnvironment = Initialize-TestEnvironment `
     -DSCResourceName $script:DSCResourceName `
     -TestType Integration 
 #endregion
-
 
 try
 {
@@ -44,11 +43,13 @@ try
 
         Context 'Verify Successful Configuration on Trusted Caller' {
             Import-Module "$PSScriptRoot\..\..\DSCResources\MSFT_UserRightsAssignment\MSFT_UserRightsAssignment.psm1"
+            Import-Module "$PSScriptRoot\..\..\DSCResources\SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1"
             It 'Should have set the resource and all the parameters should match' {
                 $getResults = Get-TargetResource -Policy $rule.Policy -Identity $rule.Identity
                 foreach ($Id in $rule.Identity)
                 {
-                    $getResults.Identity | where {$_ -eq $Id} | Should Be $Id
+                    $Id = ConvertTo-LocalFriendlyName -Identity $Id
+                    $getResults.Identity | Where-Object {$_ -eq $Id} | Should Be $Id
                 }
 
                 $rule.Policy | Should Be $getResults.Policy
@@ -62,10 +63,24 @@ try
                  
                 foreach ($Id in $removeAll.Identity)
                 {
-                    $getResults.Identity | where {$_ -eq $Id} | Should Be $null
+                    $getResults.Identity | Where-Object {$_ -eq $Id} | Should Be $null
                 }
 
                 $removeAll.Policy | Should Be $getResults.Policy
+            }
+        }
+
+        Context 'Verify Guests removed from deny log on locally' {
+            Import-Module "$PSScriptRoot\..\..\DSCResources\MSFT_UserRightsAssignment\MSFT_UserRightsAssignment.psm1"
+            $getResults = Get-TargetResource -Policy $removeGuests.Policy -Identity $removeGuests.Identity
+            $testResults = Test-TargetResource -Policy $removeGuests.Policy -Identity $removeGuests.Identity -Ensure 'Absent'
+
+            It 'Should remove Guests' {
+                $getResults.Identity | Should Not Be $removeGuests.Identity
+            }
+
+            It 'Should return true when testing for ABSENT' {
+                $testResults | Should Be $true
             }
         }
     }
@@ -77,5 +92,4 @@ finally
     #region FOOTER
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
     #endregion
-
 }

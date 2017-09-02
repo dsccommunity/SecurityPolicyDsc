@@ -78,6 +78,7 @@ try
 
                 Mock -CommandName Get-UserRightPolicy -MockWith {$mockUSRDoesExist}
                 Mock -CommandName Test-IdentityIsNull -MockWith {$false}
+                Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {'contoso\testuser1'}
 
                 It 'Should return true' {
                     $testResult = Test-TargetResource @testParameters
@@ -92,7 +93,7 @@ try
 
             Context 'Identity does not exist' {
                 Mock -CommandName Get-UserRightPolicy -MockWith {$mockUSRDoesNotExist}
-
+                Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {'contoso\testUser1'}
                 It 'Shoud return false' {
                    $testResult = Test-TargetResource @testParameters
                    $testResult | Should be $false
@@ -101,6 +102,7 @@ try
 
             Context 'Identity does not exist but should' {
                 Mock -CommandName Get-UserRightPolicy -MockWith {}
+                Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {'contoso\testUser1'}
 
                 It 'Should return false' {
                     $testResult = Test-TargetResource @testParameters
@@ -128,17 +130,6 @@ try
 
             Context 'Tests for when Identity is a local account or SID' {
                 $mockGetUSRPolicyResult = $mockGetUSRPolicyResult.Clone()          
-                
-                Mock -CommandName Test-IsLocalAccount -MockWith {$true}
-                
-
-                It 'Should return True when a computerName is specified with a local account' {   
-                                 
-                    $mockGetUSRPolicyResult.Identity = 'testuser1'
-                    Mock -CommandName Get-UserRightPolicy -MockWith {$mockGetUSRPolicyResult}
-                    $testResult = Test-TargetResource -Policy 'Access_Credential_Manager_as_a_trusted_caller' -Identity 'localhost\testuser1'
-                    $testResult | Should be $true
-                }
 
                 It 'Should return True when a SID is used for Identity' {
 
@@ -156,7 +147,8 @@ try
                 Mock -CommandName Invoke-Secedit -MockWith {}
                 Mock -CommandName Test-TargetResource -MockWith {$true}
                 Mock -CommandName Get-Content -ParameterFilter {$Path -match "Secedit-OutPut.txt"} -MockWith {"Tasked Failed"}             
-
+                Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {'contoso\testuser1'}
+                
                 It 'Should not throw' { 
                     {Set-TargetResource @testParameters} | Should Not Throw
                 }
