@@ -60,8 +60,6 @@ try
         # https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md
         $dscResourceInfo = Get-DscResource -Name SecurityOption
         Describe 'SecurityOptionHelperTests' {
-
-
             Context 'SecurityOptionData' {
                 $dataFilePath = Join-Path -Path $dscResourceInfo.ParentPath -ChildPath SecurityOptionData.psd1
                 $securityOptionData = Get-SecurityOptionData -FilePath $dataFilePath.Normalize()
@@ -99,10 +97,20 @@ try
                     $getTargetResult.GetType().Name | Should Be 'Hashtable'
                 }
             }
+        }
         Describe 'Test-TargetResource' {
-            Context '<Context-description>' {
-                It 'Should ...test-description' {
+            Context 'General operation tests' {
+                It 'Should return a bool' {
                     # test-code
+                }
+            }
+            Context 'Not in a desired state' {
+                It 'Should return false when desired value is ambiguous (string)' {
+                    # test-code
+                }
+
+                It 'Should return false when desired value is Enabled or Disabled' {
+                    
                 }
             }
         }
