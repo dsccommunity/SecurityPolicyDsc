@@ -13,9 +13,9 @@
         Value   = "MACHINE1\Software\Microsoft\Windows\CurrentVersion\Policies\System\NoConnectedUser"
         Section = 'Registry Values'
         Option  = @{
-            "This policy is disabled" = '4,0'
-            "Users can't add Microsoft accounts" = '4,1'
-            "Users can't add or log on with Microsoft accounts" = '4,3'
+            "This_policy_is_disabled" = '4,0'
+            "Users_cant_add_Microsoft_accounts" = '4,1'
+            "Users_cant_add_or_log_on_with_Microsoft_accounts" = '4,3'
         }        
     }
 
@@ -548,7 +548,7 @@
         }
     }
     
-    "Network_security_Do_notDstore_LAN_Manager_hash_value_on_next_password_change" = @{    
+    "Network_security_Do_not_store_LAN_Manager_hash_value_on_next_password_change" = @{    
         Value   = "MACHINE\System\CurrentControlSet\Control\Lsa\NoLMHash"
         Section = 'Registry Values'
         Option  = @{
