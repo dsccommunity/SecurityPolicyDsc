@@ -98,7 +98,7 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-        Gets the current identities assigned to a user rights assignment.
+        Sets the current identities assigned to a user rights assignment.
     .PARAMETER Policy
         Specifies the policy to configure.
     .PARAMETER Identity
@@ -267,12 +267,12 @@ function Set-TargetResource
 }
 
 <#
-.SYNOPSIS
-Gets the current identities assigned to a user rights assignment.
-.PARAMETER Policy
-Specifies the policy to configure.
-.PARAMETER Identity
-Specifies the identity to add to a user rights assignment.
+    .SYNOPSIS
+    Tests the current identities assigned to a user rights assignment.
+    .PARAMETER Policy
+    Specifies the policy to configure.
+    .PARAMETER Identity
+    Specifies the identity to add to a user rights assignment.
 #>
 function Test-TargetResource
 {

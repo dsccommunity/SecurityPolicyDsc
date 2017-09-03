@@ -60,7 +60,7 @@ try
         # https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md
         $dscResourceInfo = Get-DscResource -Name SecurityOption
         Describe 'SecurityOptionHelperTests' {
-            Context 'SecurityOptionData' {
+            Context 'Get-SecurityOptionData' {
                 $dataFilePath = Join-Path -Path $dscResourceInfo.ParentPath -ChildPath SecurityOptionData.psd1
                 $securityOptionData = Get-SecurityOptionData -FilePath $dataFilePath.Normalize()
                 $securityOptionPropertyList    = $dscResourceInfo.Properties | Where-Object -FilterScript { $PSItem.Name -match '_' }
@@ -76,15 +76,36 @@ try
                         $securityOptionPropertyList.Name -contains $name | Should Be $true                        
                     }
                 }
-
-                It 'Should have string as Option type' {
-
+                
+                $optionData = Get-SecurityOptionData
+                
+                foreach ($option in $optionData.GetEnumerator())
+                {
+                    context "$($option.Name)"{
+                        $options = $option.Value.Option
+                    
+                        foreach ($entry in $options.GetEnumerator())
+                        {
+                            It "$($entry.Name) Should have string as Option type" {
+                                $entry.value.GetType().Name -is [string] | Should Be $true
+                            }
+                        }
+                    }
                 }
             }
 
             Context 'Add-PolicyOption' {
-                It 'Should ....test-description' {
-                    # test-code
+                It 'Should have [Registry Values]' {
+                    [string[]]$testString = "Registry\path"
+                    [string]$addOptionResult = Add-PolicyOption -RegistryPolicies $testPath
+
+                    $addOptionResult | Should Match '[Registry Values]'
+                }
+                It 'Should have [System Access]' {
+                    [string[]]$testString = "EnableAdminAccount=1"
+                    [string]$addOptionResult = Add-PolicyOption -SystemAccessPolicies $testPath
+
+                    $addOptionResult | Should Match '[System Access]'
                 }
             }
         }

@@ -10,7 +10,7 @@
     }
     
     "Accounts_Block_Microsoft_accounts" = @{
-        Value   = "MACHINE1\Software\Microsoft\Windows\CurrentVersion\Policies\System\NoConnectedUser"
+        Value   = "MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\NoConnectedUser"
         Section = 'Registry Values'
         Option  = @{
             "This_policy_is_disabled" = '4,0'
@@ -374,7 +374,7 @@
     "Microsoft_network_server_Attempt_S4U2Self_to_obtain_claim_information" = @{    
         Value   = "MACHINE\System\CurrentControlSet\Services\LanManServer\Parameters\EnableS4U2SelfForClaims"
         Section = 'Registry Values'
-        Optoin  = @{
+        Option  = @{
             Default  = '4,0'  
             Enabled  = '4,1' 
             Disabled = '4,2'
