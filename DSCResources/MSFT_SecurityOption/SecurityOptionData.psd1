@@ -57,8 +57,8 @@
         Value   = "MACHINE\System\CurrentControlSet\Control\Lsa\AuditBaseObjects"
         Section = 'Registry Values'
         Option  = @{
-            Enabled  = 4,1
-            Disabled = 4,0
+            Enabled  = '4,1'
+            Disabled = '4,0'
         }
     }
 

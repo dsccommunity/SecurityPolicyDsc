@@ -75,10 +75,14 @@ try
                     It "Should contain property name: $name" {                        
                         $securityOptionPropertyList.Name -contains $name | Should Be $true                        
                     }
-                }   
+                }
+
+                It 'Should have string as Option type' {
+
+                }
             }
 
-            Context 'Context-description' {
+            Context 'Add-PolicyOption' {
                 It 'Should ....test-description' {
                     # test-code
                 }
@@ -110,7 +114,7 @@ try
                 }
 
                 It 'Should return false when desired value is Enabled or Disabled' {
-                    
+
                 }
             }
         }

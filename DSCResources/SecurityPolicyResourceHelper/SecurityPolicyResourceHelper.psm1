@@ -59,12 +59,12 @@ function Get-LocalizedData
 <#
     .SYNOPSIS
         Wrapper around secedit.exe used to make changes
-    .PARAMETER UserRightsToAddInf
+    .PARAMETER InfPath
         Path to an INF file with desired user rights assignment policy configuration
     .PARAMETER SeceditOutput
         Path to secedit log file output
     .EXAMPLE
-        Invoke-Secedit -UserRightsToAddInf C:\secedit.inf -SeceditOutput C:\seceditLog.txt
+        Invoke-Secedit -InfPath C:\secedit.inf -SeceditOutput C:\seceditLog.txt
 #>
 function Invoke-Secedit
 {
@@ -74,7 +74,7 @@ function Invoke-Secedit
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $UserRightsToAddInf,
+        $InfPath,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -88,13 +88,14 @@ function Invoke-Secedit
     $script:localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
 
     $tempDB = "$env:TEMP\DscSecedit.sdb"
-    $arguments = "/configure /db $tempDB /cfg $userRightsToAddInf"
+    $arguments = "/configure /db $tempDB /cfg $InfPath"
 
     if ($OverWrite)
     {
         $arguments = $arguments + " /overwrite /quiet"
     }
 
+    Write-Verbose "secedit arguments: $arguments"
     Start-Process -FilePath secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput -NoNewWindow -Wait
 }
 

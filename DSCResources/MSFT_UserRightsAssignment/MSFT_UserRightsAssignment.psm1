@@ -249,7 +249,7 @@ function Set-TargetResource
     Write-Debug -Message ($script:localizedData.EchoDebugInf -f $userRightsToAddInf)
 
     Write-Verbose -Message  ($script:localizedData.AttemptingSetPolicy -f $($idstoAdd -join ","), $Policy)
-    Invoke-Secedit -UserRightsToAddInf $userRightsToAddInf -SecEditOutput $seceditOutput
+    Invoke-Secedit -InfPath $userRightsToAddInf -SecEditOutput $script:seceditOutput
 
     # Verify secedit command was successful
 
