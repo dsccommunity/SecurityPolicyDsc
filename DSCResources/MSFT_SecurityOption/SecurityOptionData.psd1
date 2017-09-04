@@ -13,9 +13,9 @@
         Value   = "MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\NoConnectedUser"
         Section = 'Registry Values'
         Option  = @{
-            "This_policy_is_disabled" = '4,0'
-            "Users_cant_add_Microsoft_accounts" = '4,1'
-            "Users_cant_add_or_log_on_with_Microsoft_accounts" = '4,3'
+            "This policy is disabled" = '4,0'
+            "Users cant add Microsoft accounts" = '4,1'
+            "Userscant add or log on with Microsoft accounts" = '4,3'
         }        
     }
 
