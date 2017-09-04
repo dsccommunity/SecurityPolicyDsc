@@ -28,7 +28,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 * **Name**: Name of Security Setting you are changing. Required to allow setting of any value without having to specify a hashtable or array while ensuring that resource has a KEY parameter.
 ## For explanation of below settings, please consult Security Policy Reference.
-* **## https://technet.microsoft.com/en-us/library/dn452423(v=ws.11).aspx**
+* ## https://technet.microsoft.com/en-us/library/dn452423(v=ws.11).aspx**
 * **ClearTextPassword**
 * **EnableAdminAccount**
 * **EnableGuestAccount**
