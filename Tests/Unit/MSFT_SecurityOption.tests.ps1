@@ -1,18 +1,3 @@
-<#
-    .SYNOPSIS
-        Template for creating DSC Resource Unit Tests
-    .DESCRIPTION
-        To Use:
-        1. Copy to \Tests\Unit\ folder and rename <ResourceName>.tests.ps1 (e.g. MSFT_xFirewall.tests.ps1)
-        2. Customize TODO sections.
-        3. Delete all template comments (TODOs, etc.)
-
-    .NOTES
-        There are multiple methods for writing unit tests. This template provides a few examples
-        which you are welcome to follow but depending on your resource, you may want to
-        design it differently. Read through our TestsGuidelines.md file for an intro on how to
-        write unit tests for DSC resources: https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md
-#>
 
 #region HEADER
 
@@ -26,7 +11,6 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
 
-# TODO: Insert the correct <ModuleName> and <ResourceName> for your resource
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName 'SecurityPolicyDsc' `
     -DSCResourceName 'MSFT_SecurityOption' `
@@ -34,31 +18,22 @@ $TestEnvironment = Initialize-TestEnvironment `
 
 #endregion HEADER
 
-function Invoke-TestSetup {
-    # TODO: Optional init code goes here...
-}
-
 function Invoke-TestCleanup {
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
-
-    # TODO: Other Optional Cleanup Code Goes Here...
 }
 
 # Begin Testing
 try
 {
-    Invoke-TestSetup
-
     InModuleScope 'MSFT_SecurityOption' {
-        # TODO: Optionally create any variables here for use by your tests
-
-        # TODO: Complete the Describe blocks below and add more as needed.
-        # The most common method for unit testing is to test by function. For more information
-        # check out this introduction to writing unit tests in Pester:
-        # https://www.simple-talk.com/sysadmin/powershell/practical-powershell-unit-testing-getting-started/#eleventh
-        # You may also follow one of the patterns provided in the TestsGuidelines.md file:
-        # https://github.com/PowerShell/DscResources/blob/master/TestsGuidelines.md
+        
         $dscResourceInfo = Get-DscResource -Name SecurityOption
+        $testParameters = @{
+            Name = 'Test'
+            User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users = 'Automatically deny elevation request'
+            Accounts_Administrator_account_status = 'Enabled'
+        }
+
         Describe 'SecurityOptionHelperTests' {
             Context 'Get-SecurityOptionData' {
                 $dataFilePath = Join-Path -Path $dscResourceInfo.ParentPath -ChildPath SecurityOptionData.psd1
@@ -81,7 +56,7 @@ try
                 
                 foreach ($option in $optionData.GetEnumerator())
                 {
-                    context "$($option.Name)"{
+                    Context "$($option.Name)"{
                         $options = $option.Value.Option
                     
                         foreach ($entry in $options.GetEnumerator())
@@ -124,9 +99,13 @@ try
             }
         }
         Describe 'Test-TargetResource' {
+            $falseMockResult = @{
+                User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users = 'Prompt for crendentials'
+            }
             Context 'General operation tests' {
                 It 'Should return a bool' {
-                    # test-code
+                    $testResult = Test-TargetResource @testParameters
+                    $testResult -is [bool] | Should Be $true
                 }
             }
             Context 'Not in a desired state' {
@@ -134,19 +113,50 @@ try
                     # test-code
                 }
 
-                It 'Should return false when desired value is Enabled or Disabled' {
-
+                It 'Should return false when NOT in desired state' {
+                    Mock -CommandName Get-TargetResource -MockWith { $falseMockResult }
+                    $testResult = Test-TargetResource @testParameters
+                    $testResult | Should Be $false
+                }
+            }
+            Context 'In a desired State' {
+                $trueMockResult = $testParameters.Clone()
+                $trueMockResult.Remove('Name')
+                It 'Should return true when in desired state' {
+                    Mock -CommandName Get-TargetResource -MockWith { $trueMockResult }
+                    $testResult = Test-TargetResource @testParameters
+                    $testResult | Should Be $true
                 }
             }
         }
         Describe 'Set-TargetResource' {
-            Context '<Context-description>' {
-                It 'Should ...test-description' {
-                    # test-code
+            Mock -CommandName Invoke-Secedit -MockWith {}
+            
+            Context 'Successfully applied security policy' {
+                Mock -CommandName Test-TargetResource -MockWith { $true }
+                It 'Should not throw when successfully updated security option' {
+                    { Set-TargetResource @testParameters } | Should Not throw
+                }
+                
+                It 'Should call Test-TargetResource 2 times' {
+                    Assert-MockCalled -CommandName Test-TargetResource -Times 2
                 }
             }
+            Context 'Failed to apply security policy' {
+                Mock -CommandName Test-TargetResource -MockWith { $false }
+                It 'Should throw when failed to apply security policy' {
+                    { Set-TargetResource @testParameters } | Should throw
+                }
+
+                It 'Should call Test-TargetResource 2 times' {
+                    Assert-MockCalled -CommandName Test-TargetResource -Times 2
+                }
+            }
+
+            It "Should call Invoke-Secedit 2 times" {
+                Assert-MockCalled -CommandName Invoke-Secedit -Times 2                
+            }            
         }
-        # TODO: add more Describe blocks as needed
     }
 }
 finally

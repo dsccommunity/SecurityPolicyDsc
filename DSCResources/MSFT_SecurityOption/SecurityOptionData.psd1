@@ -359,7 +359,7 @@
         Section = 'Registry Values'
         Option  = @{
             Enabled  = '4,1'
-            Disabled = '4,1'
+            Disabled = '4,0'
         }
     }
 
@@ -561,7 +561,7 @@
         Value = "ForceLogoffWhenHourExpire"
         Section = 'System Access'
         Option = @{
-            Enabled = '1'
+            Enabled  = '1'
             Disabled = '0'
         }
     }
@@ -730,7 +730,7 @@
         Section = 'Registry Values'
         Option  = @{
             Enabled  = '4,1'
-            Disabled = '4,1'
+            Disabled = '4,0'
         }
     }
 
@@ -764,7 +764,7 @@
         Value   = "MACHINE\Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\AuthenticodeEnabled"
         Section = 'Registry Values'
         Option  = @{
-            Enabled = '4,1'
+            Enabled  = '4,1'
             Disabled = '4,0'
         }
     }
@@ -773,7 +773,7 @@
         Value   = "MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\FilterAdministratorToken"
         Section = 'Registry Values'
         Option  = @{
-            Enabled = '4,1'
+            Enabled  = '4,1'
             Disabled = '4,0'
         }
     }
@@ -863,6 +863,4 @@
             Disabled = '4,0'
         }
     }
-    
-} 
-
+}
