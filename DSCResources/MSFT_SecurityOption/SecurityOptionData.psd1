@@ -544,7 +544,13 @@
         Value   = "MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters\SupportedEncryptionTypes"
         Section = 'Registry Values'
         Option  = @{
-            String = '4,3' # - ****Need to look into this one****
+            DES_CBC_CRC  = '4,1'
+            DES_CBC_MD5  = '4,2'
+            RC4_HMAC_MD5 = '4,4'
+            AES128_HMAC_SHA1  = '4,8'
+            AES256_HMAC_SHA1  = '4,16'
+            'Future encryption types' = '4,2147483616'
+            
         }
     }
     
