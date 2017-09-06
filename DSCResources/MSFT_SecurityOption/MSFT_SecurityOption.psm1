@@ -892,7 +892,7 @@ function Get-SecurityOptionParameter
 #>
 function Add-PolicyOption
 {
-    [OutputType([string[]])]
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     param
     (
