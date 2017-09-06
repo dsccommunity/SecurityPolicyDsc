@@ -22,7 +22,7 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name
     )
@@ -80,7 +80,7 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
@@ -892,7 +892,7 @@ function Get-SecurityOptionParameter
 #>
 function Add-PolicyOption
 {
-    [OutputType([string])]
+    [OutputType([string[]])]
     [CmdletBinding()]
     param
     (
@@ -995,7 +995,7 @@ function ConvertTo-KerberosEncryptionValue
     $kerberosOptionValues = $securityOptionData[$kerberosSecurityOptionName].Option
 
     foreach ( $type in $EncryptionType )
-    {    
+    {
         $sumResult = $sumResult + ($kerberosOptionValues.$type -split ',')[-1]
     }
 

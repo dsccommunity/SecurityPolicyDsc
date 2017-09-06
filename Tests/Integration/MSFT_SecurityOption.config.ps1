@@ -10,7 +10,7 @@ configuration MSFT_SecurityOption_config {
     Import-DscResource -ModuleName 'SecurityPolicyDsc'
 
     node localhost {
-    
+
         SecurityOption Integration_Test 
         {
             Name = 'IntegrationTest'
