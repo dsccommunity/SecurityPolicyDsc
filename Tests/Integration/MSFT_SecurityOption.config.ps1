@@ -1,7 +1,7 @@
 
 $securityOptions = @{
     Accounts_Guest_account_status = 'Enabled'
-    Accounts_Rename_guest_account = 'NewGuest'    
+    Accounts_Rename_guest_account = 'NewGuest'
     Accounts_Block_Microsoft_accounts = 'This policy is disabled'
 }
 
