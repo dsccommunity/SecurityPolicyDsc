@@ -1204,9 +1204,11 @@ function Compare-Array
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [string[]]
         $ReferenceObject,
 
+        [Parameter()]
         [string[]]
         $DifferenceObject
 
