@@ -503,7 +503,7 @@ function Set-TargetResource
     $desiredPolicies = $PSBoundParameters.GetEnumerator() | Where-Object -FilterScript { $PSItem.key -in $moduleParameters }
 
     foreach ( $policy in $desiredPolicies )
- {
+    {
         $testParameters = @{}
         $testParameters = @{
             Name = 'Test'
@@ -560,11 +560,11 @@ function Set-TargetResource
     $successResult = Test-TargetResource @PSBoundParameters
 
     if ( $successResult -eq $false )
- {
+    {
         throw "$($script:localizedData.SetFailed -f $($nonComplaintPolicies -join ','))"
     }
     else
- {
+    {
         Write-Verbose -Message ($script:localizedData.SetSuccess)
     }    
 }
