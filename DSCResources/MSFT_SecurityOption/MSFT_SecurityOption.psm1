@@ -132,6 +132,7 @@ function Set-TargetResource
         [System.String]
         $Audit_Shut_down_system_immediately_if_unable_to_log_security_audits,
 
+        [Parameter()]
         [System.String]
         $DCOM_Machine_Access_Restrictions_in_Security_Descriptor_Definition_Language_SDDL_syntax,
 
@@ -627,6 +628,7 @@ function Test-TargetResource
         [System.String]
         $Audit_Shut_down_system_immediately_if_unable_to_log_security_audits,
 
+        [Parameter()]
         [System.String]
         $DCOM_Machine_Access_Restrictions_in_Security_Descriptor_Definition_Language_SDDL_syntax,
 
