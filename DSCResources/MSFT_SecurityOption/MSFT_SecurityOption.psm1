@@ -77,6 +77,7 @@ function Get-TargetResource
 function Set-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingUserNameAndPassWordParams", "")]
     [CmdletBinding()]
     param
     (
@@ -85,22 +86,22 @@ function Set-TargetResource
         $Name,
 
         [Parameter()]
-        [ValidateSet("Enabled","Disabled")]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
         $Accounts_Administrator_account_status,
 
         [Parameter()]
-        [ValidateSet("This policy is disabled","Users cant add Microsoft accounts","Users cant add or log on with Microsoft accounts")]
+        [ValidateSet("This policy is disabled", "Users cant add Microsoft accounts", "Users cant add or log on with Microsoft accounts")]
         [System.String]
         $Accounts_Block_Microsoft_accounts,
         
         [Parameter()]
-        [ValidateSet("Enabled","Disabled")]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
         $Accounts_Guest_account_status,
 
         [Parameter()]
-        [ValidateSet("Enabled","Disabled")]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
         $Accounts_Limit_local_account_use_of_blank_passwords_to_console_logon_only,
 
@@ -113,22 +114,22 @@ function Set-TargetResource
         $Accounts_Rename_guest_account,
 
         [Parameter()]
-        [ValidateSet("Enabled","Disabled")]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
         $Audit_Audit_the_access_of_global_system_objects,
 
         [Parameter()]
-        [ValidateSet("Enabled","Disabled")]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
         $Audit_Audit_the_use_of_Backup_and_Restore_privilege,
 
         [Parameter()]
-        [ValidateSet("Enabled","Disabled")]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
         $Audit_Force_audit_policy_subcategory_settings_Windows_Vista_or_later_to_override_audit_policy_category_settings,
 
         [Parameter()]
-        [ValidateSet("Enabled","Disabled")]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
         $Audit_Shut_down_system_immediately_if_unable_to_log_security_audits,
 
@@ -145,7 +146,7 @@ function Set-TargetResource
         $Devices_Allow_undock_without_having_to_log_on,
 
         [Parameter()]
-        [ValidateSet("Administrators","Administrators and Power Users","Administrators and Interactive Users")]
+        [ValidateSet("Administrators", "Administrators and Power Users", "Administrators and Interactive Users")]
         [System.String]
         $Devices_Allowed_to_format_and_eject_removable_media,
 
@@ -198,7 +199,7 @@ function Set-TargetResource
         $Domain_member_Require_strong_Windows_2000_or_later_session_key,
 
         [Parameter()]
-        [ValidateSet("User displayname, domain and user names","User display name only","Do not display user information")]
+        [ValidateSet("User displayname, domain and user names", "User display name only", "Do not display user information")]
         [System.String]
         $Interactive_logon_Display_user_information_when_the_session_is_locked,
 
@@ -243,7 +244,7 @@ function Set-TargetResource
         $Interactive_logon_Require_smart_card,
 
         [Parameter()]
-        [ValidateSet("No Action","Lock workstation","Force logoff","Disconnect if a remote Remote Desktop Services session")]
+        [ValidateSet("No Action", "Lock workstation", "Force logoff", "Disconnect if a remote Remote Desktop Services session")]
         [System.String]
         $Interactive_logon_Smart_card_removal_behavior,
 
@@ -280,7 +281,7 @@ function Set-TargetResource
         $Microsoft_network_server_Disconnect_clients_when_logon_hours_expire,
 
         [Parameter()]
-        [ValidateSet("Off","Accept if provided by the client","Required from client")]
+        [ValidateSet("Off", "Accept if provided by the client", "Required from client")]
         [System.String]
         $Microsoft_network_server_Server_SPN_target_name_validation_level,
 
@@ -325,7 +326,7 @@ function Set-TargetResource
         $Network_access_Shares_that_can_be_accessed_anonymously,
 
         [Parameter()]
-        [ValidateSet("Classic - Local users authenticate as themselves","Guest only - Local users authenticate as Guest")]
+        [ValidateSet("Classic - Local users authenticate as themselves", "Guest only - Local users authenticate as Guest")]
         [System.String]
         $Network_access_Sharing_and_security_model_for_local_accounts,
 
@@ -342,7 +343,7 @@ function Set-TargetResource
         $Network_Security_Allow_PKU2U_authentication_requests_to_this_computer_to_use_online_identities,
 
         [Parameter()]
-        [ValidateSet("DES_CBC_CRC","DES_CBC_MD5","RC4_HMAC_MD5","AES128_HMAC_SHA1","AES256_HMAC_SHA1")]
+        [ValidateSet("DES_CBC_CRC", "DES_CBC_MD5", "RC4_HMAC_MD5", "AES128_HMAC_SHA1", "AES256_HMAC_SHA1")]
         [System.String[]]
         $Network_security_Configure_encryption_types_allowed_for_Kerberos,
 
@@ -355,22 +356,22 @@ function Set-TargetResource
         $Network_security_Force_logoff_when_logon_hours_expire,
 
         [Parameter()]
-        [ValidateSet("Send LM & NTLM responses","Send LM & NTLM - use NTLMv2 session security if negotiated","Send NTLM responses only","Send NTLMv2 responses only","Send NTLMv2 responses only. Refuse LM","Send NTLMv2 responses only. Refuse LM & NTLM")]
+        [ValidateSet("Send LM & NTLM responses", "Send LM & NTLM - use NTLMv2 session security if negotiated", "Send NTLM responses only", "Send NTLMv2 responses only", "Send NTLMv2 responses only. Refuse LM", "Send NTLMv2 responses only. Refuse LM & NTLM")]
         [System.String]
         $Network_security_LAN_Manager_authentication_level,
 
         [Parameter()]
-        [ValidateSet("None","Negotiate Signing","Require Signing")]
+        [ValidateSet("None", "Negotiate Signing", "Require Signing")]
         [System.String]
         $Network_security_LDAP_client_signing_requirements,
 
         [Parameter()]
-        [ValidateSet("Require NTLMv2 session security","Require 128-bit encryption","Both options checked")]
+        [ValidateSet("Require NTLMv2 session security", "Require 128-bit encryption", "Both options checked")]
         [System.String]
         $Network_security_Minimum_session_security_for_NTLM_SSP_based_including_secure_RPC_clients,
 
         [Parameter()]
-        [ValidateSet("Require NTLMv2 session security","Require 128-bit encryption","Both options checked")]
+        [ValidateSet("Require NTLMv2 session security", "Require 128-bit encryption", "Both options checked")]
         [System.String]
         $Network_security_Minimum_session_security_for_NTLM_SSP_based_including_secure_RPC_servers,
 
@@ -383,27 +384,27 @@ function Set-TargetResource
         $Network_security_Restrict_NTLM_Add_server_exceptions_in_this_domain,
 
         [Parameter()]
-        [ValidateSet("Disabled","Enable auditing for domain accounts","Enable auditing for all accounts")]
+        [ValidateSet("Disabled", "Enable auditing for domain accounts", "Enable auditing for all accounts")]
         [System.String]
         $Network_Security_Restrict_NTLM_Incoming_NTLM_Traffic,
 
         [Parameter()]
-        [ValidateSet("Disable","Enable for domain accounts to domain servers","Enable for domain accounts","Enable for domain servers","Enable all")]
+        [ValidateSet("Disable", "Enable for domain accounts to domain servers", "Enable for domain accounts", "Enable for domain servers", "Enable all")]
         [System.String]
         $Network_Security_Restrict_NTLM_NTLM_authentication_in_this_domain,
 
         [Parameter()]
-        [ValidateSet("Allow all","Deny all domain accounts","Deny all accounts")]
+        [ValidateSet("Allow all", "Deny all domain accounts", "Deny all accounts")]
         [System.String]
         $Network_Security_Restrict_NTLM_Outgoing_NTLM_traffic_to_remote_servers,
 
         [Parameter()]
-        [ValidateSet("Disable","Deny for domain accounts to domain servers","Deny for domain accounts","Deny for domain servers","Deny all")]
+        [ValidateSet("Disable", "Deny for domain accounts to domain servers", "Deny for domain accounts", "Deny for domain servers", "Deny all")]
         [System.String]
         $Network_Security_Restrict_NTLM_Audit_Incoming_NTLM_Traffic,
 
         [Parameter()]
-        [ValidateSet("Allow all","Audit all","Deny all")]
+        [ValidateSet("Allow all", "Audit all", "Deny all")]
         [System.String]
         $Network_Security_Restrict_NTLM_Audit_NTLM_authentication_in_this_domain,
 
@@ -424,7 +425,7 @@ function Set-TargetResource
         $Shutdown_Clear_virtual_memory_pagefile,
 
         [Parameter()]
-        [ValidateSet("User input is not required when new keys are stored and used","User is prompted when the key is first used","User must enter a password each time they use a key")]
+        [ValidateSet("User input is not required when new keys are stored and used", "User is prompted when the key is first used", "User must enter a password each time they use a key")]
         [System.String]
         $System_cryptography_Force_strong_key_protection_for_user_keys_stored_on_the_computer,
 
@@ -457,12 +458,12 @@ function Set-TargetResource
         $User_Account_Control_Allow_UIAccess_applications_to_prompt_for_elevation_without_using_the_secure_desktop,
 
         [Parameter()]
-        [ValidateSet("Elevate without prompting","Prompt for credentials on the secure desktop","Prompt for consent on the secure desktop","Prompt for credentials","Prompt for consent","Prompt for consent for non-Windows binaries")]
+        [ValidateSet("Elevate without prompting", "Prompt for credentials on the secure desktop", "Prompt for consent on the secure desktop", "Prompt for credentials", "Prompt for consent", "Prompt for consent for non-Windows binaries")]
         [System.String]
         $User_Account_Control_Behavior_of_the_elevation_prompt_for_administrators_in_Admin_Approval_Mode,
 
         [Parameter()]
-        [ValidateSet("Automatically deny elevation request","Prompt for credentials on the secure desktop","Prompt for crendentials")]
+        [ValidateSet("Automatically deny elevation request", "Prompt for credentials on the secure desktop", "Prompt for crendentials")]
         [System.String]
         $User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users,
 
@@ -491,23 +492,23 @@ function Set-TargetResource
         $User_Account_Control_Virtualize_file_and_registry_write_failures_to_per_user_locations
     )
 
-    $registryPolicies          = @()
-    $systemAccessPolicies      = @()
-    $nonComplaintPolicies      = @()
-    $moduleParameters          = Get-SecurityOptionParameter
-    $securityOptionData        = Get-SecurityOptionData
-    $script:seceditOutput      = "$env:TEMP\Secedit-OutPut.txt"
-    $securityOptionsToAddInf   = "$env:TEMP\userRightsToAdd.inf"
+    $registryPolicies = @()
+    $systemAccessPolicies = @()
+    $nonComplaintPolicies = @()
+    $moduleParameters = Get-SecurityOptionParameter
+    $securityOptionData = Get-SecurityOptionData
+    $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
+    $securityOptionsToAddInf = "$env:TEMP\userRightsToAdd.inf"
 
     $desiredPolicies = $PSBoundParameters.GetEnumerator() | Where-Object -FilterScript { $PSItem.key -in $moduleParameters }
 
     foreach ( $policy in $desiredPolicies )
-    {
+ {
         $testParameters = @{}
         $testParameters = @{
-            Name        = 'Test'
+            Name = 'Test'
             $policy.Key = $policy.Value
-            Verbose     = $false
+            Verbose = $false
         }
 
         # define what policies are not in a desired state so we only add those policies
@@ -515,7 +516,7 @@ function Set-TargetResource
         $isInDesiredState = Test-TargetResource @testParameters
         if ( -not ( $isInDesiredState ) )
         {
-            $policyKey  = $policy.Key
+            $policyKey = $policy.Key
             $policyData = $securityOptionData.$policyKey
             $nonComplaintPolicies += $policyKey
 
@@ -559,11 +560,11 @@ function Set-TargetResource
     $successResult = Test-TargetResource @PSBoundParameters
 
     if ( $successResult -eq $false )
-    {
+ {
         throw "$($script:localizedData.SetFailed -f $($nonComplaintPolicies -join ','))"
     }
     else
-    {
+ {
         Write-Verbose -Message ($script:localizedData.SetSuccess)
     }    
 }
@@ -572,6 +573,7 @@ function Set-TargetResource
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingUserNameAndPassWordParams", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
