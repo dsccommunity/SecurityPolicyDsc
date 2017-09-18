@@ -14,6 +14,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 * **UserRightsAssignment**: Configures user rights assignments in local security policies.
 * **SecurityTemplate**: Configures user rights assignments that are defined in an INF file.
 * **SecuritySetting**: Configures additional Security Settings typically associated with SecurityPolicy.
+* **SecurityOption**: Configures the policies under the Security Options node in local security policies.
 
 ## UserRightsAssignment
 

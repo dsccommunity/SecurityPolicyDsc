@@ -12,9 +12,6 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SecurityOption'
     .PARAMETER Name
         Describes the security option to be managed. This could be anything as long as it is unique. This property is not 
         used during the configuration process.
-
-    .NOTES
-    General notes
 #>
 function Get-TargetResource
 {
@@ -30,15 +27,15 @@ function Get-TargetResource
     $returnValue = @{}
     $currentSecurityPolicy = Get-SecurityPolicy -Area SECURITYPOLICY
     $securityOptionData = Get-SecurityOptionData
-    $moduleParameters = Get-SecurityOptionParameter
+    $securityOptionList = Get-SecurityOptionList
     
-    foreach ( $parameter in $moduleParameters )
+    foreach ( $securityOption in $securityOptionList )
     {
-        $section = $securityOptionData.$parameter.Section
+        $section = $securityOptionData.$securityOption.Section
         Write-Verbose -Message ( $script:localizedData.Section -f $section )
-        $valueName = $securityOptionData.$parameter.Value
+        $valueName = $securityOptionData.$securityOption.Value
         Write-Verbose  -Message ( $script:localizedData.Value -f $valueName )
-        $options = $securityOptionData.$parameter.Option
+        $options = $securityOptionData.$securityOption.Option
         Write-Verbose -Message ( $script:localizedData.Option -f $($options -join ',') )
         $currentValue = $currentSecurityPolicy.$section.$valueName
         Write-Verbose -Message ( $script:localizedData.RawValue -f $($currentValue -join ',') )
@@ -53,13 +50,13 @@ function Get-TargetResource
             Write-Verbose "Retrieving value for $valueName"
             if ( $currentSecurityPolicy.$section.keys -contains $valueName )
             {
-                if ( $parameter -eq "Network_security_Configure_encryption_types_allowed_for_Kerberos" )
+                if ( $securityOption -eq "Network_security_Configure_encryption_types_allowed_for_Kerberos" )
                 {
                     $resultValue = ConvertTo-KerberosEncryptionOption -EncryptionValue $currentValue
                 }
                 else
                 {
-                    $resultValue = ($securityOptionData.$parameter.Option.GetEnumerator() | 
+                    $resultValue = ($securityOptionData.$securityOption.Option.GetEnumerator() | 
                         Where-Object -Property Value -eq $currentValue.Trim() ).Name
                 }
             }
@@ -68,12 +65,16 @@ function Get-TargetResource
                 $resultValue = $null
             }
         }        
-        $returnValue.Add( $parameter, $resultValue )    
+        $returnValue.Add( $securityOption, $resultValue )    
     }
     return $returnValue
 }
 
 
+<#
+    .SYNOPSIS
+        Applies the desired security option configuration.
+#>
 function Set-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
@@ -495,16 +496,15 @@ function Set-TargetResource
     $registryPolicies = @()
     $systemAccessPolicies = @()
     $nonComplaintPolicies = @()
-    $moduleParameters = Get-SecurityOptionParameter
+    $securityOptionList = Get-SecurityOptionList
     $securityOptionData = Get-SecurityOptionData
     $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
     $securityOptionsToAddInf = "$env:TEMP\userRightsToAdd.inf"
 
-    $desiredPolicies = $PSBoundParameters.GetEnumerator() | Where-Object -FilterScript { $PSItem.key -in $moduleParameters }
+    $desiredPolicies = $PSBoundParameters.GetEnumerator() | Where-Object -FilterScript { $PSItem.key -in $securityOptionList }
 
     foreach ( $policy in $desiredPolicies )
-    {
-        $testParameters = @{}
+ {
         $testParameters = @{
             Name = 'Test'
             $policy.Key = $policy.Value
@@ -560,16 +560,20 @@ function Set-TargetResource
     $successResult = Test-TargetResource @PSBoundParameters
 
     if ( $successResult -eq $false )
-    {
+ {
         throw "$($script:localizedData.SetFailed -f $($nonComplaintPolicies -join ','))"
     }
     else
-    {
+ {
         Write-Verbose -Message ($script:localizedData.SetSuccess)
     }    
 }
 
 
+<#
+    .SYNOPSIS
+         Tests the current security options against the desired configuration
+#>
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
@@ -1025,13 +1029,10 @@ function Test-TargetResource
 
 <#
     .SYNOPSIS
-        Retrieves the Security Option Data to map the policy name and values as they appeat in the Security Template Snap-in
+        Retrieves the Security Option Data to map the policy name and values as they appear in the Security Template Snap-in
 
     .PARAMETER FilePath
         Path to the file containing the Security Option Data
-
-    .NOTES
-        General notes
 #>
 function Get-SecurityOptionData
 {
@@ -1050,11 +1051,8 @@ function Get-SecurityOptionData
 <#
     .SYNOPSIS
         Returns all the set-able parameters in the SecurityOption resource
-
-    .NOTES
-    General notes
 #>
-function Get-SecurityOptionParameter
+function Get-SecurityOptionList
 {
     [OutputType([array])]
     [CmdletBinding()]
@@ -1078,9 +1076,6 @@ function Get-SecurityOptionParameter
 
     .PARAMETER RegistryPolicies
         Specifies the security opions that are managed via [Registry Values]
-
-    .NOTES
-    General notes
 #>
 function Add-PolicyOption
 {

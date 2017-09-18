@@ -1,6 +1,6 @@
 
-$script:DSCModuleName   = 'SecurityPolicyDsc' # Example xNetworking
-$script:DSCResourceName = 'MSFT_SecurityOption' # Example MSFT_xFirewall
+$script:DSCModuleName   = 'SecurityPolicyDsc'
+$script:DSCResourceName = 'MSFT_SecurityOption'
 
 #region HEADER
 # Integration Test Template Version: 1.1.2
