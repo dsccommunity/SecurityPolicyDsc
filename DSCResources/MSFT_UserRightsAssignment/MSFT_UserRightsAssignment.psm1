@@ -98,7 +98,7 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-        Gets the current identities assigned to a user rights assignment.
+        Sets the current identities assigned to a user rights assignment.
     .PARAMETER Policy
         Specifies the policy to configure.
     .PARAMETER Identity
@@ -249,7 +249,7 @@ function Set-TargetResource
     Write-Debug -Message ($script:localizedData.EchoDebugInf -f $userRightsToAddInf)
 
     Write-Verbose -Message  ($script:localizedData.AttemptingSetPolicy -f $($idstoAdd -join ","), $Policy)
-    Invoke-Secedit -UserRightsToAddInf $userRightsToAddInf -SecEditOutput $seceditOutput
+    Invoke-Secedit -InfPath $userRightsToAddInf -SecEditOutput $script:seceditOutput
 
     # Verify secedit command was successful
 
@@ -267,12 +267,12 @@ function Set-TargetResource
 }
 
 <#
-.SYNOPSIS
-Gets the current identities assigned to a user rights assignment.
-.PARAMETER Policy
-Specifies the policy to configure.
-.PARAMETER Identity
-Specifies the identity to add to a user rights assignment.
+    .SYNOPSIS
+    Tests the current identities assigned to a user rights assignment.
+    .PARAMETER Policy
+    Specifies the policy to configure.
+    .PARAMETER Identity
+    Specifies the identity to add to a user rights assignment.
 #>
 function Test-TargetResource
 {

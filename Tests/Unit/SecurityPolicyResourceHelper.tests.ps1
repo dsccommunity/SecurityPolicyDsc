@@ -30,15 +30,14 @@ try
                     ConvertTo-LocalFriendlyName -Identity $sid | should be 'BUILTIN\Administrators'
                 }
 
-                It "Should return $env:USERDOMAIN\user1" {                    
-                    
+                It "Should return $env:USERDOMAIN\user1" {   
                     ConvertTo-LocalFriendlyName -Identity 'administrator' | Should be "$env:USERDOMAIN\administrator"
                 }
             }
             Context 'Test Invoke-Secedit' {
                 Mock Start-Process -MockWith {} -ModuleName SecurityPolicyResourceHelper
                 $invokeSeceditParameters = @{
-                    UserRightsToAddInf = 'temp.inf'
+                    InfPath = 'temp.inf'
                     SeceditOutput      = 'output.txt'
                     OverWrite          = $true
                 }

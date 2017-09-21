@@ -82,7 +82,7 @@ function Set-TargetResource
     {
         $secEditOutput = "$env:TEMP\Secedit-OutPut.txt"
     
-        Invoke-Secedit -UserRightsToAddInf $Path -SecEditOutput $seceditOutput
+        Invoke-Secedit -InfPath $Path -SecEditOutput $seceditOutput
     }
     # Verify secedit command was successful
     $testSuccuess = Test-TargetResource @PSBoundParameters

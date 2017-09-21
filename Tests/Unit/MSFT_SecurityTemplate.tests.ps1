@@ -148,7 +148,7 @@ try
             Context 'Test Invoke-Secedit' {
                 Mock Start-Process -MockWith {} -ModuleName SecurityPolicyResourceHelper
                 $invokeSeceditParameters = @{
-                    UserRightsToAddInf = 'temp.inf'
+                    InfPath = 'temp.inf'
                     SeceditOutput      = 'output.txt'
                     OverWrite          = $true
                 }
