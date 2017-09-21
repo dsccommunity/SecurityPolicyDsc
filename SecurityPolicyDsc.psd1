@@ -9,7 +9,7 @@
 @{
 
 # Version number of this module.
-ModuleVersion = '1.3.0.0'
+ModuleVersion = '1.5.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'e2b73194-69ef-4fa6-b949-9f62ebe04989'
@@ -47,9 +47,8 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Added functionality to support BaselineManagement Module.
-* Updated UserRightsAssignment resource to respect dynamic local accounts.
-* Added SecuritySetting resource to process additional INF settings.
+        ReleaseNotes = '* Refactored user rights assignment to read and test easier. 
+
 '
 
     } # End of PSData hashtable
@@ -57,6 +56,8 @@ PrivateData = @{
 } # End of PrivateData hashtable
 
 }
+
+
 
 
 

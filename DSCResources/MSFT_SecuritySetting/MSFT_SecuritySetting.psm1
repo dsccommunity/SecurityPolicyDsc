@@ -33,8 +33,9 @@ function Get-IniContent
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [Parameter(Mandatory=$true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName=$true)]
-        [System.String]$Path
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [System.String]
+        $Path
     )
 
     $ini = @{}
@@ -98,11 +99,13 @@ function Set-SecuritySettings
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true)]
-        [string]$secDB,
+        [Parameter(Mandatory = $true)]
+        [string]
+        $secDB,
 
-        [Parameter(Mandatory=$true)]
-        [string]$tmpFile
+        [Parameter(Mandatory = $true)]
+        [string]
+        $tmpFile
     )
     
     $PowerShellProcess = new-object System.Diagnostics.Process
@@ -121,9 +124,10 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet("MinimumPasswordAge","MaximumPasswordAge","MinimumPasswordLength","PasswordComplexity","PasswordHistorySize","LockoutBadCount","ForceLogoffWhenHourExpire","NewAdministratorName","NewGuestName","ClearTextPassword","LSAAnonymousNameLookup","EnableAdminAccount","EnableGuestAccount","ResetLockoutCount","LockoutDuration","MaxServiceAge","MaxTicketAge","MaxRenewAge","MaxClockSkew","TicketValidateClient")]
-        [System.String]$Name
+        [System.String]
+        $Name
     )
     
     $ini = Get-SecuritySettings
@@ -147,77 +151,101 @@ function Set-TargetResource
     (
         [Parameter()]
         [ValidateRange(-1, 999)]
-        [System.Int16]$MinimumPasswordAge,
+        [System.Int16]
+        $MinimumPasswordAge,
         
         [Parameter()]
         [ValidateRange(0,999)]
-        [System.UInt16]$MaximumPasswordAge,
+        [System.UInt16]
+        $MaximumPasswordAge,
 
         [Parameter()]
-        [System.UInt16]$MinimumPasswordLength,
+        [System.UInt16]
+        $MinimumPasswordLength,
         
         [Parameter()]
-        [System.UInt16]$PasswordComplexity,
+        [System.UInt16]
+        $PasswordComplexity,
         
         [Parameter()]
-        [System.UInt16]$PasswordHistorySize,
+        [System.UInt16]
+        $PasswordHistorySize,
         
         [Parameter()]
-        [System.UInt16]$LockoutBadCount,
+        [System.UInt16]
+        $LockoutBadCount,
         
         [Parameter()]
-        [System.UInt16]$ForceLogoffWhenHourExpire,
+        [System.UInt16]
+        $ForceLogoffWhenHourExpire,
         
         [Parameter()]
-        [System.String]$NewAdministratorName,
+        [System.String]
+        $NewAdministratorName,
         
         [Parameter()]
-        [System.String]$NewGuestName,
+        [System.String]
+        $NewGuestName,
 
         [Parameter()]
-        [System.UInt16]$ClearTextPassword,
+        [System.UInt16]
+        $ClearTextPassword,
         
         [Parameter()]
-        [System.UInt16]$LSAAnonymousNameLookup,
+        [System.UInt16]
+        $LSAAnonymousNameLookup,
         
         [Parameter()]
-        [System.UInt16]$EnableAdminAccount,
+        [System.UInt16]
+        $EnableAdminAccount,
         
         [Parameter()]
-        [System.UInt16]$EnableGuestAccount,
+        [System.UInt16]
+        $EnableGuestAccount,
 
         [Parameter()]
-        [System.Int16]$ResetLockoutCount,
+        [System.Int16]
+        $ResetLockoutCount,
         
         [Parameter()]
         [ValidateRange(-1, 99999)]
         [ValidateScript({$_ -ne 0})]
-        [System.Int16]$LockoutDuration,
+        [System.Int16]
+        $LockoutDuration,
         
         [Parameter()]
         [ValidateScript({$_ -ge 10})]
-        [System.UInt16]$MaxServiceAge,
+        [System.UInt16]
+        $MaxServiceAge,
         
         [Parameter()]
         [ValidateRange(0,99999)]
-        [System.UInt16]$MaxTicketAge,
+        [System.UInt16]
+        $MaxTicketAge,
         
         [Parameter()]
         [ValidateRange(0,99999)]
-        [System.UInt16]$MaxRenewAge,
+        [System.UInt16]
+        $MaxRenewAge,
         
         [Parameter()]
         [ValidateRange(0,99999)]
-        [System.UInt16]$MaxClockSkew,
-        [System.UInt16]$TicketValidateClient,
+        [System.UInt16]
+        $MaxClockSkew,
+
+        [Parameter()]
+        [System.UInt16]
+        $TicketValidateClient,
 
         [Parameter()]
         [ValidateSet("Present","Absent")]
-        [System.String]$Ensure = "Present",
+        [System.String]
+        $Ensure = "Present",
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet("MinimumPasswordAge","MaximumPasswordAge","MinimumPasswordLength","PasswordComplexity","PasswordHistorySize","LockoutBadCount","ForceLogoffWhenHourExpire","NewAdministratorName","NewGuestName","ClearTextPassword","LSAAnonymousNameLookup","EnableAdminAccount","EnableGuestAccount","ResetLockoutCount","LockoutDuration","MaxServiceAge","MaxTicketAge","MaxRenewAge","MaxClockSkew","TicketValidateClient")]
-        [System.String]$Name
+        [System.String]
+        $Name
     )
     
     if (@($PSBoundParameters.Keys.Where({$_ -notin "Name", "Ensure"})).Count -eq 0)
@@ -295,77 +323,101 @@ function Test-TargetResource
     (
         [Parameter()]
         [ValidateRange(-1, 999)]
-        [System.Int16]$MinimumPasswordAge,
+        [System.Int16]
+        $MinimumPasswordAge,
         
         [Parameter()]
         [ValidateRange(0,999)]
-        [System.UInt16]$MaximumPasswordAge,
+        [System.UInt16]
+        $MaximumPasswordAge,
 
         [Parameter()]
-        [System.UInt16]$MinimumPasswordLength,
+        [System.UInt16]
+        $MinimumPasswordLength,
         
         [Parameter()]
-        [System.UInt16]$PasswordComplexity,
+        [System.UInt16]
+        $PasswordComplexity,
         
         [Parameter()]
-        [System.UInt16]$PasswordHistorySize,
+        [System.UInt16]
+        $PasswordHistorySize,
         
         [Parameter()]
-        [System.UInt16]$LockoutBadCount,
+        [System.UInt16]
+        $LockoutBadCount,
         
         [Parameter()]
-        [System.UInt16]$ForceLogoffWhenHourExpire,
+        [System.UInt16]
+        $ForceLogoffWhenHourExpire,
         
         [Parameter()]
-        [System.String]$NewAdministratorName,
+        [System.String]
+        $NewAdministratorName,
         
         [Parameter()]
-        [System.String]$NewGuestName,
+        [System.String]
+        $NewGuestName,
 
         [Parameter()]
-        [System.UInt16]$ClearTextPassword,
+        [System.UInt16]
+        $ClearTextPassword,
         
         [Parameter()]
-        [System.UInt16]$LSAAnonymousNameLookup,
+        [System.UInt16]
+        $LSAAnonymousNameLookup,
         
         [Parameter()]
-        [System.UInt16]$EnableAdminAccount,
+        [System.UInt16]
+        $EnableAdminAccount,
         
         [Parameter()]
-        [System.UInt16]$EnableGuestAccount,
+        [System.UInt16]
+        $EnableGuestAccount,
 
         [Parameter()]
-        [System.Int16]$ResetLockoutCount,
+        [System.Int16]
+        $ResetLockoutCount,
         
         [Parameter()]
         [ValidateRange(-1, 99999)]
         [ValidateScript({$_ -ne 0})]
-        [System.Int16]$LockoutDuration,
+        [System.Int16]
+        $LockoutDuration,
         
         [Parameter()]
         [ValidateScript({$_ -ge 10})]
-        [System.UInt16]$MaxServiceAge,
+        [System.UInt16]
+        $MaxServiceAge,
         
         [Parameter()]
         [ValidateRange(0,99999)]
-        [System.UInt16]$MaxTicketAge,
+        [System.UInt16]
+        $MaxTicketAge,
         
         [Parameter()]
         [ValidateRange(0,99999)]
-        [System.UInt16]$MaxRenewAge,
+        [System.UInt16]
+        $MaxRenewAge,
         
         [Parameter()]
         [ValidateRange(0,99999)]
-        [System.UInt16]$MaxClockSkew,
-        [System.UInt16]$TicketValidateClient,
+        [System.UInt16]
+        $MaxClockSkew,
+
+        [Parameter()]
+        [System.UInt16]
+        $TicketValidateClient,
 
         [Parameter()]
         [ValidateSet("Present","Absent")]
-        [System.String]$Ensure = "Present",
+        [System.String]
+        $Ensure = "Present",
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet("MinimumPasswordAge","MaximumPasswordAge","MinimumPasswordLength","PasswordComplexity","PasswordHistorySize","LockoutBadCount","ForceLogoffWhenHourExpire","NewAdministratorName","NewGuestName","ClearTextPassword","LSAAnonymousNameLookup","EnableAdminAccount","EnableGuestAccount","ResetLockoutCount","LockoutDuration","MaxServiceAge","MaxTicketAge","MaxRenewAge","MaxClockSkew","TicketValidateClient")]
-        [System.String]$Name
+        [System.String]
+        $Name
     )
 
     if (@($PSBoundParameters.Keys.Where({$_ -notin "Name", "Ensure"})).Count -eq 0)

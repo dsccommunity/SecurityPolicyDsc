@@ -25,7 +25,6 @@ function Get-LocalizedData
         [ValidateNotNullOrEmpty()]
         [String]
         $HelperName
-
     )
 
     # With the helper module just update the name and path variables as if it were a resource. 
@@ -46,7 +45,6 @@ function Get-LocalizedData
     if (-not (Test-Path -Path $localizedStringFileLocation))
     {
         # Fallback to en-US
-
         $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath 'en-US'
     }
 
@@ -70,15 +68,19 @@ function Get-LocalizedData
 #>
 function Invoke-Secedit
 {
+    [OutputType([void])]
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $UserRightsToAddInf,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SeceditOutput,
 
+        [Parameter()]
         [System.Management.Automation.SwitchParameter]
         $OverWrite
     )
@@ -98,6 +100,87 @@ function Invoke-Secedit
 
 <#
     .SYNOPSIS
+        Returns security policies configuration settings
+
+    .PARAMETER Area
+        Specifies the security areas to be returned
+
+    .NOTES
+    General notes
+#>
+function Get-SecurityPolicy
+{
+    [OutputType([Hashtable])]
+    [CmdletBinding()]
+    param
+    (       
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES")]
+        [System.String]
+        $Area,
+
+        [Parameter()]
+        [System.String]
+        $FilePath
+    )
+
+    if ($FilePath)
+    {
+        $currentSecurityPolicyFilePath = $FilePath
+    }
+    else
+    {
+        $currentSecurityPolicyFilePath = Join-Path -Path $env:temp -ChildPath 'SecurityPolicy.inf' 
+          
+        Write-Debug -Message ($localizedData.EchoDebugInf -f $currentSecurityPolicyFilePath)
+
+        secedit.exe /export /cfg $currentSecurityPolicyFilePath /areas $Area | Out-Null
+    }
+
+    $policyConfiguration = @{}
+    switch -regex -file $currentSecurityPolicyFilePath
+    {
+        "^\[(.+)\]" # Section
+        {
+            $section = $matches[1]
+            $policyConfiguration[$section] = @{}
+            $CommentCount = 0
+        }
+        "^(;.*)$" # Comment
+        {
+            $value = $matches[1]
+            $commentCount = $commentCount + 1
+            $name = "Comment" + $commentCount
+            $policyConfiguration[$section][$name] = $value
+        } 
+        "(.+?)\s*=(.*)" # Key
+        {
+            $name,$value =  $matches[1..2] -replace "\*"
+            $policyConfiguration[$section][$name] = $value
+        }
+    }
+
+    Switch($Area)
+    {
+        "USER_RIGHTS" 
+        {
+            $returnValue = @{}
+            $privilegeRights = $policyConfiguration.'Privilege Rights'
+            foreach ($key in $privilegeRights.keys )
+            {
+                $identity = ConvertTo-LocalFriendlyName -Identity $($privilegeRights[$key] -split ",").Trim()
+                $returnValue.Add( $key,$identity )                 
+            }
+
+            continue
+        }
+    }
+
+    return $returnValue
+}
+
+<#
+    .SYNOPSIS
         Parses an INF file produced by 'secedit.exe /export' and returns an object of identites assigned to a user rights assignment policy
     .PARAMETER FilePath
         Path to an INF file
@@ -110,6 +193,7 @@ function Get-UserRightsAssignment
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $FilePath
     )
@@ -133,64 +217,151 @@ function Get-UserRightsAssignment
         "(.+?)\s*=(.*)" # Key
         {
             $name,$value =  $matches[1..2] -replace "\*"
-            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
+            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName -Identity $($value -split ','))
         }
     }
+
     return $policyConfiguration
 }
 
 <#
     .SYNOPSIS
-        Converts SID to a friendly name
-    .PARAMETER SID
-        SID of an identity being converted
+        Resolves username or SID to a NTAccount friendly name so desired and actual idnetities can be compared
+
+    .PARAMETER Identity
+        An Identity in the form of a friendly name (testUser1,contoso\testUser1) or SID
+
     .EXAMPLE
-        ConvertTo-LocalFriendlyName -SID 'S-1-5-21-3623811015-3361044348-30300820-1013'
+        PS C:\> ConvertTo-LocalFriendlyName testuser1
+        Server1\TestUser1
+
+        This example demonstrats converting a username without a domain name specified
+
+    .EXAMPLE
+        PS C:\> ConvertTo-LocalFriendlyName -Identity S-1-5-21-3084257389-385233670-139165443-1001
+        Server1\TestUser1
+
+        This example demonstrats converting a SID to a frendlyname
 #>
 function ConvertTo-LocalFriendlyName
 {
-    [OutputType([String[]])]
-    [CmdletBinding()]
+    [OutPutType([string])]
+    [CmdletBinding()] 
     param
     (
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [System.String[]]
-        $SID        
+        $Identity
     )
-    
-    $localizedData = Import-LocalizedData -BaseDirectory C:\Users\robreed\Documents\WindowsPowerShell\Modules\SecurityPolicyDSC\DSCResources\SecurityPolicyResourceHelper\en-US\ -FileName SecurityPolicyResourceHelper.strings.psd1
-    $domainRole = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
-    $friendlyNames = [String[]]@()
 
-    foreach ($id in $SID)
+    $friendlyNames = @()
+    foreach ($id in $Identity)
     {
-        $id = $id.Trim();
-        
-        Write-Verbose  "Received Identity ($id)"
+        $id = ( $id -replace "\*" ).Trim()
         if ($null -ne $id -and $id -match '^(S-[0-9-]{3,})')
         {
-            try
-            {
-                Write-Verbose -Message ($localizedData:TranslateID -f $id)
-                $securityIdentifier = [System.Security.Principal.SecurityIdentifier]($id)
-                $user = $securityIdentifier.Translate([System.Security.Principal.NTAccount])
-                $friendlyNames += $user.value
-                Write-Verbose -Message ($localizedData:IdTranslatesTo -f $id,$user.Value)
-            }
-            catch
-            {
-                Write-Warning -Message ($localizedData.ErrorCantTranslateSID -f $id, $($_.Exception.Message) )
-            }
+            # if id is a SID convert to a NTAccount
+            $friendlyNames += ConvertTo-NTAccount -SID $id
         }
-        elseIf ($domainRole -eq 4 -or $domainRole -eq 5)
+        else
         {
-            $friendlyNames += "$($env:USERDOMAIN + '\' + $($id))"
-        }
-        elseIf ($id -notmatch '^S-')
-        {
-            $friendlyNames += "$($id)"
+            # if id is an friendly name convert it to a sid and then to an NTAccount
+            $friendlyNames += ( ConvertTo-Sid -Identity $id | ConvertTo-NTAccount )
         }
     }
 
     return $friendlyNames
 }
 
+<#
+    .SYNOPSIS
+        Tests if the provided Identity is null
+    .PARAMETER Identity
+        The identity string to test
+#>
+function Test-IdentityIsNull
+{
+    [OutputType([bool])]
+    [CmdletBinding()]
+    param
+    ( 
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()] 
+        [AllowEmptyString()]
+        [AllowNull()]
+        [System.String[]]
+        $Identity
+    )
+
+    if ( $null -eq $Identity -or [System.String]::IsNullOrWhiteSpace($Identity) )
+    {
+        return $true
+    }
+    else 
+    {
+        return $false
+    }
+}
+
+<#
+    .SYNOPSIS
+        Convert a SID to a common friendly name
+    .PARAMETER SID
+        SID of an identity being converted
+#>
+function ConvertTo-NTAccount
+{
+    [OutPutType([string])]
+    [CmdletBinding()] 
+    param
+    (
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [System.Security.Principal.SecurityIdentifier[]]
+        $SID 
+    )
+
+    $result = @()
+    foreach ($id in $SID)
+    {
+        $id = ( $id -replace "\*" ).Trim()
+
+        $sidId = [System.Security.Principal.SecurityIdentifier]$id
+        $result += $sidId.Translate([System.Security.Principal.NTAccount]).value
+    }
+
+    return $result
+}
+
+<#
+    .SYNOPSIS
+        Converts an identity to a SID to verify it's a valid account
+
+    .PARAMETER Identity
+        Specifies the identity to convert
+
+    .NOTES
+        General notes
+#>
+function ConvertTo-Sid
+{
+    [OutputType([System.Security.Principal.SecurityIdentifier])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [String]
+        $Identity
+    )
+ 
+    $id = [System.Security.Principal.NTAccount]$Identity
+    try
+    {
+        $sid = $id.Translate([System.Security.Principal.SecurityIdentifier])
+    }
+    catch
+    {
+        throw "Could not convert Identity: $Identity to SID"
+    }
+
+    return $sid.Value
+}

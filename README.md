@@ -56,10 +56,16 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ### Unreleased
 
-### 1.3.0.0
+### 1.5.0.0
+* Refactored user rights assignment to read and test easier. 
+
+### 1.4.0.0
 
 * Fixed bug in which friendly name translation may fail if user or group contains 'S-'.
 * Fixed bug identified in issue 33 and 34 where Test-TargetResource would return false but was true
+
+### 1.3.0.0
+
 * Added functionality to support BaselineManagement Module.
 * Updated UserRightsAssignment resource to respect dynamic local accounts.
 * Added SecuritySetting resource to process additional INF settings.

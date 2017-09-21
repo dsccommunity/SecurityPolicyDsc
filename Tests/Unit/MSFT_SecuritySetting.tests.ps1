@@ -40,9 +40,9 @@ try
 
             $mockSecuritySettings = [PSObject]@{
                 'System Access' = @{ 
-                                    LockoutBadCount = 10
-                                    Name = "LockoutBadCount"       
-                                }
+                    LockoutBadCount = 10
+                    Name = "LockoutBadCount"       
+                }
             }   
             
             $testParameters = [PSObject]@{    
@@ -76,17 +76,16 @@ try
         Describe "Test-TargetResource" {
             Context 'Values Match' {
                 Mock -CommandName New-Object -ParameterFilter {$TypeName -eq "System.Diagnostics.Process" } -MockWith {
-                     $object = [pscustomobject]@{
-                                                StartInfo=[pscustomobject]@{
-                                                                            FileName="secedit.exe";
-                                                                            Arguments=" /configure /db $newSecDB /cfg $tmpfile /overwrite /quiet";
-                                                                            RedirectStandardOutput=$true;
-                                                                            UseShellExecute=$false;
-                                                                           };
-                                                StandardOutput=[pscustomobject]@{
-                                                                                 
-                                                                                }
-                                            }
+                    $object = [pscustomobject]@{
+                        StartInfo=[pscustomobject]@{
+                            FileName="secedit.exe";
+                            Arguments=" /configure /db $newSecDB /cfg $tmpfile /overwrite /quiet";
+                            RedirectStandardOutput=$true;
+                            UseShellExecute=$false;
+                        };
+                        StandardOutput=[pscustomobject]@{}                                                        
+                    }
+
                     $object = $object | Add-member -MemberType ScriptMethod -Name Start -Value { param() } -Force -PassThru
                     $object = $object | Add-member -MemberType ScriptMethod -Name WaitForExit -Value { param() } -Force -PassThru
                     $object.StandardOutput = $object.StandardOutput | Add-member -MemberType ScriptMethod -Name ReadToEnd -Value { param() } -Force -PassThru
@@ -104,7 +103,6 @@ try
                     Assert-MockCalled -CommandName Get-SecuritySettings -Exactly 1
                 }
             }
-
             Context 'Values do not match' {
                 Mock -CommandName Get-SecuritySettings -MockWith {return @($mockSecuritySettings)}
 
@@ -120,17 +118,16 @@ try
             Context 'Explicitly Set SecuritySetting values' {
                 
                  Mock -CommandName New-Object -ParameterFilter {$TypeName -eq "System.Diagnostics.Process" } -MockWith {
-                     $object = [pscustomobject]@{
-                                                StartInfo=[pscustomobject]@{
-                                                                            FileName="secedit.exe";
-                                                                            Arguments=" /configure /db $newSecDB /cfg $tmpfile /overwrite /quiet";
-                                                                            RedirectStandardOutput=$true;
-                                                                            UseShellExecute=$false;
-                                                                           };
-                                                StandardOutput=[pscustomobject]@{
-                                                                                 
-                                                                                }
-                                            }
+                    $object = [pscustomobject]@{
+                        StartInfo=[pscustomobject]@{
+                            FileName="secedit.exe";
+                            Arguments=" /configure /db $newSecDB /cfg $tmpfile /overwrite /quiet";
+                            RedirectStandardOutput=$true;
+                            UseShellExecute=$false;
+                        };
+                        StandardOutput=[pscustomobject]@{ }
+                    }
+
                     $object = $object | Add-member -MemberType ScriptMethod -Name Start -Value { param() } -Force -PassThru
                     $object = $object | Add-member -MemberType ScriptMethod -Name WaitForExit -Value { param() } -Force -PassThru
                     $object.StandardOutput = $object.StandardOutput | Add-member -MemberType ScriptMethod -Name ReadToEnd -Value { param() } -Force -PassThru
@@ -154,7 +151,7 @@ try
         #region Function Get-IniContent
         Describe "Get-IniContent" {
             
-            $iniPath = (Join-Path -Path $PSScriptRoot -ChildPath "sample.inf")
+            $iniPath = "$PSScriptRoot..\..\..\Misc\TestHelpers\sample.inf"
 
             It 'Should not Throw' {
                 {Get-IniContent -Path $iniPath} | Should Not Throw
@@ -173,16 +170,15 @@ try
 
             Mock -CommandName New-Object -ParameterFilter {$TypeName -eq "System.Diagnostics.Process" } -MockWith {
                      $object = [pscustomobject]@{
-                                                StartInfo=[pscustomobject]@{
-                                                                            FileName="secedit.exe";
-                                                                            Arguments=" /configure /db $newSecDB /cfg $tmpfile /overwrite /quiet";
-                                                                            RedirectStandardOutput=$true;
-                                                                            UseShellExecute=$false;
-                                                                           };
-                                                StandardOutput=[pscustomobject]@{
-                                                                                 
-                                                                                }
-                                            }
+                            StartInfo=[pscustomobject]@{
+                                FileName="secedit.exe";
+                                Arguments=" /configure /db $newSecDB /cfg $tmpfile /overwrite /quiet";
+                                RedirectStandardOutput=$true;
+                                UseShellExecute=$false;
+                            };
+                            StandardOutput=[pscustomobject]@{}
+                        }
+
                     $object = $object | Add-member -MemberType ScriptMethod -Name Start -Value { param() } -Force -PassThru
                     $object = $object | Add-member -MemberType ScriptMethod -Name WaitForExit -Value { param() } -Force -PassThru
                     $object.StandardOutput = $object.StandardOutput | Add-member -MemberType ScriptMethod -Name ReadToEnd -Value { param() } -Force -PassThru
@@ -206,16 +202,15 @@ try
 
             Mock -CommandName New-Object -ParameterFilter {$TypeName -eq "System.Diagnostics.Process" } -MockWith {
                      $object = [pscustomobject]@{
-                                                StartInfo=[pscustomobject]@{
-                                                                            FileName="secedit.exe";
-                                                                            Arguments=" /configure /db $newSecDB /cfg $tmpfile /overwrite /quiet";
-                                                                            RedirectStandardOutput=$true;
-                                                                            UseShellExecute=$false;
-                                                                           };
-                                                StandardOutput=[pscustomobject]@{
-                                                                                 
-                                                                                }
-                                            }
+                        StartInfo=[pscustomobject]@{
+                            FileName="secedit.exe";
+                            Arguments=" /configure /db $newSecDB /cfg $tmpfile /overwrite /quiet";
+                            RedirectStandardOutput=$true;
+                            UseShellExecute=$false;
+                            };
+                        StandardOutput=[pscustomobject]@{ }  
+                    }
+
                     $object = $object | Add-member -MemberType ScriptMethod -Name Start -Value { param() } -Force -PassThru
                     $object = $object | Add-member -MemberType ScriptMethod -Name WaitForExit -Value { param() } -Force -PassThru
                     $object.StandardOutput = $object.StandardOutput | Add-member -MemberType ScriptMethod -Name ReadToEnd -Value { param() } -Force -PassThru
