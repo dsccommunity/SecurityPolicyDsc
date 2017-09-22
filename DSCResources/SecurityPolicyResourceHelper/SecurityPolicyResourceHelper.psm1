@@ -370,3 +370,108 @@ function ConvertTo-Sid
 
     return $sid.Value
 }
+
+
+<#
+    .SYNOPSIS
+        Retrieves the Security Option Data to map the policy name and values as they appear in the Security Template Snap-in
+
+    .PARAMETER FilePath
+        Path to the file containing the Security Option Data
+#>
+function Get-PolicyOptionData
+{
+    [OutputType([hashtable])]
+    [CmdletBinding()]
+    Param 
+    (
+        [Parameter(Mandatory = $true)]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformation()]
+        [hashtable]
+        $FilePath
+    )
+    return $FilePath
+}
+
+<#
+    .SYNOPSIS
+        Returns all the set-able parameters in the SecurityOption resource
+#>
+function Get-PolicyOptionList
+{
+    [OutputType([array])]
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter( Mandatory = $true)]
+        [string]
+        $ModuleName
+    )
+
+    $commonParameters = @( 'Name' )
+    $commonParameters += [System.Management.Automation.PSCmdlet]::CommonParameters
+    $commonParameters += [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
+    $moduleParameters = ( Get-Command -Name Set-TargetResource -Module $ModuleName ).Parameters.Keys | 
+        Where-Object -FilterScript { $PSItem -notin $commonParameters }
+
+    return $moduleParameters
+}
+
+<#
+    .SYNOPSIS
+        Creates the INF file content that contains the security option configurations
+
+    .PARAMETER SystemAccessPolicies
+        Specifies the security options that pertain to [System Access] policies
+
+    .PARAMETER RegistryPolicies
+        Specifies the security opions that are managed via [Registry Values]
+#>
+function Add-PolicyOption
+{
+    [OutputType([System.Object[]])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [Collections.ArrayList]
+        $SystemAccessPolicies,
+
+        [Parameter()]
+        [Collections.ArrayList]
+        $RegistryPolicies,
+
+        [Parameter()]
+        [Collections.ArrayList]
+        $KerberosPolicies
+    )
+
+    # insert the appropiate INI section
+    if ( [string]::IsNullOrWhiteSpace( $RegistryPolicies ) -eq $false )
+    {
+        $RegistryPolicies.Insert(0,'[Registry Values]')
+    }
+
+    if ( [string]::IsNullOrWhiteSpace( $SystemAccessPolicies ) -eq $false )
+    {
+        $SystemAccessPolicies.Insert(0,'[System Access]')
+    }
+
+    if ( [string]::IsNullOrWhiteSpace( $KerberosPolicies ) -eq $false )
+    {
+        $KerberosPolicies.Insert(0,'[System Access]')
+    }
+
+    $iniTemplate = @(
+        "[Unicode]"
+        "Unicode=yes"
+        $systemAccessPolicies
+        "[Version]"
+        'signature="$CHICAGO$"'
+        "Revision=1"
+        $KerberosPolicies
+        $registryPolicies
+    )
+
+    return $iniTemplate
+}

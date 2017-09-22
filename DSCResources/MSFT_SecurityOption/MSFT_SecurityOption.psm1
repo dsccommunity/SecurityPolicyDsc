@@ -26,15 +26,15 @@ function Get-TargetResource
 
     $returnValue = @{}
     $currentSecurityPolicy = Get-SecurityPolicy -Area SECURITYPOLICY
-    $securityOptionData = Get-SecurityOptionData
-    $securityOptionList = Get-SecurityOptionList
+    $securityOptionData = Get-PolicyOptionData -FilePath $("$PSScriptRoot\SecurityOptionData.psd1").Normalize()
+    $securityOptionList = Get-PolicyOptionList -ModuleName MSFT_SecurityOption
     
     foreach ( $securityOption in $securityOptionList )
     {
         $section = $securityOptionData.$securityOption.Section
         Write-Verbose -Message ( $script:localizedData.Section -f $section )
         $valueName = $securityOptionData.$securityOption.Value
-        Write-Verbose  -Message ( $script:localizedData.Value -f $valueName )
+        Write-Verbose -Message ( $script:localizedData.Value -f $valueName )
         $options = $securityOptionData.$securityOption.Option
         Write-Verbose -Message ( $script:localizedData.Option -f $($options -join ',') )
         $currentValue = $currentSecurityPolicy.$section.$valueName
@@ -499,12 +499,12 @@ function Set-TargetResource
     $securityOptionList = Get-SecurityOptionList
     $securityOptionData = Get-SecurityOptionData
     $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
-    $securityOptionsToAddInf = "$env:TEMP\userRightsToAdd.inf"
+    $securityOptionsToAddInf = "$env:TEMP\securityOptionsToAdd.inf"
 
     $desiredPolicies = $PSBoundParameters.GetEnumerator() | Where-Object -FilterScript { $PSItem.key -in $securityOptionList }
 
     foreach ( $policy in $desiredPolicies )
- {
+    {
         $testParameters = @{
             Name = 'Test'
             $policy.Key = $policy.Value
@@ -528,7 +528,7 @@ function Set-TargetResource
                 }
                 else
                 {
-                    $newValue = "$( $policyData.Option.String )" + "$( $policy.Value )"
+                    $newValue = "$($policyData.Option.String)" + "$($policy.Value)"
                 }
             }
             elseIf ( $policy.Key -eq 'Network_security_Configure_encryption_types_allowed_for_Kerberos' )
@@ -1025,95 +1025,6 @@ function Test-TargetResource
 
     # if the code made it this far we must be in a desired state
     return $true
-}
-
-<#
-    .SYNOPSIS
-        Retrieves the Security Option Data to map the policy name and values as they appear in the Security Template Snap-in
-
-    .PARAMETER FilePath
-        Path to the file containing the Security Option Data
-#>
-function Get-SecurityOptionData
-{
-    [OutputType([hashtable])]
-    [CmdletBinding()]
-    Param 
-    (
-        [Parameter()]
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformation()]
-        [hashtable]
-        $FilePath = ("$PSScriptRoot\SecurityOptionData.psd1").Normalize()
-    )
-    return $FilePath
-}
-
-<#
-    .SYNOPSIS
-        Returns all the set-able parameters in the SecurityOption resource
-#>
-function Get-SecurityOptionList
-{
-    [OutputType([array])]
-    [CmdletBinding()]
-    Param ()
-
-    $commonParameters = @( 'Name' )
-    $commonParameters += [System.Management.Automation.PSCmdlet]::CommonParameters
-    $commonParameters += [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
-    $moduleParameters = ( Get-Command -Name Set-TargetResource -Module MSFT_SecurityOption ).Parameters.Keys | 
-        Where-Object -FilterScript { $PSItem -notin $commonParameters }
-
-    return $moduleParameters
-}
-
-<#
-    .SYNOPSIS
-        Creates the INF file content that contains the security option configurations
-
-    .PARAMETER SystemAccessPolicies
-        Specifies the security options that pertain to [System Access] policies
-
-    .PARAMETER RegistryPolicies
-        Specifies the security opions that are managed via [Registry Values]
-#>
-function Add-PolicyOption
-{
-    [OutputType([System.Object[]])]
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [Collections.ArrayList]
-        $SystemAccessPolicies,
-
-        [Parameter()]
-        [Collections.ArrayList]
-        $RegistryPolicies
-    )
-
-    # insert the appropiate INI section
-    if ( [string]::IsNullOrWhiteSpace( $RegistryPolicies ) -eq $false )
-    {
-        $RegistryPolicies.Insert(0,'[Registry Values]')
-    }
-
-    if ( [string]::IsNullOrWhiteSpace( $SystemAccessPolicies ) -eq $false )
-    {
-        $SystemAccessPolicies.Insert(0,'[System Access]')
-    }
-
-    $iniTemplate = @(
-        "[Unicode]"
-        "Unicode=yes"
-        $systemAccessPolicies
-        "[Version]"
-        'signature="$CHICAGO$"'
-        "Revision=1"
-        $registryPolicies
-    )
-
-    return $iniTemplate
 }
 
 <#
