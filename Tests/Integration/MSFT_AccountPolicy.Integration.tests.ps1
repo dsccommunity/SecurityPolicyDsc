@@ -42,8 +42,8 @@ try
             } | Should Not Throw
         }
         #endregion
-        $helperPath = (Join-Path -Path (Split-Path ( Split-Path $PSScriptRoot -Parent ))`
-            -ChildPath 'DSCResources\SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1')
+        $moduleBase = (Get-Module SecurityPolicyDsc -ListAvailable).ModuleBase
+        $helperPath = (Join-Path -Path $moduleBase -ChildPath 'DSCResources\SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') 
         Import-Module $helperPath -Force
         $resourcePath = (Get-DscResource -Name $script:DSCResourceName).Path
         Import-Module $resourcePath -Force -PassThru
