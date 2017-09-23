@@ -42,10 +42,8 @@ try
             } | Should Not Throw
         }
         #endregion
-         
-        Import-Module "$env:ProgramFiles\WindowsPowerShell\Modules\SecurityPolicyDsc\DSCResources\SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1" -Force
-        $resourcePath = (Get-DscResource -Name $script:DSCResourceName).Path
-        Import-Module $resourcePath -Force -PassThru
+        
+        Import-Module "$env:ProgramFiles\WindowsPowerShell\Modules\SecurityPolicyDsc\DSCResources\MSFT_AccountPolicy\MSFT_AccountPolicy.psm1" -Force
         $currentAccountPolicies = Get-TargetResource -Name 'IntegrationTests'
         foreach ( $key in $accountPolicies.Keys)
         {
