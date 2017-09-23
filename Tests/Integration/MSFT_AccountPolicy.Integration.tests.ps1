@@ -42,7 +42,9 @@ try
             } | Should Not Throw
         }
         #endregion
-
+        $helperPath = (Join-Path -Path (Split-Path ( Split-Path $pwd -Parent ))`
+            -ChildPath 'DSCResources\SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1')
+        Import-Module $helperPath -Force
         $resourcePath = (Get-DscResource -Name $script:DSCResourceName).Path
         Import-Module $resourcePath -Force -PassThru
         $currentAccountPolicies = Get-TargetResource -Name 'IntegrationTests'
