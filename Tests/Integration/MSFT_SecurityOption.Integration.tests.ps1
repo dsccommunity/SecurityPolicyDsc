@@ -43,13 +43,11 @@ try
         }
         #endregion
 
-        $resourcePath = (Get-DscResource -Name $script:DSCResourceName).Path
-        Import-Module $resourcePath -Force
-        $currentSecurityOptions = Get-TargetResource -Name 'IntegrationTests'
+        $currentSecurityOptions = Get-DscConfiguration
         foreach ( $key in $securityOptions.Keys)
         {
             It 'Should have set the SecurityOption: $key and parameters should match' {
-                $securityOptions[$key]  | Should Be $currentSecurityOptions[$key]
+                $securityOptions.$key  | Should Be $currentSecurityOptions.$key
             }
         }
     }

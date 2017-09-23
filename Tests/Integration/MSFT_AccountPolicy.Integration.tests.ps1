@@ -43,12 +43,11 @@ try
         }
         #endregion
         
-        Import-Module "$env:ProgramFiles\WindowsPowerShell\Modules\SecurityPolicyDsc\DSCResources\MSFT_AccountPolicy\MSFT_AccountPolicy.psm1" -Force
-        $currentAccountPolicies = Get-TargetResource -Name 'IntegrationTests'
+        $currentAccountPolicies = Get-DscConfiguration
         foreach ( $key in $accountPolicies.Keys)
         {
             It 'Should have set the Account Policy: $key and parameters should match' {
-                $accountPolicies[$key]  | Should Be $currentAccountPolicies[$key]
+                $accountPolicies.$key | Should Be $currentAccountPolicies.$key
             }
         }
     }
