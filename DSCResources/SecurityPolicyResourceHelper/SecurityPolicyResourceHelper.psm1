@@ -411,7 +411,7 @@ function Get-PolicyOptionList
     $commonParameters = @( 'Name' )
     $commonParameters += [System.Management.Automation.PSCmdlet]::CommonParameters
     $commonParameters += [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
-    $moduleParameters = ( Get-Command -Name Set-TargetResource -Module $ModuleName ).Parameters.Keys | 
+    $moduleParameters = ( Get-Command -Name 'Set-TargetResource' -Module $ModuleName ).Parameters.Keys | 
         Where-Object -FilterScript { $PSItem -notin $commonParameters }
 
     return $moduleParameters
