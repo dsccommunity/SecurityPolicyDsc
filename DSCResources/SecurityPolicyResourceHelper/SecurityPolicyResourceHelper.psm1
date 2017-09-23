@@ -459,7 +459,7 @@ function Add-PolicyOption
 
     if ( [string]::IsNullOrWhiteSpace( $KerberosPolicies ) -eq $false )
     {
-        $KerberosPolicies.Insert(0,'[System Access]')
+        $KerberosPolicies.Insert(0,'[Kerberos Policy]')
     }
 
     $iniTemplate = @(
@@ -475,3 +475,4 @@ function Add-PolicyOption
 
     return $iniTemplate
 }
+

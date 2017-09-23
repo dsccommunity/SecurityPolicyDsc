@@ -496,8 +496,8 @@ function Set-TargetResource
     $registryPolicies = @()
     $systemAccessPolicies = @()
     $nonComplaintPolicies = @()
-    $securityOptionList = Get-SecurityOptionList
-    $securityOptionData = Get-SecurityOptionData
+    $securityOptionList = Get-PolicyOptionList -ModuleName MSFT_SecurityOption
+    $securityOptionData = Get-PolicyOptionData -FilePath $("$PSScriptRoot\SecurityOptionData.psd1").Normalize()
     $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
     $securityOptionsToAddInf = "$env:TEMP\securityOptionsToAdd.inf"
 
@@ -1047,7 +1047,7 @@ function ConvertTo-KerberosEncryptionOption
 
     $reverseOptions = @{}
     $kerberosSecurityOptionName = "Network_security_Configure_encryption_types_allowed_for_Kerberos"
-    $securityOptionData =  Get-SecurityOptionData
+    $securityOptionData = Get-PolicyOptionData -FilePath $("$PSScriptRoot\SecurityOptionData.psd1").Normalize()
     $kerberosOptionValues = $securityOptionData[$kerberosSecurityOptionName].Option
 
     $newValue = $(($EncryptionValue -split ',')[-1])
@@ -1089,7 +1089,7 @@ function ConvertTo-KerberosEncryptionValue
 
     $sumResult = 0
     $kerberosSecurityOptionName = "Network_security_Configure_encryption_types_allowed_for_Kerberos"
-    $securityOptionData =  Get-SecurityOptionData
+    $securityOptionData = Get-PolicyOptionData -FilePath $("$PSScriptRoot\SecurityOptionData.psd1").Normalize()
     $kerberosOptionValues = $securityOptionData[$kerberosSecurityOptionName].Option
 
     foreach ( $type in $EncryptionType )
