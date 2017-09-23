@@ -1,6 +1,6 @@
 
 $script:DSCModuleName   = 'SecurityPolicyDsc'
-$script:DSCResourceName = 'MSFT_SecurityOption'
+$script:DSCResourceName = 'MSFT_AccountPolicy'
 
 #region HEADER
 # Integration Test Template Version: 1.1.2
@@ -45,11 +45,11 @@ try
 
         $resourcePath = (Get-DscResource -Name $script:DSCResourceName).Path
         Import-Module $resourcePath -Force
-        $currentSecurityOptions = Get-TargetResource -Name 'IntegrationTests'
-        foreach ( $key in $securityOptions.Keys)
+        $currentAccountPolicies = Get-TargetResource -Name 'IntegrationTests'
+        foreach ( $key in $accountPolicies.Keys)
         {
             It 'Should have set the SecurityOption: $key and parameters should match' {
-                $securityOptions[$key]  | Should Be $currentSecurityOptions[$key]
+                $accountPolicies[$key]  | Should Be $currentAccountPolicies[$key]
             }
         }
     }

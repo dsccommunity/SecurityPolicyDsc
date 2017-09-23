@@ -30,7 +30,7 @@ try
                     ConvertTo-LocalFriendlyName -Identity $sid | should be 'BUILTIN\Administrators'
                 }
 
-                It "Should return $env:USERDOMAIN\user1" {   
+                It "Should return $env:USERDOMAIN\administrator" {   
                     ConvertTo-LocalFriendlyName -Identity 'administrator' | Should be "$env:USERDOMAIN\administrator"
                 }
             }
