@@ -44,7 +44,7 @@ try
         #endregion
 
         $resourcePath = (Get-DscResource -Name $script:DSCResourceName).Path
-        Import-Module $resourcePath -Force
+        Import-Module $resourcePath -Force -PassThru
         $currentAccountPolicies = Get-TargetResource -Name 'IntegrationTests'
         foreach ( $key in $accountPolicies.Keys)
         {
