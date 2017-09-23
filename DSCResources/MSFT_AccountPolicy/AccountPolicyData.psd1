@@ -1,3 +1,4 @@
+
 @{
     "Enforce_password_history" = @{
         Value   = 'PasswordHistorySize'
@@ -114,4 +115,3 @@
         }        
     }
 }
- 
