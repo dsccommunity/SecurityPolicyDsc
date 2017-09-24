@@ -30,7 +30,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 * **Name**: A unique name of the AccountPolicy resource instance. This is not used during configuration but needed
 to ensure the resource configuration is unique.
 ## For explanation of below settings, please consult Account Policies Reference.
-* ## https://technet.microsoft.com/en-us/library/jj852214(v=ws.11).aspx
+* # https://technet.microsoft.com/en-us/library/jj852214(v=ws.11).aspx
 * **Enforce_password_history**
 * **Maximum_Password_Age**
 * **Minimum_Password_Age**
@@ -52,7 +52,7 @@ to ensure the resource configuration is unique.
 to ensure the resource configuration instance is unique.
 
 ## For explanation of below settings, please consult Security Policy Reference.
-* ## https://technet.microsoft.com/en-us/library/jj852268(v=ws.11).aspx
+* # https://technet.microsoft.com/en-us/library/jj852268(v=ws.11).aspx
 * **Accounts_Administrator_account_status**
 * **Accounts_Block_Microsoft_accounts**
 * **Accounts_Guest_account_status**
