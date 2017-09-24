@@ -46,7 +46,7 @@ try
         $currentAccountPolicies = Get-DscConfiguration
         foreach ( $key in $accountPolicies.Keys)
         {
-            It 'Should have set the Account Policy: $key and parameters should match' {
+            It "Should have set the Account Policy: $key and parameters should match" {
                 $accountPolicies.$key | Should Be $currentAccountPolicies.$key
             }
         }

@@ -46,7 +46,7 @@ try
         $currentSecurityOptions = Get-DscConfiguration
         foreach ( $key in $securityOptions.Keys)
         {
-            It 'Should have set the SecurityOption: $key and parameters should match' {
+            It "Should have set the SecurityOption: $key and parameters should match" {
                 $securityOptions.$key  | Should Be $currentSecurityOptions.$key
             }
         }

@@ -94,6 +94,20 @@ try
                     $securityPolicy.SeLoadDriverPrivilege | Should Be 'BUILTIN\Administrators'
                 }
             }
+            Context 'Add-PolicyOption' {
+                It 'Should have [System Access]' {
+                    [string[]]$testString = "EnableAdminAccount=1"
+                    [string]$addOptionResult = Add-PolicyOption -SystemAccessPolicies $testString
+
+                    $addOptionResult | Should Match '[System Access]'
+                }
+                It 'Shoud have [Kerberos Policy]' {
+                    [string[]]$testString = "MaxClockSkew=5"
+                    [string]$addOptionResult = Add-PolicyOption -KerberosPolicies $testString
+
+                    $addOptionResult | Should Match '[Kerberos Policy]'    
+                }
+            }
         } 
     }
 }

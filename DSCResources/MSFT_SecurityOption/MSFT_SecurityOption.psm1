@@ -47,7 +47,7 @@ function Get-TargetResource
         }
         else
         {
-            Write-Verbose "Retrieving value for $valueName"
+            Write-Verbose -Message ( $script:localizedData.RetrievingValue -f $valueName )
             if ( $currentSecurityPolicy.$section.keys -contains $valueName )
             {
                 if ( $securityOption -eq "Network_security_Configure_encryption_types_allowed_for_Kerberos" )
@@ -1002,7 +1002,8 @@ function Test-TargetResource
         if ( $currentSecurityOptions.ContainsKey( $policy ) )
         {
             Write-Verbose -Message ( $script:localizedData.TestingPolicy -f $policy )
-            Write-Verbose -Message ( $script:localizedData.PoliciesBeingCompared -f $($currentSecurityOptions[$policy] -join ',' ), $($desiredSecurityOptions[$policy] -join ',' ) )
+            Write-Verbose -Message ( $script:localizedData.PoliciesBeingCompared`
+                -f $($currentSecurityOptions[$policy] -join ',' ), $($desiredSecurityOptions[$policy] -join ',' ) )
             
             if ( $desiredSecurityOptions[$policy] -is [array] )
             {

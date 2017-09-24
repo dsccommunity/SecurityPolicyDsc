@@ -4,6 +4,11 @@ Import-Module -Name (Join-Path -Path ( Split-Path $PSScriptRoot -Parent ) `
 -Force
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_AccountPolicy'
+
+<#
+    .SYNOPSIS
+        Retreives the current account policy configuration
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -39,7 +44,7 @@ function Get-TargetResource
         }
         else
         {
-            Write-Verbose "Retrieving value for $valueName"
+            Write-Verbose -Message ( $script:localizedData.RetrievingValue -f $valueName )
             if ( $currentSecurityPolicy.$section.keys -contains $valueName )
             {
                 $resultValue = ( $accountPolicyData.$accountPolicy.Option.GetEnumerator() | 
@@ -56,6 +61,10 @@ function Get-TargetResource
 }
 
 
+<#
+    .SYNOPSIS
+        Sets the specified account policy
+#>
 function Set-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
@@ -200,6 +209,10 @@ function Set-TargetResource
 }
 
 
+<#
+    .SYNOPSIS
+        Tests the desired account policy configuration against the current configuration
+#>
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
