@@ -5,7 +5,7 @@
         Section = 'System Access'
         Option  = @{
             String = ''
-        }        
+        }
     }
 
     "Maximum_Password_Age" = @{
@@ -13,7 +13,7 @@
         Section = 'System Access'
         Option  = @{
             String = ''
-        }        
+        }
     }
 
     "Minimum_Password_Age" = @{
@@ -21,7 +21,7 @@
         Section = 'System Access'
         Option  = @{
             String = ''
-        }        
+        }
     }
 
     "Minimum_Password_Length" = @{
@@ -29,7 +29,7 @@
         Section = 'System Access'
         Option  = @{
             String = ''
-        }        
+        }
     }
 
     "Password_must_meet_complexity_requirements" = @{
@@ -38,7 +38,7 @@
         Option  = @{
             Enabled  = '1'
             Disabled = '0'
-        }        
+        }
     }
 
     "Store_passwords_using_reversible_encryption" = @{
@@ -47,7 +47,7 @@
         Option  = @{
             Enabled = '1'
             Disabled = '0'
-        }        
+        }
     }
 
     "Account_lockout_duration" = @{
@@ -55,7 +55,7 @@
         Section = 'System Access'
         Option  = @{
             String = ''
-        }        
+        }
     }
 
     "Account_lockout_threshold" = @{
@@ -63,7 +63,7 @@
         Section = 'System Access'
         Option  = @{
             String = ''
-        }        
+        }
     }
 
     "Reset_account_lockout_counter_after" = @{
@@ -71,7 +71,7 @@
         Section = 'System Access'
         Option  = @{
             String = ''
-        }        
+        }
     }
 
     "Enfore_user_logon_restrictions" = @{
@@ -80,7 +80,7 @@
         Option  = @{
             Enabled = '1'
             Disabled = '0'
-        }        
+        }
     }
 
     "Maximum_lifetime_for_service_ticket" = @{
@@ -88,7 +88,7 @@
         Section = 'Kerberos Policy'
         Option  = @{
             String = ''
-        }        
+        }
     }
 
     "Maximum_lifetime_for_user_ticket" = @{
@@ -96,7 +96,7 @@
         Section = 'Kerberos Policy'
         Option  = @{
             String = ''
-        }        
+        }
     }
 
     "Maximum_lifetime_for_user_ticket_renewal" = @{
@@ -104,7 +104,7 @@
         Section = 'Kerberos Policy'
         Option  = @{
             String = ''
-        }        
+        }
     }
 
     "Maximum_tolerance_for_computer_clock_synchronization" = @{
@@ -112,6 +112,6 @@
         Section = 'Kerberos Policy'
         Option  = @{
             String = ''
-        }        
+        }
     }
 }

@@ -36,7 +36,7 @@ function Get-TargetResource
         Write-Verbose -Message ( $script:localizedData.Option -f $($options -join ',') )
         $currentValue = $currentSecurityPolicy.$section.$valueName
         Write-Verbose -Message ( $script:localizedData.RawValue -f $($currentValue -join ',') )
-    
+
         if ( $options.keys -eq 'String' )
         {
             $stringValue = ( $currentValue -split ',' )[-1]
@@ -47,15 +47,15 @@ function Get-TargetResource
             Write-Verbose -Message ( $script:localizedData.RetrievingValue -f $valueName )
             if ( $currentSecurityPolicy.$section.keys -contains $valueName )
             {
-                $resultValue = ( $accountPolicyData.$accountPolicy.Option.GetEnumerator() | 
-                    Where-Object -Property Value -eq $currentValue.Trim() ).Name             
+                $resultValue = ( $accountPolicyData.$accountPolicy.Option.GetEnumerator() |
+                    Where-Object -Property Value -eq $currentValue.Trim() ).Name
             }
             else
             {
                 $resultValue = $null
             }
-        }        
-        $returnValue.Add( $accountPolicy, $resultValue )    
+        }
+        $returnValue.Add( $accountPolicy, $resultValue )
     }
     return $returnValue
 }
@@ -167,7 +167,7 @@ function Set-TargetResource
             {
                 if ( [String]::IsNullOrWhiteSpace( $policyData.Option.String ) )
                 {
-                    $newValue = $policy.value                    
+                    $newValue = $policy.value
                 }
                 else
                 {
@@ -191,13 +191,14 @@ function Set-TargetResource
     }
 
     $infTemplate = Add-PolicyOption -SystemAccessPolicies $systemAccessPolicies -KerberosPolicies $registryPolicies
-    
+
     Out-File -InputObject $infTemplate -FilePath $accountPolicyToAddInf -Encoding unicode -Force
 
     Invoke-Secedit -InfPath $accountPolicyToAddInf -SecEditOutput $script:seceditOutput
+    Remove-Item -Path $accountPolicyToAddInf
 
     $successResult = Test-TargetResource @PSBoundParameters
-    
+
     if ( $successResult -eq $false )
     {
         throw "$($script:localizedData.SetFailed -f $($nonComplaintPolicies -join ','))"
@@ -286,7 +287,7 @@ function Test-TargetResource
     )
 
     $currentAccountPolicies = Get-TargetResource -Name $Name -Verbose:0
-    
+
     $desiredAccountPolicies = $PSBoundParameters
 
     foreach ( $policy in $desiredAccountPolicies.Keys )
@@ -295,11 +296,11 @@ function Test-TargetResource
         {
             Write-Verbose -Message ( $script:localizedData.TestingPolicy -f $policy )
             Write-Verbose -Message ( $script:localizedData.PoliciesBeingCompared -f $($currentAccountPolicies[$policy] -join ',' ), $($desiredAccountPolicies[$policy] -join ',' ) )
-                       
+
             if ( $currentAccountPolicies[$policy] -ne $desiredAccountPolicies[$policy] )
             {
                 return $false
-            }                    
+            }
         }
     }
 
