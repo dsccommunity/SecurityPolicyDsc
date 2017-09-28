@@ -2,8 +2,8 @@
 
 A wrapper around secedit.exe to allow you to configure local security policies.  This resource requires a Windows OS with secedit.exe.
 
-* **This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-* **For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact * **[opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## How to Contribute
 
@@ -13,7 +13,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 * **UserRightsAssignment**: Configures user rights assignments in local security policies.
 * **SecurityTemplate**: Configures user rights assignments that are defined in an INF file.
-* **SecuritySetting**: Configures additional Security Settings typically associated with SecurityPolicy.
+* **AccountPolicy**: Configures the policies under the Account Policy node in local security policies.
 * **SecurityOption**: Configures the policies under the Security Options node in local security policies.
 
 ## UserRightsAssignment
@@ -25,31 +25,26 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 * **Path**: Path to an INF file that defines the desired security policies.
 
-## SecuritySetting
+## AccountPolicy
 
-* **Name**: Name of Security Setting you are changing. Required to allow setting of any value without having to specify a hashtable or array while ensuring that resource has a KEY parameter.
-## For explanation of below settings, please consult Security Policy Reference.
-* ## https://technet.microsoft.com/en-us/library/dn452423(v=ws.11).aspx
-* **ClearTextPassword**
-* **EnableAdminAccount**
-* **EnableGuestAccount**
-* **ForceLogoffWhenHourExpire**
-* **LockoutBadCount**
-* **LockoutDuration**
-* **LSAAnonymousNameLookup**
-* **MaxClockSkew**
-* **MaximumPasswordAge**
-* **MaxRenewAge**
-* **MaxServiceAge**
-* **MaxTicketAge**
-* **MinimumPasswordAge**
-* **MinimumPasswordLength**
-* **NewAdministratorName**
-* **NewGuestName**
-* **PasswordComplexity**
-* **PasswordHistorySize**
-* **ResetLockoutCount**
-* **TicketValidateClient**
+* **Name**: A unique name of the AccountPolicy resource instance. This is not used during configuration but needed
+to ensure the resource configuration is unique.
+## For explanation of below settings, please consult Account Policies Reference.
+* # https://technet.microsoft.com/en-us/library/jj852214(v=ws.11).aspx
+* **Enforce_password_history**
+* **Maximum_Password_Age**
+* **Minimum_Password_Age**
+* **Minimum_Password_Length**
+* **Password_must_meet_complexity_requirements**
+* **Store_passwords_using_reversible_encryption**
+* **Account_lockout_duration**
+* **Account_lockout_threshold**
+* **Reset_account_lockout_counter_after**
+* **Enfore_user_logon_restrictions**
+* **Maximum_lifetime_for_service_ticket**
+* **Maximum_lifetime_for_user_ticket**
+* **Maximum_lifetime_for_user_ticket_renewal**
+* **Maximum_tolerance_for_computer_clock_synchronization**
 
 ## SecurityOption
 
@@ -57,7 +52,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 to ensure the resource configuration instance is unique.
 
 ## For explanation of below settings, please consult Security Policy Reference.
-* ## https://technet.microsoft.com/en-us/library/jj852268(v=ws.11).aspx
+* # https://technet.microsoft.com/en-us/library/jj852268(v=ws.11).aspx
 * **Accounts_Administrator_account_status**
 * **Accounts_Block_Microsoft_accounts**
 * **Accounts_Guest_account_status**
@@ -157,6 +152,8 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
+* Added SecurityOption and AccountPolicy
+* Removed SecuritySetting
 
 ### 1.5.0.0
 * Refactored user rights assignment to read and test easier. 

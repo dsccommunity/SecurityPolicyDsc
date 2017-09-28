@@ -13,7 +13,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName 'SecurityPolicyDsc' `
-    -DSCResourceName 'MSFT_SecurityOption' `
+    -DSCResourceName 'MSFT_AccountPolicy' `
     -TestType Unit
 
 #endregion HEADER
@@ -25,30 +25,30 @@ function Invoke-TestCleanup {
 # Begin Testing
 try
 {
-    InModuleScope 'MSFT_SecurityOption' {
+    InModuleScope 'MSFT_AccountPolicy' {
         
-        $dscResourceInfo = Get-DscResource -Name SecurityOption
+        $dscResourceInfo = Get-DscResource -Name AccountPolicy
         $testParameters = @{
             Name = 'Test'
-            User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users = 'Automatically deny elevation request'
-            Accounts_Administrator_account_status = 'Enabled'
+            Maximum_Password_Age = '15'
+            Store_passwords_using_reversible_encryption = 'Enabled'
         }
 
         Describe 'SecurityOptionHelperTests' {
-            Context 'Get-PolicyOptionData' {
-                $dataFilePath = Join-Path -Path $dscResourceInfo.ParentPath -ChildPath SecurityOptionData.psd1
-                $securityOptionData = Get-PolicyOptionData -FilePath $dataFilePath.Normalize()
-                $securityOptionPropertyList    = $dscResourceInfo.Properties | Where-Object -FilterScript { $PSItem.Name -match '_' }
+            Context 'Get-AccountPolicyData' {
+                $dataFilePath = Join-Path -Path $dscResourceInfo.ParentPath -ChildPath AccountPolicyData.psd1
+                $accountPolicyData = Get-PolicyOptionData -FilePath $dataFilePath.Normalize()
+                $accountPolicyPropertyList = $dscResourceInfo.Properties | Where-Object -FilterScript { $PSItem.Name -match '_' }
 
                 It 'Should have the same count as property count' {
-                    $securityOptionDataPropertyCount = $securityOptionData.Count                    
-                    $securityOptionDataPropertyCount | Should Be $securityOptionPropertyList.Name.Count
+                    $accountPolicyDataPropertyCount = $accountPolicyData.Count                    
+                    $accountPolicyDataPropertyCount | Should Be $accountPolicyPropertyList.Name.Count
                 }
 
-                foreach ( $name in $securityOptionData.Keys )
+                foreach ( $name in $accountPolicyData.Keys )
                 {
                     It "Should contain property name: $name" {                        
-                        $securityOptionPropertyList.Name -contains $name | Should Be $true                        
+                        $accountPolicyPropertyList.Name -contains $name | Should Be $true                        
                     }
                 }
                 
@@ -70,17 +70,17 @@ try
             }
 
             Context 'Add-PolicyOption' {
-                It 'Should have [Registry Values]' {
-                    [string[]]$testString = "Registry\path"
-                    [string]$addOptionResult = Add-PolicyOption -RegistryPolicies $testPath
-
-                    $addOptionResult | Should Match '[Registry Values]'
-                }
                 It 'Should have [System Access]' {
                     [string[]]$testString = "EnableAdminAccount=1"
-                    [string]$addOptionResult = Add-PolicyOption -SystemAccessPolicies $testPath
+                    [string]$addOptionResult = Add-PolicyOption -SystemAccessPolicies $testString
 
                     $addOptionResult | Should Match '[System Access]'
+                }
+                It 'Shoud have [Kerberos Policy]' {
+                    [string[]]$testString = "MaxClockSkew=5"
+                    [string]$addOptionResult = Add-PolicyOption -KerberosPolicies $testString
+
+                    $addOptionResult | Should Match '[Kerberos Policy]'    
                 }
             }
         }
@@ -100,7 +100,7 @@ try
         }
         Describe 'Test-TargetResource' {
             $falseMockResult = @{
-                User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users = 'Prompt for crendentials'
+                Store_passwords_using_reversible_encryption = 'Disabled'
             }
             Context 'General operation tests' {
                 It 'Should return a bool' {
@@ -128,9 +128,9 @@ try
         Describe 'Set-TargetResource' {
             Mock -CommandName Invoke-Secedit -MockWith {}
             
-            Context 'Successfully applied security policy' {
+            Context 'Successfully applied account policy' {
                 Mock -CommandName Test-TargetResource -MockWith { $true }
-                It 'Should not throw when successfully updated security option' {
+                It 'Should not throw when successfully updated account policy' {
                     { Set-TargetResource @testParameters } | Should Not throw
                 }
                 
@@ -138,9 +138,9 @@ try
                     Assert-MockCalled -CommandName Test-TargetResource -Times 2
                 }
             }
-            Context 'Failed to apply security policy' {
+            Context 'Failed to apply account policy' {
                 Mock -CommandName Test-TargetResource -MockWith { $false }
-                It 'Should throw when failed to apply security policy' {
+                It 'Should throw when failed to apply account policy' {
                     { Set-TargetResource @testParameters } | Should throw
                 }
 
