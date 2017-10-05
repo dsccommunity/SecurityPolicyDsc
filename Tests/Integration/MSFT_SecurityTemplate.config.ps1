@@ -4,7 +4,7 @@ $userName = "TestUser" + ([guid]::NewGuid().guid).substring(0,6)
 $policy = 'SeTrustedCredManAccessPrivilege'
 $directoryEntry = [ADSI]"WinNT://$env:COMPUTERNAME,Computer"
 $user = $directoryEntry.Create("User", $userName)
-$user.setpassword('P@ssword1')
+$user.setpassword('P@ssword!QAZ2wsx')
 $user.SetInfo()
 
 $infTemplate =@"

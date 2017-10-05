@@ -1,7 +1,7 @@
 
 Import-Module -Name (Join-Path -Path ( Split-Path $PSScriptRoot -Parent ) `
-                               -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
-                               -Force
+    -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
+    -Force
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_UserRightsAssignment'
 
@@ -85,11 +85,11 @@ function Get-TargetResource
         [System.Boolean]
         $Force
     )
-    
+
     $userRightPolicy = Get-UserRightPolicy -Name $Policy
 
     Write-Verbose -Message "Policy: $($userRightPolicy.FriendlyName). Identity: $($userRightPolicy.Identity)"
-    
+
     return  @{
         Policy   = $userRightPolicy.FriendlyName
         Identity = $userRightPolicy.Identity
@@ -98,7 +98,7 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-        Gets the current identities assigned to a user rights assignment.
+        Sets the current identities assigned to a user rights assignment.
     .PARAMETER Policy
         Specifies the policy to configure.
     .PARAMETER Identity
@@ -175,14 +175,13 @@ function Set-TargetResource
         [System.Boolean]
         $Force = $false
     )
-    
+
     $userRightConstant = Get-UserRightConstant -Policy $Policy
 
     $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
     $userRightsToAddInf   = "$env:TEMP\userRightsToAdd.inf" 
-    $idsToAdd = $Identity -join ","
-
-    if ($null -eq $Identity)
+    
+    if (Test-IdentityIsNull -Identity $Identity)
     {
         Write-Verbose -Message ($script:localizedData.IdentityIsNullRemovingAll -f $Policy)
         $idsToAdd = $null
@@ -203,9 +202,12 @@ function Set-TargetResource
                 $users += $usersList | Where-Object {$_ -match $env:COMPUTERNAME}
                 $accounts += $users | ForEach-Object {(Get-CimInstance win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
             }
-            Default { $accounts += $_} 
+            Default 
+            {
+                $accounts += ConvertTo-LocalFriendlyName -Identity $_
+            } 
         }
-        
+
         if ($Ensure -eq "Present")
         {
             if (!$Force)
@@ -214,33 +216,47 @@ function Set-TargetResource
                 {
                     if ($id -notin $accounts)
                     {
-                        $accounts += $id
+                        $accounts += ConvertTo-LocalFriendlyName -Identity $id
                     }
                 }
             }
         }
         else
         {
-            $accounts = $accounts | Where-Object {$_ -notin $currentRights.Identity}
+            if ($currentRights.Identity.Count -gt 1)
+            {            
+                [collections.arraylist]$currentIdentities = $currentRights.Identity
+
+                foreach ($account in $accounts)
+                {
+                    $currentIdentities.Remove($account)
+                }
+
+                $accounts = $currentIdentities
+            }
+            else
+            {
+                $accounts = ""    
+            }
         }
-        
+
         $idsToAdd = $accounts -join ","
-        
+
         Write-Verbose -Message ($script:localizedData.GrantingPolicyRightsToIds -f $Policy, $idsToAdd)
     }
-       
+
     Out-UserRightsInf -InfPolicy $userRightConstant -UserList $idsToAdd -FilePath $userRightsToAddInf
     Write-Debug -Message ($script:localizedData.EchoDebugInf -f $userRightsToAddInf)
 
-    Write-Verbose "Attempting to Set ($($idstoAdd -join ",")) for Policy $($Policy))"
-    Invoke-Secedit -UserRightsToAddInf $userRightsToAddInf -SecEditOutput $seceditOutput
-    
+    Write-Verbose -Message  ($script:localizedData.AttemptingSetPolicy -f $($idstoAdd -join ","), $Policy)
+    Invoke-Secedit -InfPath $userRightsToAddInf -SecEditOutput $script:seceditOutput
+
     # Verify secedit command was successful
 
     if ( Test-TargetResource -Identity $Identity -Policy $Policy -Ensure $Ensure )
     {
         Write-Verbose -Message ($script:localizedData.TaskSuccess)
-        Write-Verbose "$(($idsToAdd -join ",")) successfully given Rights ($Policy)"
+        Write-Verbose -Message ($script:localizedData.UserRightAppliedSuccess -f $($idsToAdd -join ","), $Policy)
     }
     else
     {
@@ -252,11 +268,11 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Gets the current identities assigned to a user rights assignment.
+    Tests the current identities assigned to a user rights assignment.
     .PARAMETER Policy
-        Specifies the policy to configure.
+    Specifies the policy to configure.
     .PARAMETER Identity
-        Specifies the identity to add to a user rights assignment.
+    Specifies the identity to add to a user rights assignment.
 #>
 function Test-TargetResource
 {
@@ -365,45 +381,25 @@ function Test-TargetResource
         }
         Default
         {
-            # To test for identities we have to do a dump of the security database the dump does not specify the 
-            # computerName on local accounts. So we need to test for that scenario.
-            if ( $_ -match '\\' -and $_ -notmatch 'Builtin')
-            {
-                if ( Test-IsLocalAccount -Identity $_ )
-                {
-                    $accounts += ( $_ -split '\\' )[-1]
-                }
-                else
-                {
-                    $accounts += ConvertTo-LocalFriendlyName $_
-                }
-            }
-            elseif( ($_ -match 'Builtin\\') -or ($_ -match 'NT Authority\\') -or ($_ -match 'NT Service\\') -or ($_ -match 'Window Manager\\') )
-            {
-                $accounts += $_
-            }
-            else
-            {
-                $accounts += ConvertTo-LocalFriendlyName $(($_) -replace '\*')
-            }    
-        } 
+            $accounts += ConvertTo-LocalFriendlyName -Identity $PSItem             
+        }
     }
-        
+
     if ($Ensure -eq "Present")
     {        
         $usersWithoutRight = $accounts | Where-Object { $_ -notin $currentUserRights.Identity }
         if ($usersWithoutRight)
         {
-            Write-Verbose "$($usersWithoutRight -join ",") do not have Privilege ($Policy)"
+            Write-Verbose -Message ($script:localizedData.IdentityDoesNotHaveRight -f $($usersWithoutRight -join ","), $Policy)
             return $false
         }
 
         if ($Force)
-        {
+        { 
             $effectiveUsers = $currentUserRights.Identity | Where-Object {$_ -notin $accounts}
             if ($effectiveUsers.Count -gt 0)
             {
-                Write-Verbose "$($effectiveUsers -join ",") are extraneous users with Privilege ($Policy)"
+                Write-Verbose -Message ($script:localizedData.ShouldNotHaveRights -f $($effectiveUsers -join ","), $Policy)
                 return $false
             }
         }
@@ -412,17 +408,16 @@ function Test-TargetResource
     }
     else
     {
-        $UsersWithRight = $accounts | Where-Object {$_ -in $userRights.Identity}
+        $UsersWithRight = $accounts | Where-Object {$_ -in $currentUserRights.Identity}
         if ($UsersWithRight.Count -gt 0)
         {
-            Write-Verbose "$($UsersWithRight) should NOT have Privilege ($Policy)"
+            Write-Verbose -Message ($script:localizedData.ShouldNotHaveRights -f $($UsersWithRight -join ","), $Policy)
             return $false
         }
 
         $returnValue = $true
     }
-
-    # If the code made it this far all identities have the desired user rights
+    
     return $returnValue
 }
 
@@ -519,9 +514,9 @@ function Get-UserRightConstant
         [System.String]
         $Policy
     )
-    
+
     $friendlyNames = Get-Content -Path $PSScriptRoot\UserRightsFriendlyNameConversions.psd1 -Raw | 
-        ConvertFrom-StringData
+    ConvertFrom-StringData
 
     $friendlyNames[$Policy]
 }
@@ -558,43 +553,17 @@ function Out-UserRightsInf
         $FilePath
     )
 
-    $infTemplate =@"
-[Unicode]
-Unicode=yes
-[Privilege Rights]
-$InfPolicy = $UserList
-[Version]
-signature="`$CHICAGO`$"
-Revision=1
+    $infTemplate = @"
+    [Unicode]
+    Unicode=yes
+    [Privilege Rights]
+    $InfPolicy = $UserList
+    [Version]
+    signature="`$CHICAGO`$"
+    Revision=1
 "@
 
     $null = Out-File -InputObject $infTemplate -FilePath $FilePath -Encoding unicode
-}
-<#
-    .SYNOPSIS
-        Test if an account is a local account
-    .PARAMETER Identity
-        The identity of the user or group to be added or removed from the user rights assignment
-#>
-function Test-IsLocalAccount
-{
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity
-    )
-
-    $localAccounts = Get-CimInstance Win32_UserAccount -Filter "LocalAccount='True'"
-
-    if ( $localAccounts.Caption -contains $Identity )
-    {
-        return $true
-    }
-    else
-    {
-        return $false
-    }
 }
 
 Export-ModuleMember -Function *-TargetResource

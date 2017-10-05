@@ -45,7 +45,6 @@ function Get-LocalizedData
     if (-not (Test-Path -Path $localizedStringFileLocation))
     {
         # Fallback to en-US
-
         $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath 'en-US'
     }
 
@@ -60,12 +59,12 @@ function Get-LocalizedData
 <#
     .SYNOPSIS
         Wrapper around secedit.exe used to make changes
-    .PARAMETER UserRightsToAddInf
+    .PARAMETER InfPath
         Path to an INF file with desired user rights assignment policy configuration
     .PARAMETER SeceditOutput
         Path to secedit log file output
     .EXAMPLE
-        Invoke-Secedit -UserRightsToAddInf C:\secedit.inf -SeceditOutput C:\seceditLog.txt
+        Invoke-Secedit -InfPath C:\secedit.inf -SeceditOutput C:\seceditLog.txt
 #>
 function Invoke-Secedit
 {
@@ -75,7 +74,7 @@ function Invoke-Secedit
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $UserRightsToAddInf,
+        $InfPath,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -89,16 +88,27 @@ function Invoke-Secedit
     $script:localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
 
     $tempDB = "$env:TEMP\DscSecedit.sdb"
-    $arguments = "/configure /db $tempDB /cfg $userRightsToAddInf"
+    $arguments = "/configure /db $tempDB /cfg $InfPath"
 
     if ($OverWrite)
     {
         $arguments = $arguments + " /overwrite /quiet"
     }
 
+    Write-Verbose "secedit arguments: $arguments"
     Start-Process -FilePath secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput -NoNewWindow -Wait
 }
 
+<#
+    .SYNOPSIS
+        Returns security policies configuration settings
+
+    .PARAMETER Area
+        Specifies the security areas to be returned
+
+    .NOTES
+    General notes
+#>
 function Get-SecurityPolicy
 {
     [OutputType([Hashtable])]
@@ -108,14 +118,26 @@ function Get-SecurityPolicy
         [Parameter(Mandatory = $true)]
         [ValidateSet("SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES")]
         [System.String]
-        $Area
+        $Area,
+
+        [Parameter()]
+        [System.String]
+        $FilePath
     )
 
-    $currentSecurityPolicyFilePath = Join-Path -Path $env:temp -ChildPath 'SecurityPolicy.inf'   
-    Write-Debug -Message ($localizedData.EchoDebugInf -f $currentSecurityPolicyFilePath)
+    if ($FilePath)
+    {
+        $currentSecurityPolicyFilePath = $FilePath
+    }
+    else
+    {
+        $currentSecurityPolicyFilePath = Join-Path -Path $env:temp -ChildPath 'SecurityPolicy.inf' 
+          
+        Write-Debug -Message ($localizedData.EchoDebugInf -f $currentSecurityPolicyFilePath)
 
-    secedit.exe /export /cfg $currentSecurityPolicyFilePath /areas $Area | Out-Null
-    
+        secedit.exe /export /cfg $currentSecurityPolicyFilePath /areas $Area | Out-Null
+    }
+
     $policyConfiguration = @{}
     switch -regex -file $currentSecurityPolicyFilePath
     {
@@ -135,7 +157,7 @@ function Get-SecurityPolicy
         "(.+?)\s*=(.*)" # Key
         {
             $name,$value =  $matches[1..2] -replace "\*"
-            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
+            $policyConfiguration[$section][$name] = $value
         }
     }
 
@@ -143,13 +165,21 @@ function Get-SecurityPolicy
     {
         "USER_RIGHTS" 
         {
-            $returnValue = $policyConfiguration.'Privilege Rights'
+            $returnValue = @{}
+            $privilegeRights = $policyConfiguration.'Privilege Rights'
+            foreach ($key in $privilegeRights.keys )
+            {
+                $identity = ConvertTo-LocalFriendlyName -Identity $($privilegeRights[$key] -split ",").Trim()
+                $returnValue.Add( $key,$identity )                 
+            }
+
             continue
         }
+        Default
+        {
+            $returnValue = $policyConfiguration 
+        }
     }
-
-    # Cleanup the temp file
-    Remove-Item -Path $currentSecurityPolicyFilePath
 
     return $returnValue
 }
@@ -192,104 +222,61 @@ function Get-UserRightsAssignment
         "(.+?)\s*=(.*)" # Key
         {
             $name,$value =  $matches[1..2] -replace "\*"
-            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName $($value -split ','))
+            $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName -Identity $($value -split ','))
         }
     }
+
     return $policyConfiguration
 }
 
 <#
     .SYNOPSIS
-        Converts SID to a friendly name
-    .PARAMETER SID
-        SID of an identity being converted
+        Resolves username or SID to a NTAccount friendly name so desired and actual idnetities can be compared
+
+    .PARAMETER Identity
+        An Identity in the form of a friendly name (testUser1,contoso\testUser1) or SID
+
     .EXAMPLE
-        ConvertTo-LocalFriendlyName -SID 'S-1-5-21-3623811015-3361044348-30300820-1013'
+        PS C:\> ConvertTo-LocalFriendlyName testuser1
+        Server1\TestUser1
+
+        This example demonstrats converting a username without a domain name specified
+
+    .EXAMPLE
+        PS C:\> ConvertTo-LocalFriendlyName -Identity S-1-5-21-3084257389-385233670-139165443-1001
+        Server1\TestUser1
+
+        This example demonstrats converting a SID to a frendlyname
 #>
 function ConvertTo-LocalFriendlyName
 {
-    [OutputType([String[]])]
-    [CmdletBinding()]
+    [OutPutType([string])]
+    [CmdletBinding()] 
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [System.String[]]
-        $SID
+        $Identity
     )
-    
-    $localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
 
-    $friendlyNames = [String[]]@()
-
-    foreach ($id in $SID)
+    $friendlyNames = @()
+    foreach ($id in $Identity)
     {
-        $id = $id.Trim()
-        
-        Write-Verbose  "Received Identity ($id)"
+        $id = ( $id -replace "\*" ).Trim()
         if ($null -ne $id -and $id -match '^(S-[0-9-]{3,})')
         {
-            try
-            {
-                Write-Verbose -Message ($localizedData:TranslateID -f $id)
-                $securityIdentifier = [System.Security.Principal.SecurityIdentifier]($id)
-                $user = $securityIdentifier.Translate([System.Security.Principal.NTAccount])
-                $friendlyNames += $user.value
-                Write-Verbose -Message ($localizedData:IdTranslatesTo -f $id,$user.Value)
-            }
-            catch
-            {
-                Write-Warning -Message ($localizedData.ErrorCantTranslateSID -f $id, $($_.Exception.Message) )
-            }
+            # if id is a SID convert to a NTAccount
+            $friendlyNames += ConvertTo-NTAccount -SID $id
         }
-        elseIf ( ( Get-DomainRole ) -eq 'DomainController')
+        else
         {
-            $friendlyNames += "$($env:USERDOMAIN + '\' + $($id))"
-        }
-        elseIf ($id -notmatch '^S-')
-        {
-            $friendlyNames += "$($id)"
+            # if id is an friendly name convert it to a sid and then to an NTAccount
+            $friendlyNames += ( ConvertTo-Sid -Identity $id | ConvertTo-NTAccount )
         }
     }
 
     return $friendlyNames
 }
-
-<#
-    .SYNOPSIS
-        Converts int value from the Win32_ComputerSystem class into its text equivalent
-#>
-function Get-DomainRole
-{
-    [OutputType([String])]
-    [CmdletBinding()]
-    param()
-
-    $domainRoleInt = (Get-CimInstance -ClassName Win32_ComputerSystem).DomainRole
-
-    if ($domainRoleInt -eq 0)
-    {
-        $domainRole = 'StandaloneWorkstation'
-    }
-    elseif($domainRoleInt -eq 1)
-    {
-        $domainRole = 'MemberWorkstation'
-    }
-    elseif($domainRoleInt -eq 2)
-    {
-        $domainRole = 'StandaloneServer'
-    }
-    elseif($domainRoleInt -eq 3)
-    {
-        $domainRole = 'MemberServer'
-    }
-    else
-    {
-        $domainRole = 'DomainController'
-    }
-
-    return $domainRole
-}
-
 
 <#
     .SYNOPSIS
@@ -320,3 +307,172 @@ function Test-IdentityIsNull
         return $false
     }
 }
+
+<#
+    .SYNOPSIS
+        Convert a SID to a common friendly name
+    .PARAMETER SID
+        SID of an identity being converted
+#>
+function ConvertTo-NTAccount
+{
+    [OutPutType([string])]
+    [CmdletBinding()] 
+    param
+    (
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [System.Security.Principal.SecurityIdentifier[]]
+        $SID 
+    )
+
+    $result = @()
+    foreach ($id in $SID)
+    {
+        $id = ( $id -replace "\*" ).Trim()
+
+        $sidId = [System.Security.Principal.SecurityIdentifier]$id
+        $result += $sidId.Translate([System.Security.Principal.NTAccount]).value
+    }
+
+    return $result
+}
+
+<#
+    .SYNOPSIS
+        Converts an identity to a SID to verify it's a valid account
+
+    .PARAMETER Identity
+        Specifies the identity to convert
+
+    .NOTES
+        General notes
+#>
+function ConvertTo-Sid
+{
+    [OutputType([System.Security.Principal.SecurityIdentifier])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [String]
+        $Identity
+    )
+ 
+    $id = [System.Security.Principal.NTAccount]$Identity
+    try
+    {
+        $sid = $id.Translate([System.Security.Principal.SecurityIdentifier])
+    }
+    catch
+    {
+        throw "Could not convert Identity: $Identity to SID"
+    }
+
+    return $sid.Value
+}
+
+
+<#
+    .SYNOPSIS
+        Retrieves the Security Option Data to map the policy name and values as they appear in the Security Template Snap-in
+
+    .PARAMETER FilePath
+        Path to the file containing the Security Option Data
+#>
+function Get-PolicyOptionData
+{
+    [OutputType([hashtable])]
+    [CmdletBinding()]
+    Param 
+    (
+        [Parameter(Mandatory = $true)]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformation()]
+        [hashtable]
+        $FilePath
+    )
+    return $FilePath
+}
+
+<#
+    .SYNOPSIS
+        Returns all the set-able parameters in the SecurityOption resource
+#>
+function Get-PolicyOptionList
+{
+    [OutputType([array])]
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]
+        $ModuleName
+    )
+
+    $commonParameters = @( 'Name' )
+    $commonParameters += [System.Management.Automation.PSCmdlet]::CommonParameters
+    $commonParameters += [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
+    $moduleParameters = ( Get-Command -Name "Set-TargetResource" -Module $ModuleName ).Parameters.Keys | 
+        Where-Object -FilterScript { $PSItem -notin $commonParameters }
+
+    return $moduleParameters
+}
+
+<#
+    .SYNOPSIS
+        Creates the INF file content that contains the security option configurations
+
+    .PARAMETER SystemAccessPolicies
+        Specifies the security options that pertain to [System Access] policies
+
+    .PARAMETER RegistryPolicies
+        Specifies the security opions that are managed via [Registry Values]
+#>
+function Add-PolicyOption
+{
+    [OutputType([System.Object[]])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [Collections.ArrayList]
+        $SystemAccessPolicies,
+
+        [Parameter()]
+        [Collections.ArrayList]
+        $RegistryPolicies,
+
+        [Parameter()]
+        [Collections.ArrayList]
+        $KerberosPolicies
+    )
+
+    # insert the appropiate INI section
+    if ( [string]::IsNullOrWhiteSpace( $RegistryPolicies ) -eq $false )
+    {
+        $RegistryPolicies.Insert(0,'[Registry Values]')
+    }
+
+    if ( [string]::IsNullOrWhiteSpace( $SystemAccessPolicies ) -eq $false )
+    {
+        $SystemAccessPolicies.Insert(0,'[System Access]')
+    }
+
+    if ( [string]::IsNullOrWhiteSpace( $KerberosPolicies ) -eq $false )
+    {
+        $KerberosPolicies.Insert(0,'[Kerberos Policy]')
+    }
+
+    $iniTemplate = @(
+        "[Unicode]"
+        "Unicode=yes"
+        $systemAccessPolicies
+        "[Version]"
+        'signature="$CHICAGO$"'
+        "Revision=1"
+        $KerberosPolicies
+        $registryPolicies
+    )
+
+    return $iniTemplate
+}
+
