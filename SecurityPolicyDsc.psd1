@@ -9,7 +9,7 @@
 @{
 
 # Version number of this module.
-ModuleVersion = '1.5.0.0'
+ModuleVersion = '2.0.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'e2b73194-69ef-4fa6-b949-9f62ebe04989'
@@ -47,7 +47,8 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Refactored user rights assignment to read and test easier. 
+        ReleaseNotes = '* Added SecurityOption and AccountPolicy
+* Removed SecuritySetting
 
 '
 
@@ -56,6 +57,7 @@ PrivateData = @{
 } # End of PrivateData hashtable
 
 }
+
 
 
 

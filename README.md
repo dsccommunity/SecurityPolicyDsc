@@ -152,6 +152,8 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
+
+### 2.0.0.0
 * Added SecurityOption and AccountPolicy
 * Removed SecuritySetting
 
