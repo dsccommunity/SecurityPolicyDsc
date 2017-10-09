@@ -238,7 +238,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $Interactive_logon_Require_Domain_Controller_authenticatio_to_unlock_workstation,
+        $Interactive_logon_Require_Domain_Controller_authentication_to_unlock_workstation,
 
         [Parameter()]
         [System.String]
@@ -738,7 +738,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $Interactive_logon_Require_Domain_Controller_authenticatio_to_unlock_workstation,
+        $Interactive_logon_Require_Domain_Controller_authentication_to_unlock_workstation,
 
         [Parameter()]
         [System.String]
