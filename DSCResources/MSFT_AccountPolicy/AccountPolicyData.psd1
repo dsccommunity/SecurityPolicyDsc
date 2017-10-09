@@ -74,7 +74,7 @@
         }
     }
 
-    "Enfore_user_logon_restrictions" = @{
+    "Enforce_user_logon_restrictions" = @{
         Value   = 'TicketValidateClient'
         Section = 'Kerberos Policy'
         Option  = @{
