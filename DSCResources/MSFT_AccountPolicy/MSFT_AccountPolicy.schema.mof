@@ -12,7 +12,7 @@ class MSFT_AccountPolicy : OMI_BaseResource
     [Write] Uint32 Account_lockout_duration;
     [Write] Uint32 Account_lockout_threshold;
     [Write] Uint32 Reset_account_lockout_counter_after;
-    [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Enfore_user_logon_restrictions;
+    [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Enforce_user_logon_restrictions;
     [Write] Uint32 Maximum_lifetime_for_service_ticket;
     [Write] Uint32 Maximum_lifetime_for_user_ticket;
     [Write] Uint32 Maximum_lifetime_for_user_ticket_renewal;

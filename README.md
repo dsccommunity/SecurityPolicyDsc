@@ -40,7 +40,7 @@ to ensure the resource configuration is unique.
 * **Account_lockout_duration**
 * **Account_lockout_threshold**
 * **Reset_account_lockout_counter_after**
-* **Enfore_user_logon_restrictions**
+* **Enforce_user_logon_restrictions**
 * **Maximum_lifetime_for_service_ticket**
 * **Maximum_lifetime_for_user_ticket**
 * **Maximum_lifetime_for_user_ticket_renewal**

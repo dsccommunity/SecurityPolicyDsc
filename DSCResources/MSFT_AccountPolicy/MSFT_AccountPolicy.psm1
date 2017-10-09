@@ -117,7 +117,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateSet("Enabled","Disabled")]
         [System.String]
-        $Enfore_user_logon_restrictions,
+        $Enforce_user_logon_restrictions,
 
         [Parameter()]
         [System.UInt32]
@@ -267,7 +267,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateSet("Enabled","Disabled")]
         [System.String]
-        $Enfore_user_logon_restrictions,
+        $Enforce_user_logon_restrictions,
 
         [Parameter()]
         [System.UInt32]
