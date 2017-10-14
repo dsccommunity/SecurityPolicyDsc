@@ -15,7 +15,7 @@
         Option  = @{
             "This policy is disabled" = '4,0'
             "Users cant add Microsoft accounts" = '4,1'
-            "Userscant add or log on with Microsoft accounts" = '4,3'
+            "Users cant add or log on with Microsoft accounts" = '4,3'
         }        
     }
 
