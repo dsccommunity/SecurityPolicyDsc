@@ -42,8 +42,15 @@ function Get-TargetResource
     
         if ( $options.keys -eq 'String' )
         {
-            $stringValue = ( $currentValue -split ',' )[-1]
-            $resultValue = ( $stringValue -replace '"' ).Trim()
+            if ($securityOption -eq 'Interactive_logon_Message_text_for_users_attempting_to_log_on')
+            {
+                $resultValue = ($currentValue -split '7,')[-1].Trim()
+            }
+            else
+            {
+                $stringValue = ( $currentValue -split ',' )[-1]
+                $resultValue = ( $stringValue -replace '"' ).Trim()
+            }
         }
         else
         {
