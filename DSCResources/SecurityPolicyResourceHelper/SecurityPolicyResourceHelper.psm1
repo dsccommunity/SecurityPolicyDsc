@@ -169,8 +169,11 @@ function Get-SecurityPolicy
             $privilegeRights = $policyConfiguration.'Privilege Rights'
             foreach ($key in $privilegeRights.keys )
             {
-                $identity = ConvertTo-LocalFriendlyName -Identity $($privilegeRights[$key] -split ",").Trim()
-                $returnValue.Add( $key,$identity )                 
+                
+                If ($privilegeRights[$key]){
+                    $identity = ConvertTo-LocalFriendlyName -Identity $($privilegeRights[$key] -split ",").Trim()
+                    $returnValue.Add( $key, $identity )
+                }               
             }
 
             continue
