@@ -66,7 +66,7 @@ try
                             }
                         }
                     }
-                }
+                }                
             }
 
             Context 'Add-PolicyOption' {
@@ -81,6 +81,23 @@ try
                     [string]$addOptionResult = Add-PolicyOption -SystemAccessPolicies $testPath
 
                     $addOptionResult | Should Match '[System Access]'
+                }
+            }
+
+            Context 'Format-LogonMessage' {
+                $singleLineMessage = 'Line 1 - Message for line 1.,Line 2 - Message for line 2"," words"," seperated"," with"," commas.,Line 3 - Message for line 3.'
+                $multiLineMessage = @'
+                Line 1 - Message for line 1.
+                Line 2 - Message for line 2, words, seperated, with, commas.
+                Line 3 - Message for line 3.
+'@
+                It 'Should return a string' {
+                    $result = Format-LogonMessage -Message $multiLineMessage
+                    $result -is [string] | Should be $true
+                }
+                It 'Should match SingleLineMessage' {
+                    $result = Format-LogonMessage -Message $multiLineMessage
+                    $result -eq $singleLineMessage | Should be $true
                 }
             }
         }
