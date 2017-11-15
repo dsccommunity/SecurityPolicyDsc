@@ -152,6 +152,8 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
+* Updated SecurityOption to handle multi-line logon messages
+* SecurityOption: Added logic and example to handle scenario when using Interactive_logon_Message_text_for_users_attempting_to_log_on
 
 ### 2.0.0.0
 * Added SecurityOption and AccountPolicy
