@@ -15,7 +15,7 @@
         Option  = @{
             "This policy is disabled" = '4,0'
             "Users cant add Microsoft accounts" = '4,1'
-            "Userscant add or log on with Microsoft accounts" = '4,3'
+            "Users cant add or log on with Microsoft accounts" = '4,3'
         }        
     }
 
@@ -307,7 +307,7 @@
         }
     }
     
-    "Interactive_logon_Require_Domain_Controller_authenticatio_to_unlock_workstation" = @{    
+    "Interactive_logon_Require_Domain_Controller_authentication_to_unlock_workstation" = @{    
         Value   = "MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\ForceUnlockLogon"
         Section = 'Registry Values'
         Option  = @{

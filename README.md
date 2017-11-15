@@ -40,7 +40,7 @@ to ensure the resource configuration is unique.
 * **Account_lockout_duration**
 * **Account_lockout_threshold**
 * **Reset_account_lockout_counter_after**
-* **Enfore_user_logon_restrictions**
+* **Enforce_user_logon_restrictions**
 * **Maximum_lifetime_for_service_ticket**
 * **Maximum_lifetime_for_user_ticket**
 * **Maximum_lifetime_for_user_ticket_renewal**
@@ -88,7 +88,7 @@ to ensure the resource configuration instance is unique.
 * **Interactive_logon_Message_title_for_users_attempting_to_log_on**
 * **Interactive_logon_Number_of_previous_logons_to_cache_in_case_domain_controller_is_not_available**
 * **Interactive_logon_Prompt_user_to_change_password_before_expiration**
-* **Interactive_logon_Require_Domain_Controller_authenticatio_to_unlock_workstation**
+* **Interactive_logon_Require_Domain_Controller_authentication_to_unlock_workstation**
 * **Interactive_logon_Require_smart_card**
 * **Interactive_logon_Smart_card_removal_behavior**
 * **Microsoft_network_client_Digitally_sign_communications_always**
@@ -152,6 +152,10 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
+
+### 2.1.0.0
+* Updated SecurityOption to handle multi-line logon messages
+* SecurityOption: Added logic and example to handle scenario when using Interactive_logon_Message_text_for_users_attempting_to_log_on
 
 ### 2.0.0.0
 * Added SecurityOption and AccountPolicy

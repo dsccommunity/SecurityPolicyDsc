@@ -38,7 +38,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write] String Interactive_logon_Message_title_for_users_attempting_to_log_on;
     [Write] String Interactive_logon_Number_of_previous_logons_to_cache_in_case_domain_controller_is_not_available;
     [Write] String Interactive_logon_Prompt_user_to_change_password_before_expiration;
-    [Write] String Interactive_logon_Require_Domain_Controller_authenticatio_to_unlock_workstation;
+    [Write] String Interactive_logon_Require_Domain_Controller_authentication_to_unlock_workstation;
     [Write] String Interactive_logon_Require_smart_card;
     [Write, ValueMap{"No Action","Lock workstation","Force logoff","Disconnect if a remote Remote Desktop Services session"}, Values{"No Action","Lock workstation","Force logoff","Disconnect if a remote Remote Desktop Services session"}] String Interactive_logon_Smart_card_removal_behavior;
     [Write] String Microsoft_network_client_Digitally_sign_communications_always;

@@ -42,8 +42,15 @@ function Get-TargetResource
     
         if ( $options.keys -eq 'String' )
         {
-            $stringValue = ( $currentValue -split ',' )[-1]
-            $resultValue = ( $stringValue -replace '"' ).Trim()
+            if ( $securityOption -eq 'Interactive_logon_Message_text_for_users_attempting_to_log_on'  )
+            {
+                $resultValue = ($currentValue -split '7,')[-1].Trim()
+            }
+            else
+            {
+                $stringValue = ( $currentValue -split ',' )[-1]
+                $resultValue = ( $stringValue -replace '"' ).Trim()
+            }
         }
         else
         {
@@ -238,7 +245,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $Interactive_logon_Require_Domain_Controller_authenticatio_to_unlock_workstation,
+        $Interactive_logon_Require_Domain_Controller_authentication_to_unlock_workstation,
 
         [Parameter()]
         [System.String]
@@ -524,11 +531,19 @@ function Set-TargetResource
             {
                 if ( [String]::IsNullOrWhiteSpace( $policyData.Option.String ) )
                 {
-                    $newValue = $policy.value                    
+                    $newValue = $policy.Value                                                         
                 }
                 else
-                {
-                    $newValue = "$($policyData.Option.String)" + "$($policy.Value)"
+                {                    
+                    if( $policy.Key -eq 'Interactive_logon_Message_text_for_users_attempting_to_log_on' )
+                    {
+                        $message = Format-LogonMessage -Message $policy.Value
+                        $newValue = "$($policyData.Option.String)" + $message
+                    }
+                    else
+                    {                                           
+                        $newValue = "$($policyData.Option.String)" + "$($policy.Value)"
+                    }
                 }
             }
             elseIf ( $policy.Key -eq 'Network_security_Configure_encryption_types_allowed_for_Kerberos' )
@@ -738,7 +753,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $Interactive_logon_Require_Domain_Controller_authenticatio_to_unlock_workstation,
+        $Interactive_logon_Require_Domain_Controller_authentication_to_unlock_workstation,
 
         [Parameter()]
         [System.String]
@@ -1001,13 +1016,21 @@ function Test-TargetResource
     {
         if ( $currentSecurityOptions.ContainsKey( $policy ) )
         {
+            if ( $policy -eq 'Interactive_logon_Message_text_for_users_attempting_to_log_on' )
+            {
+                $desiredSecurityOptionValue = Format-LogonMessage -Message $desiredSecurityOptions[$policy]
+            }
+            else
+            {
+                $desiredSecurityOptionValue = $desiredSecurityOptions[$policy]
+            }
             Write-Verbose -Message ( $script:localizedData.TestingPolicy -f $policy )
             Write-Verbose -Message ( $script:localizedData.PoliciesBeingCompared`
-                -f $($currentSecurityOptions[$policy] -join ',' ), $($desiredSecurityOptions[$policy] -join ',' ) )
+                -f $($currentSecurityOptions[$policy] -join ',' ), $($desiredSecurityOptionValue -join ',' ) )
             
-            if ( $desiredSecurityOptions[$policy] -is [array] )
+            if ( $desiredSecurityOptionValue -is [array] )
             {
-                $compareResult = Compare-Array -ReferenceObject $currentSecurityOptions[$policy] -DifferenceObject $desiredSecurityOptions[$policy]
+                $compareResult = Compare-Array -ReferenceObject $currentSecurityOptions[$policy] -DifferenceObject $desiredSecurityOptionValue
 
                 if ( -not $compareResult )
                 {
@@ -1016,7 +1039,7 @@ function Test-TargetResource
             }
             else
             {
-                if ( $currentSecurityOptions[$policy] -ne $desiredSecurityOptions[$policy] )
+                if ( $currentSecurityOptions[$policy] -ne $desiredSecurityOptionValue )
                 {
                     return $false
                 }
@@ -1062,7 +1085,6 @@ function ConvertTo-KerberosEncryptionOption
     $result = $reverseOptions.Keys | Where-Object -FilterScript { $_ -band $newValue } | ForEach-Object -Process {$reverseOptions.Get_Item($_)}
     return $result
 }
-
     
 <#
     .SYNOPSIS
@@ -1122,6 +1144,41 @@ function Compare-Array
     )
 
     return $null -eq (Compare-Object $ReferenceObject $DifferenceObject ).SideIndicator
+}
+
+<#
+    .SYNOPSIS
+        Secedit.exe uses an INI file with security policies and their associated values (key value pair).
+        The value to a policy must be on one line. If the message is a multiple line message a comma is used
+        for the line break and if a comma is intended for grammar it must be surrounded with double quotes.
+
+    .PARAMETER Message
+        The logon message to be formated
+#>
+function Format-LogonMessage
+{
+    [OutputType([string])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]
+        $Message
+    )
+
+    $formatText = $Message -split '\n'
+
+    if ( $formatText.count -gt 1 )
+    {
+        $lines = $formatText -split '\n' | ForEach-Object -Process { ($PSItem -replace ',','","').Trim() }
+        $resultValue = $lines -join ','
+    }
+    else
+    {
+        $resultValue = $formatText
+    }
+
+    return $resultValue
 }
 
 Export-ModuleMember -Function *-TargetResource
