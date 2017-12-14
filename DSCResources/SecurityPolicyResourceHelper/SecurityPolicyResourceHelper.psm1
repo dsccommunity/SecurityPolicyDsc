@@ -330,8 +330,24 @@ function ConvertTo-NTAccount
     {
         $id = ( $id -replace "\*" ).Trim()
 
-        $sidId = [System.Security.Principal.SecurityIdentifier]$id
-        $result += $sidId.Translate([System.Security.Principal.NTAccount]).value
+        try
+        {
+            $sidId = [System.Security.Principal.SecurityIdentifier]$id
+            $result += $sidId.Translate([System.Security.Principal.NTAccount]).value
+        }
+        catch
+        {
+            #Domain Controllers can't translate SID S-1-5-90-0
+            if($id -match "S-1-5-90-0")
+            {
+                $result += "Window Manager\Window Manager Group"
+            }
+            else
+            {
+                write-verbose "SID $id is orphaned, consider removing"
+
+            }
+        }
     }
 
     return $result
