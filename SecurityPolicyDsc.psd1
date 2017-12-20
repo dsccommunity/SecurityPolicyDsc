@@ -9,7 +9,7 @@
 @{
 
 # Version number of this module.
-ModuleVersion = '2.1.0.0'
+ModuleVersion = '2.2.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'e2b73194-69ef-4fa6-b949-9f62ebe04989'
@@ -47,8 +47,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Updated SecurityOption to handle multi-line logon messages
-* SecurityOption: Added logic and example to handle scenario when using Interactive_logon_Message_text_for_users_attempting_to_log_on
+        ReleaseNotes = '* Fixed bug in UserRightAssignment where Get-DscConfiguration would fail if it returns $Identity as single string
 
 '
 
@@ -57,6 +56,7 @@ PrivateData = @{
 } # End of PrivateData hashtable
 
 }
+
 
 
 

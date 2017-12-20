@@ -152,6 +152,8 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
+
+### 2.2.0.0
 * Fixed bug in UserRightAssignment where Get-DscConfiguration would fail if it returns $Identity as single string
 
 ### 2.1.0.0
