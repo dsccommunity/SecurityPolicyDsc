@@ -494,7 +494,7 @@ function Get-UserRightPolicy
     [PSObject]@{
         Constant     = $userRightConstant
         FriendlyName = $Name
-        Identity     = $userRights[$userRightConstant]
+        Identity     = [array]$userRights[$userRightConstant]
     }
 }
 
