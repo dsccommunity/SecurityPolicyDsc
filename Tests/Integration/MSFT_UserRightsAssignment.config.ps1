@@ -21,7 +21,7 @@ $removeGuests = @{
     Identity = 'Guests'
 }
 
-# Add an identities to we can verify it gets removed
+# Add an identities so we can verify it gets removed
 Set-TargetResource -Policy $removeAll.Policy -Identity 'Administrators' -Ensure 'Present'
 Set-TargetResource -Policy $removeGuests.Policy -Identity 'Guests' -Ensure 'Present'
 
