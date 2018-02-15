@@ -20,6 +20,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 * **Policy**: The policy name of the user rights assignment to be configured.
 * **Identity**: The identity of the user or group to be added or removed from the user rights assignment.
+* **Force**: Specifies to explicitly assign only the identities defined.
 
 ## SecurityTemplate
 
@@ -29,8 +30,8 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 * **Name**: A unique name of the AccountPolicy resource instance. This is not used during configuration but needed
 to ensure the resource configuration is unique.
-## For explanation of below settings, please consult Account Policies Reference.
-* # https://technet.microsoft.com/en-us/library/jj852214(v=ws.11).aspx
+## For explanation of below settings, please consult [Account Policies Reference](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/jj852214(v%3dws.11)).
+
 * **Enforce_password_history**
 * **Maximum_Password_Age**
 * **Minimum_Password_Age**
@@ -40,6 +41,11 @@ to ensure the resource configuration is unique.
 * **Account_lockout_duration**
 * **Account_lockout_threshold**
 * **Reset_account_lockout_counter_after**
+
+
+  (Note: The below settings pertain to Kerberos policies and must be set by a member in the domain admins group.)
+
+
 * **Enforce_user_logon_restrictions**
 * **Maximum_lifetime_for_service_ticket**
 * **Maximum_lifetime_for_user_ticket**
@@ -51,8 +57,8 @@ to ensure the resource configuration is unique.
 * **Name**: Name of security option configuration. This is not used during the configuration process but needed
 to ensure the resource configuration instance is unique.
 
-## For explanation of below settings, please consult Security Policy Reference.
-* # https://technet.microsoft.com/en-us/library/jj852268(v=ws.11).aspx
+## For explanation of below settings, please consult [Security Policy Reference](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/dn452423(v%3dws.11)).
+
 * **Accounts_Administrator_account_status**
 * **Accounts_Block_Microsoft_accounts**
 * **Accounts_Guest_account_status**
@@ -152,7 +158,9 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
-
+* Updated documentation.
+  * Add example of applying Kerberos policies
+  * Added hyper links to readme
 ### 2.2.0.0
 * Fixed bug in UserRightAssignment where Get-DscConfiguration would fail if it returns $Identity as single string
 
