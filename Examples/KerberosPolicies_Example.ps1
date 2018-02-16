@@ -1,5 +1,5 @@
 
-
+# Since kerberos policies are domain policies they can only be modified with domain admin privileges
 configuration KerberosPolicies
 {
     param
@@ -7,11 +7,12 @@ configuration KerberosPolicies
         [pscredential]
         $DomainCred
     )
+
     Import-DscResource -ModuleName SecurityPolicyDsc
 
     node localhost
     {
-        AccountPolicy LogonResrt
+        AccountPolicy KerbPolicies
         {
             Name                                                 = 'KerberosPolicies'
             Enforce_user_logon_restrictions                      = 'Enabled'
@@ -34,5 +35,6 @@ $configData = @{
     )
 }
 
-KerberosPolicies -OutputPath C:\DSC -ConfigurationData $configData
+$cred = Get-Credential -Message "Enter the credentials of a domain admin"
+KerberosPolicies -OutputPath C:\DSC -ConfigurationData $configData -DomainCred $cred
 Start-DscConfiguration -Path C:\DSC -Wait -Force -Verbose
