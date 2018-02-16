@@ -330,8 +330,13 @@ function ConvertTo-NTAccount
     {
         $id = ( $id -replace "\*" ).Trim()
 
-        $sidId = [System.Security.Principal.SecurityIdentifier]$id
-        $result += $sidId.Translate([System.Security.Principal.NTAccount]).value
+        try {
+            $sidId = [System.Security.Principal.SecurityIdentifier]$id
+            $result += $sidId.Translate([System.Security.Principal.NTAccount]).value
+        }
+        catch {
+            write-verbose "SID $id is orphaned, consider removing"
+        }
     }
 
     return $result
