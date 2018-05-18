@@ -409,7 +409,7 @@
     }
 
     "Microsoft_network_server_Server_SPN_target_name_validation_level" = @{    
-        Value   = "MACHINE\System\CurrentControlSet\Services\LanManServer\Parameters\SmbServerNameHardeningLevel "
+        Value   = "MACHINE\System\CurrentControlSet\Services\LanManServer\Parameters\SmbServerNameHardeningLevel"
         Section = 'Registry Values'
         Option  = @{
             'Off' = '4,0'
