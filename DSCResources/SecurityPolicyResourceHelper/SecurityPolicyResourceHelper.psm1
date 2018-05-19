@@ -99,6 +99,8 @@ function Invoke-Secedit
     Start-Process -FilePath secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput -NoNewWindow -Wait
 }
 
+$script:localizedData = Get-LocalizedData -ResourceName 'SecurityPolicyResourceHelper'
+
 <#
     .SYNOPSIS
         Returns security policies configuration settings
@@ -131,7 +133,7 @@ function Get-SecurityPolicy
     }
     else
     {
-        $currentSecurityPolicyFilePath = Join-Path -Path $env:temp -ChildPath 'SecurityPolicy.inf' 
+        $currentSecurityPolicyFilePath = Join-Path -Path $env:temp -ChildPath 'SecurityPolicy.inf'
           
         Write-Debug -Message ($localizedData.EchoDebugInf -f $currentSecurityPolicyFilePath)
 
@@ -170,7 +172,7 @@ function Get-SecurityPolicy
             foreach ($key in $privilegeRights.keys )
             {
                 $identity = ConvertTo-LocalFriendlyName -Identity $($privilegeRights[$key] -split ",").Trim()
-                $returnValue.Add( $key,$identity )                 
+                $returnValue.Add( $key,$identity )
             }
 
             continue
@@ -317,7 +319,7 @@ function Test-IdentityIsNull
 function ConvertTo-NTAccount
 {
     [OutPutType([string])]
-    [CmdletBinding()] 
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
@@ -331,7 +333,14 @@ function ConvertTo-NTAccount
         $id = ( $id -replace "\*" ).Trim()
 
         $sidId = [System.Security.Principal.SecurityIdentifier]$id
-        $result += $sidId.Translate([System.Security.Principal.NTAccount]).value
+        try
+        {
+            $result += $sidId.Translate([System.Security.Principal.NTAccount]).value
+        }
+        catch
+        {
+            Write-Verbose -Message "Could not translate SID: $sidId"
+        }
     }
 
     return $result
