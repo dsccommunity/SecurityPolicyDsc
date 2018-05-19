@@ -204,7 +204,7 @@ function Set-TargetResource
             }
             Default 
             {
-                $accounts += ConvertTo-LocalFriendlyName -Identity $_
+                $accounts += ConvertTo-LocalFriendlyName -Identity $PSItem -Policy $Policy -Scope 'Set'
             } 
         }
 
@@ -216,7 +216,7 @@ function Set-TargetResource
                 {
                     if ($id -notin $accounts)
                     {
-                        $accounts += ConvertTo-LocalFriendlyName -Identity $id
+                        $accounts += ConvertTo-LocalFriendlyName -Identity $id -Policy $Policy -Scope 'Set'
                     }
                 }
             }
@@ -381,7 +381,7 @@ function Test-TargetResource
         }
         Default
         {
-            $accounts += ConvertTo-LocalFriendlyName -Identity $PSItem             
+            $accounts += ConvertTo-LocalFriendlyName -Identity $PSItem -Policy $Policy             
         }
     }
 
@@ -496,29 +496,6 @@ function Get-UserRightPolicy
         FriendlyName = $Name
         Identity     = [array]$userRights[$userRightConstant]
     }
-}
-
-<#
-    .SYNOPSIS
-        Converts policy names that match the GUI to the abbreviated names used by secedit.exe
-    .PARAMETER Policy
-        Name of the policy to get friendly name for. 
-#>
-function Get-UserRightConstant
-{
-    [OutputType([string])]
-    [CmdletBinding()]
-    Param 
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Policy
-    )
-
-    $friendlyNames = Get-Content -Path $PSScriptRoot\UserRightsFriendlyNameConversions.psd1 -Raw | 
-    ConvertFrom-StringData
-
-    $friendlyNames[$Policy]
 }
 
 <#
