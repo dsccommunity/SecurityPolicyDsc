@@ -190,7 +190,7 @@ function Set-TargetResource
         }
     }
 
-    $infTemplate = Add-PolicyOption -SystemAccessPolicies $systemAccessPolicies -KerberosPolicies $registryPolicies
+    $infTemplate = Add-PolicyOption -SystemAccessPolicies $systemAccessPolicies -KerberosPolicies $kerberosPolicies
 
     Out-File -InputObject $infTemplate -FilePath $accountPolicyToAddInf -Encoding unicode -Force
 
