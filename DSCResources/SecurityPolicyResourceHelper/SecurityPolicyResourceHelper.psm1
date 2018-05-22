@@ -172,7 +172,7 @@ function Get-SecurityPolicy
             foreach ($key in $privilegeRights.keys )
             {
                 $policyName = Get-UserRightConstant -Policy $key -Inverse
-                $identity = ConvertTo-LocalFriendlyName -Identity $($privilegeRights[$key] -split ",").Trim() -Policy $policyName
+                $identity = ConvertTo-LocalFriendlyName -Identity $($privilegeRights[$key] -split ",").Trim() -Policy $policyName -Verbose:$VerbosePreference
                 $returnValue.Add( $key,$identity )
             }
 
@@ -277,12 +277,12 @@ function ConvertTo-LocalFriendlyName
         if ($null -ne $id -and $id -match '^(S-[0-9-]{3,})')
         {
             # if id is a SID convert to a NTAccount
-            $friendlyNames += ConvertTo-NTAccount -SID $id -Policy $Policy -Scope $Scope
+            $friendlyNames += ConvertTo-NTAccount -SID $id -Policy $Policy -Scope $Scope -Verbose:$VerbosePreference
         }
         else
         {
             # if id is an friendly name convert it to a sid and then to an NTAccount
-            $friendlyNames += ( ConvertTo-Sid -Identity $id | ConvertTo-NTAccount -Policy $Policy -Scope $Scope )
+            $friendlyNames += ( ConvertTo-Sid -Identity $id -Verbose:$VerbosePreference | ConvertTo-NTAccount -Policy $Policy -Scope $Scope )
         }
     }
 
@@ -359,7 +359,7 @@ function ConvertTo-NTAccount
             if ($Scope -eq 'Get')
             {
                 Write-Verbose -Message ($script:localizedData.ErrorSidTranslation -f $sidId, $Policy)
-                $result += $sidId.Value #($script:localizedData.ErrorSidTranslation)
+                $result += $sidId.Value
             }
             else
             {

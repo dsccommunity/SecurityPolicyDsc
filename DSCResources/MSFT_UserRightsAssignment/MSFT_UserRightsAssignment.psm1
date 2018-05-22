@@ -489,7 +489,7 @@ function Get-UserRightPolicy
 
     $userRightConstant = Get-UserRightConstant -Policy $Name
 
-    $userRights = Get-SecurityPolicy -Area 'USER_RIGHTS'  
+    $userRights = Get-SecurityPolicy -Area 'USER_RIGHTS' -Verbose:$VerbosePreference
 
     [PSObject]@{
         Constant     = $userRightConstant
