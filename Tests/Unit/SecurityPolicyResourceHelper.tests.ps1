@@ -33,6 +33,14 @@ try
                 It "Should return $env:USERDOMAIN\administrator" {   
                     ConvertTo-LocalFriendlyName -Identity 'administrator' | Should be "$env:USERDOMAIN\administrator"
                 }
+
+                It "Should not Throw when Scope is 'GET'" {
+                    {ConvertTo-LocalFriendlyName -Identity 'S-1-5-32-600' -Scope 'Get'} | Should Not throw
+                }
+
+                It "Should Throw when Scope is 'SET'" {
+                    {ConvertTo-LocalFriendlyName -Identity 'S-1-5-32-600' -Scope 'Set'} | Should throw
+                }
             }
             Context 'Test Invoke-Secedit' {
                 Mock Start-Process -MockWith {} -ModuleName SecurityPolicyResourceHelper
