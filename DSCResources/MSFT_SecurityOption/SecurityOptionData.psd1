@@ -104,7 +104,7 @@
         }
     }
 
-    "Devices_Allow_undock_without_having_to_log_on" = @{    
+    "Devices_Allow_undock_without_having_to_log_on" = @{
         Value   = "MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\UndockWithoutLogon"
         Section = 'Registry Values'
         Option  = @{
@@ -329,7 +329,7 @@
         Section = 'Registry Values'
         Option  = @{
             'No Action'        = '1,"0"'
-            'Lock workstation' = '1,"1"' 
+            'Lock workstation' = '1,"1"'
             'Force logoff'     = '1,"2"'
             'Disconnect if a remote Remote Desktop Services session' = '1,"3"'
         }
@@ -342,7 +342,7 @@
             Enabled  = '4,1'
             Disabled = '4,0'
         }
-    } 
+    }
 
     "Microsoft_network_client_Digitally_sign_communications_if_server_agrees" = @{
         Value   = "MACHINE\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\EnableSecuritySignature"
@@ -351,7 +351,7 @@
             Enabled  = '4,1'
             Disabled = '4,0'
         }
-    } 
+    }
 
     "Microsoft_network_client_Send_unencrypted_password_to_third_party_SMB_servers" = @{
         Value   = "MACHINE\System\CurrentControlSet\Services\LanmanWorkstation\Parameters\EnablePlainTextPassword"
@@ -556,6 +556,7 @@
             RC4_HMAC_MD5 = '4,4'
             AES128_HMAC_SHA1  = '4,8'
             AES256_HMAC_SHA1  = '4,16'
+            FUTURE = '4,2147483616'
         }
     }
 
@@ -581,11 +582,11 @@
         Value   = "MACHINE\System\CurrentControlSet\Control\Lsa\LmCompatibilityLevel"
         Section = 'Registry Values'
         Option  = @{
-            'Send LM & NTLM responses' = '4,0' 
+            'Send LM & NTLM responses' = '4,0'
             'Send LM & NTLM - use NTLMv2 session security if negotiated' = '4,1'
             'Send NTLM responses only' = '4,2'
             'Send NTLMv2 responses only' = '4,3'
-            'Send NTLMv2 responses only. Refuse LM' = '4,4' 
+            'Send NTLMv2 responses only. Refuse LM' = '4,4'
             'Send NTLMv2 responses only. Refuse LM & NTLM' = '4,5'
         }
     }
@@ -614,9 +615,9 @@
         Value   = "MACHINE\System\CurrentControlSet\Control\Lsa\MSV1_0\NTLMMinServerSec"
         Section = 'Registry Values'
         Option  = @{
-            'Require NTLMv2 session security' = '4,524288' 
-            'Require 128-bit encryption'      = '4,536870912' 
-            'Both options checked'            = '4,537395200' 
+            'Require NTLMv2 session security' = '4,524288'
+            'Require 128-bit encryption'      = '4,536870912'
+            'Both options checked'            = '4,537395200'
         }
     }
 
@@ -650,7 +651,7 @@
         Value   = "MACHINE\System\CurrentControlSet\Services\Netlogon\Parameters\AuditNTLMInDomain"
         Section = 'Registry Values'
         Option  = @{
-            'Disable' = '4,0' 
+            'Disable' = '4,0'
             'Enable for domain accounts to domain servers' = '4,1'
             'Enable for domain accounts' = '4,3'
             'Enable for domain servers' = '4,5'
@@ -684,8 +685,8 @@
         Value   = "MACHINE\System\CurrentControlSet\Control\Lsa\MSV1_0\RestrictSendingNTLMTraffic"
         Section = 'Registry Values'
         Option  = @{
-            'Allow all' = '4,0' 
-            'Audit all' = '4,1' 
+            'Allow all' = '4,0'
+            'Audit all' = '4,1'
             'Deny all'  = '4,2'
         }
     }
@@ -694,7 +695,7 @@
         Value   = "MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Setup\RecoveryConsole\SecurityLevel"
         Section = 'Registry Values'
         Option  = @{
-            Enabled = '4,1' 
+            Enabled = '4,1'
             Disabled = '4,0'
         }
     }
@@ -796,8 +797,8 @@
             Enabled  = '4,1'
             Disabled = '4,0'
         }
-    } 
-    
+    }
+
     "User_Account_Control_Behavior_of_the_elevation_prompt_for_administrators_in_Admin_Approval_Mode" = @{
         Value   = "MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\ConsentPromptBehaviorAdmin"
         Section = 'Registry Values'
@@ -855,7 +856,7 @@
             Enabled  = '4,1'
             Disabled = '4,0'
         }
-    } 
+    }
 
     "User_Account_Control_Switch_to_the_secure_desktop_when_prompting_for_elevation" = @{
         Value   = "MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\PromptOnSecureDesktop"
