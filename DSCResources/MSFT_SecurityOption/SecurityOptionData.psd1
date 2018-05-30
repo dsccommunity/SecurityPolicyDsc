@@ -548,7 +548,8 @@
             DES_CBC_MD5  = '4,2'
             RC4_HMAC_MD5 = '4,4'
             AES128_HMAC_SHA1  = '4,8'
-            AES256_HMAC_SHA1  = '4,16'           
+            AES256_HMAC_SHA1  = '4,16'
+            FUTURE = '4,2147483616'
         }
     }
     

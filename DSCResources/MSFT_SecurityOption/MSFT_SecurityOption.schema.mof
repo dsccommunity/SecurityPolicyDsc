@@ -64,7 +64,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write] String Network_security_Allow_Local_System_to_use_computer_identity_for_NTLM;
     [Write] String Network_security_Allow_LocalSystem_NULL_session_fallback;
     [Write] String Network_Security_Allow_PKU2U_authentication_requests_to_this_computer_to_use_online_identities;
-    [Write, ValueMap{"DES_CBC_CRC","DES_CBC_MD5","RC4_HMAC_MD5","AES128_HMAC_SHA1","AES256_HMAC_SHA1"}, Values{"DES_CBC_CRC","DES_CBC_MD5","RC4_HMAC_MD5","AES128_HMAC_SHA1","AES256_HMAC_SHA1"}] String Network_security_Configure_encryption_types_allowed_for_Kerberos[];
+    [Write, ValueMap{"DES_CBC_CRC","DES_CBC_MD5","RC4_HMAC_MD5","AES128_HMAC_SHA1","AES256_HMAC_SHA1","FUTURE"}, Values{"DES_CBC_CRC","DES_CBC_MD5","RC4_HMAC_MD5","AES128_HMAC_SHA1","AES256_HMAC_SHA1","FUTURE"}] String Network_security_Configure_encryption_types_allowed_for_Kerberos[];
     [Write] String Network_security_Do_not_store_LAN_Manager_hash_value_on_next_password_change;
     [Write] String Network_security_Force_logoff_when_logon_hours_expire;
     [Write, ValueMap{"Send LM & NTLM responses","Send LM & NTLM - use NTLMv2 session security if negotiated","Send NTLM responses only","Send NTLMv2 responses only","Send NTLMv2 responses only. Refuse LM","Send NTLMv2 responses only. Refuse LM & NTLM"}, Values{"Send LM & NTLM responses","Send LM & NTLM - use NTLMv2 session security if negotiated","Send NTLM responses only","Send NTLMv2 responses only","Send NTLMv2 responses only. Refuse LM","Send NTLMv2 responses only. Refuse LM & NTLM"}] String Network_security_LAN_Manager_authentication_level;
