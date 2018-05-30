@@ -405,7 +405,7 @@ function Set-TargetResource
         $Network_Security_Allow_PKU2U_authentication_requests_to_this_computer_to_use_online_identities,
 
         [Parameter()]
-        [ValidateSet("DES_CBC_CRC", "DES_CBC_MD5", "RC4_HMAC_MD5", "AES128_HMAC_SHA1", "AES256_HMAC_SHA1", "FUTURE")]
+        [ValidateSet('DES_CBC_CRC', 'DES_CBC_MD5', 'RC4_HMAC_MD5', 'AES128_HMAC_SHA1', 'AES256_HMAC_SHA1', 'FUTURE')]
         [System.String[]]
         $Network_security_Configure_encryption_types_allowed_for_Kerberos,
 
@@ -976,7 +976,7 @@ function Test-TargetResource
         $Network_Security_Allow_PKU2U_authentication_requests_to_this_computer_to_use_online_identities,
 
         [Parameter()]
-        [ValidateSet("DES_CBC_CRC","DES_CBC_MD5","RC4_HMAC_MD5","AES128_HMAC_SHA1","AES256_HMAC_SHA1","FUTURE")]
+        [ValidateSet('DES_CBC_CRC','DES_CBC_MD5','RC4_HMAC_MD5','AES128_HMAC_SHA1','AES256_HMAC_SHA1','FUTURE')]
         [System.String[]]
         $Network_security_Configure_encryption_types_allowed_for_Kerberos,
 
