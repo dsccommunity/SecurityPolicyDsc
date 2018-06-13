@@ -99,6 +99,8 @@ function Invoke-Secedit
     Start-Process -FilePath secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput -NoNewWindow -Wait
 }
 
+$script:localizedData = Get-LocalizedData -ResourceName 'SecurityPolicyResourceHelper'
+
 <#
     .SYNOPSIS
         Returns security policies configuration settings
@@ -131,7 +133,7 @@ function Get-SecurityPolicy
     }
     else
     {
-        $currentSecurityPolicyFilePath = Join-Path -Path $env:temp -ChildPath 'SecurityPolicy.inf' 
+        $currentSecurityPolicyFilePath = Join-Path -Path $env:temp -ChildPath 'SecurityPolicy.inf'
           
         Write-Debug -Message ($localizedData.EchoDebugInf -f $currentSecurityPolicyFilePath)
 
@@ -169,8 +171,9 @@ function Get-SecurityPolicy
             $privilegeRights = $policyConfiguration.'Privilege Rights'
             foreach ($key in $privilegeRights.keys )
             {
-                $identity = ConvertTo-LocalFriendlyName -Identity $($privilegeRights[$key] -split ",").Trim()
-                $returnValue.Add( $key,$identity )                 
+                $policyName = Get-UserRightConstant -Policy $key -Inverse
+                $identity = ConvertTo-LocalFriendlyName -Identity $($privilegeRights[$key] -split ",").Trim() -Policy $policyName -Verbose:$VerbosePreference
+                $returnValue.Add( $key,$identity )
             }
 
             continue
@@ -256,7 +259,15 @@ function ConvertTo-LocalFriendlyName
     (
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [System.String[]]
-        $Identity
+        $Identity,
+
+        [Parameter()]
+        [System.String]
+        $Policy,
+
+        [Parameter()]
+        [System.String]
+        $Scope = 'Get'
     )
 
     $friendlyNames = @()
@@ -266,12 +277,12 @@ function ConvertTo-LocalFriendlyName
         if ($null -ne $id -and $id -match '^(S-[0-9-]{3,})')
         {
             # if id is a SID convert to a NTAccount
-            $friendlyNames += ConvertTo-NTAccount -SID $id
+            $friendlyNames += ConvertTo-NTAccount -SID $id -Policy $Policy -Scope $Scope -Verbose:$VerbosePreference
         }
         else
         {
             # if id is an friendly name convert it to a sid and then to an NTAccount
-            $friendlyNames += ( ConvertTo-Sid -Identity $id | ConvertTo-NTAccount )
+            $friendlyNames += ( ConvertTo-Sid -Identity $id -Verbose:$VerbosePreference | ConvertTo-NTAccount -Policy $Policy -Scope $Scope )
         }
     }
 
@@ -317,12 +328,20 @@ function Test-IdentityIsNull
 function ConvertTo-NTAccount
 {
     [OutPutType([string])]
-    [CmdletBinding()] 
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
         [System.Security.Principal.SecurityIdentifier[]]
-        $SID 
+        $SID,
+        
+        [Parameter()]
+        [System.String]
+        $Scope = 'Get',
+
+        [Parameter()]
+        [System.String]
+        $Policy
     )
 
     $result = @()
@@ -331,7 +350,22 @@ function ConvertTo-NTAccount
         $id = ( $id -replace "\*" ).Trim()
 
         $sidId = [System.Security.Principal.SecurityIdentifier]$id
-        $result += $sidId.Translate([System.Security.Principal.NTAccount]).value
+        try
+        {
+            $result += $sidId.Translate([System.Security.Principal.NTAccount]).value
+        }
+        catch
+        {
+            if ($Scope -eq 'Get')
+            {
+                Write-Verbose -Message ($script:localizedData.ErrorSidTranslation -f $sidId, $Policy)
+                $result += $sidId.Value
+            }
+            else
+            {
+                throw "$($script:localizedData.ErrorSidTranslation -f $sidId, $Policy)"
+            }
+        }
     }
 
     return $result
@@ -365,7 +399,7 @@ function ConvertTo-Sid
     }
     catch
     {
-        throw "Could not convert Identity: $Identity to SID"
+        throw "$($script:localizedData.ErrorIdToSid -f $Identity)"
     }
 
     return $sid.Value
@@ -476,3 +510,35 @@ function Add-PolicyOption
     return $iniTemplate
 }
 
+<#
+    .SYNOPSIS
+        Converts policy names that match the GUI to the abbreviated names used by secedit.exe
+    .PARAMETER Policy
+        Name of the policy to get friendly name for. 
+#>
+function Get-UserRightConstant
+{
+    [OutputType([string])]
+    [CmdletBinding()]
+    Param 
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Policy,
+
+        [Parameter()]
+        [Switch]
+        $Inverse
+    )
+
+    $friendlyNames = Get-Content -Path $PSScriptRoot\UserRightsFriendlyNameConversions.psd1 -Raw | 
+    ConvertFrom-StringData
+
+    if ($Inverse)
+    {
+        $result = $friendlyNames.GetEnumerator() | Where-Object -FilterScript { $_.Value -eq $Policy }
+        return $result.Key
+    }
+    
+    return $friendlyNames[$Policy]
+}
