@@ -158,6 +158,8 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
+
+### 2.3.0.0
 * Updated documentation.
   * Add example of applying Kerberos policies
   * Added hyper links to readme
