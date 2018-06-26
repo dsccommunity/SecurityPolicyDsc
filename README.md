@@ -158,11 +158,13 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
+
+### 2.3.0.0
 * Updated documentation.
   * Add example of applying Kerberos policies
   * Added hyper links to readme
-  * Refactored the SID translation process to not throw a terminating error when called from Test-TargetResource
-  * Updated verbose message during the SID transliation process to identiy the policy where an orphaned SID exists
+* Refactored the SID translation process to not throw a terminating error when called from Test-TargetResource
+* Updated verbose message during the SID transliation process to identiy the policy where an orphaned SID exists
 
 ### 2.2.0.0
 * Fixed bug in UserRightAssignment where Get-DscConfiguration would fail if it returns $Identity as single string
