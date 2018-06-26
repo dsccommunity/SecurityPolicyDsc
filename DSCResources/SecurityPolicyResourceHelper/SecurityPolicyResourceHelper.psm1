@@ -282,7 +282,14 @@ function ConvertTo-LocalFriendlyName
         else
         {
             # if id is an friendly name convert it to a sid and then to an NTAccount
-            $friendlyNames += ( ConvertTo-Sid -Identity $id -Verbose:$VerbosePreference | ConvertTo-NTAccount -Policy $Policy -Scope $Scope )
+            $sidResult = ConvertTo-Sid -Identity $id -Scope $Scope -Verbose:$VerbosePreference
+
+            if ($sidResult -isnot [System.Security.Principal.SecurityIdentifier])
+            {
+                continue
+            }
+
+            $friendlyNames += ConvertTo-NTAccount -SID $sidResult.Value -Policy $Policy -Scope $Scope
         }
     }
 
@@ -389,20 +396,32 @@ function ConvertTo-Sid
     (
         [Parameter()]
         [String]
-        $Identity
+        $Identity,
+
+        [Parameter()]
+        [System.String]
+        $Scope = 'Get'
     )
  
     $id = [System.Security.Principal.NTAccount]$Identity
     try
     {
-        $sid = $id.Translate([System.Security.Principal.SecurityIdentifier])
+        $result = $id.Translate([System.Security.Principal.SecurityIdentifier])
     }
     catch
     {
-        throw "$($script:localizedData.ErrorIdToSid -f $Identity)"
+        if ($Scope -eq 'Get')
+        {
+            Write-Verbose -Message ($script:localizedData.ErrorIdToSid -f $Identity)
+            $result = $id
+        }
+        else
+        {
+            throw "$($script:localizedData.ErrorIdToSid -f $Identity)"
+        }
     }
 
-    return $sid.Value
+    return $result
 }
 
 
