@@ -395,7 +395,7 @@ function ConvertTo-Sid
     param
     (
         [Parameter()]
-        [String]
+        [System.String]
         $Identity,
 
         [Parameter()]
