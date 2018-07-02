@@ -38,6 +38,13 @@ try
                     {ConvertTo-LocalFriendlyName -Identity 'S-1-5-32-600' -Scope 'Get'} | Should Not throw
                 }
 
+                It "Should not Throw when Scope is Get and Identity is a unresolvable name" {
+                    {ConvertTo-LocalFriendlyName -Identity 'badName' -Scope 'Get'} | Should Not throw
+                }
+
+                It "Should Throw when Scope is Set and Identity is an unresolvable name" {
+                    {ConvertTo-LocalFriendlyName -Identity 'badName' -Scope 'Set'} | Should throw
+                }
                 It "Should Throw when Scope is 'SET'" {
                     {ConvertTo-LocalFriendlyName -Identity 'S-1-5-32-600' -Scope 'Set'} | Should throw
                 }
