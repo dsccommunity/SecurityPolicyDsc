@@ -158,6 +158,8 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
+
+### 2.4.0.0
 * Added additional error handling to ConvertTo-Sid helper function.
 
 ### 2.3.0.0
