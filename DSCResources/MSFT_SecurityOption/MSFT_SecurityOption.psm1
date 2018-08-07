@@ -1030,7 +1030,7 @@ function Test-TargetResource
             
             if ( $desiredSecurityOptionValue -is [array] )
             {
-                $compareResult = Compare-Array -ReferenceObject $currentSecurityOptions[$policy] -DifferenceObject $desiredSecurityOptionValue
+                $compareResult = Compare-Array -ReferenceObject @($currentSecurityOptions[$policy]) -DifferenceObject $desiredSecurityOptionValue
 
                 if ( -not $compareResult )
                 {
