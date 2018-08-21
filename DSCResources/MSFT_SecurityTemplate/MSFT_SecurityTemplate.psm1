@@ -1,7 +1,9 @@
+$resourceModuleRootPath = Split-Path -Path (Split-Path $PSScriptRoot -Parent) -Parent
+$modulesRootPath = Join-Path -Path $resourceModuleRootPath -ChildPath 'Modules'
+Import-Module -Name (Join-Path -Path $modulesRootPath  `
+              -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
+              -Force
 
-Import-Module -Name (Join-Path -Path ( Split-Path $PSScriptRoot -Parent ) `
-                               -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
-                               -Force
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SecurityTemplate'
 
@@ -47,7 +49,7 @@ function Get-TargetResource
         IsSingleInstance = 'Yes'
     }
 
-    $returnValue    
+    $returnValue
 }
 
 <#
@@ -81,7 +83,7 @@ function Set-TargetResource
     else
     {
         $secEditOutput = "$env:TEMP\Secedit-OutPut.txt"
-    
+
         Invoke-Secedit -InfPath $Path -SecEditOutput $seceditOutput
     }
     # Verify secedit command was successful
@@ -93,7 +95,7 @@ function Set-TargetResource
     }
     else
     {
-        Write-Error -Message ($script:localizedData.TaskFail)        
+        Write-Error -Message ($script:localizedData.TaskFail)
     }
 }
 
@@ -112,14 +114,14 @@ function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
         [String]
-        $IsSingleInstance, 
+        $IsSingleInstance,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Path
     )
-    
+
     $securityCmdlets = Get-Module -Name SecurityCmdlets -ListAvailable
     $fileExists = Test-Path -Path $Path
 
@@ -130,15 +132,15 @@ function Test-TargetResource
 
     if ($securityCmdlets)
     {
-        $currentUserRightsInf = Join-Path -Path $env:temp -ChildPath 'SecurityPolicy.inf' 
+        $currentUserRightsInf = Join-Path -Path $env:temp -ChildPath 'SecurityPolicy.inf'
         Backup-SecurityPolicy -Path $currentUserRightsInf
     }
 
-    
+
     $desiredPolicies = (Get-SecurityPolicy -FilePath $Path -Area 'USER_RIGHTS')
     $currentPolicies = (Get-SecurityPolicy -Area 'USER_RIGHTS')
-    
-    $policyNames = $desiredPolicies.keys    
+
+    $policyNames = $desiredPolicies.keys
 
     foreach ($policy in $policyNames)
     {
@@ -157,7 +159,7 @@ function Test-TargetResource
         {
             Write-Verbose -Message ($script:localizedData.NotDesiredState -f $Policy)
             return $false
-        } 
+        }
     }
 
     # If the code made it this far all policies must be in a desired state
@@ -182,7 +184,7 @@ function Format-SecurityPolicyFile
     )
 
     $outputPath = ([System.IO.Path]::GetTempFileName()).Replace('tmp','inf')
-    $content = Get-Content -Path $Path 
+    $content = Get-Content -Path $Path
 
     $endOfFileMatch = Select-String -Path $Path -Pattern "Revision=1" -SimpleMatch
 
@@ -202,15 +204,15 @@ function Format-SecurityPolicyFile
 #>
 function Get-SecurityTemplate
 {
-    [CmdletBinding()]   
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory = $true)]
         [System.String]
         $Path
     )
-    
-    secedit.exe /export /cfg $Path /areas "USER_Rights"    
+
+    secedit.exe /export /cfg $Path /areas "USER_Rights"
 }
 
 Export-ModuleMember -Function *-TargetResource

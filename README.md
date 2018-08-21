@@ -159,6 +159,11 @@ to ensure the resource configuration instance is unique.
 
 ### Unreleased
 
+* Moved the helper module out from DSCResource folder to the Modules folder.
+* Fixed SecurityPolicyResourceHelper.Tests.ps1 so it possible to run the tests
+  locally.
+* Fixed minor typos.
+
 ### 2.4.0.0
 * Added additional error handling to ConvertTo-Sid helper function.
 
@@ -181,7 +186,7 @@ to ensure the resource configuration instance is unique.
 * Removed SecuritySetting
 
 ### 1.5.0.0
-* Refactored user rights assignment to read and test easier. 
+* Refactored user rights assignment to read and test easier.
 
 ### 1.4.0.0
 
