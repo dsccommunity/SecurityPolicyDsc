@@ -35,8 +35,8 @@ function Get-LocalizedData
     else
     {
         # Step up one additional level to build the correct path to the resource culture.
-        $resourceDirectory = Join-Path -Path ( Split-Path $PSScriptRoot -Parent ) `
-                                       -ChildPath $ResourceName
+        $resourceDirectory = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) `
+                                       -ChildPath "DSCResources\$ResourceName"
     }
 
     $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath $PSUICulture
@@ -54,6 +54,9 @@ function Get-LocalizedData
 
     return $localizedData
 }
+
+# This must be loaded after the Get-LocalizedData function is created.
+$script:localizedData = Get-LocalizedData -HelperName 'SecurityPolicyResourceHelper'
 
 <#
     .SYNOPSIS
@@ -97,8 +100,6 @@ function Invoke-Secedit
     Write-Verbose "secedit arguments: $arguments"
     Start-Process -FilePath secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput -NoNewWindow -Wait
 }
-
-$script:localizedData = Get-LocalizedData -ResourceName 'SecurityPolicyResourceHelper'
 
 <#
     .SYNOPSIS
