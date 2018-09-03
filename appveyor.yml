@@ -19,7 +19,6 @@ build: false
 #      test configuration         # 
 #---------------------------------# 
 
-
 test_script:
     - ps: |
         Invoke-AppveyorTestScriptTask `
