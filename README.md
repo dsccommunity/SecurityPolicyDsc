@@ -159,6 +159,8 @@ to ensure the resource configuration instance is unique.
 
 ### Unreleased
 
+### 2.5.0.0
+
 * Added handler for null value in SecurityOption
 * Moved the helper module out from DSCResource folder to the Modules folder.
 * Fixed SecurityPolicyResourceHelper.Tests.ps1 so it possible to run the tests
