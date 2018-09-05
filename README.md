@@ -159,10 +159,20 @@ to ensure the resource configuration instance is unique.
 
 ### Unreleased
 
+### 2.5.0.0
+
+* Added handler for null value in SecurityOption
+* Moved the helper module out from DSCResource folder to the Modules folder.
+* Fixed SecurityPolicyResourceHelper.Tests.ps1 so it possible to run the tests
+  locally.
+* Fixed minor typos.
+
 ### 2.4.0.0
+
 * Added additional error handling to ConvertTo-Sid helper function.
 
 ### 2.3.0.0
+
 * Updated documentation.
   * Add example of applying Kerberos policies
   * Added hyper links to readme
@@ -170,18 +180,22 @@ to ensure the resource configuration instance is unique.
 * Updated verbose message during the SID transliation process to identiy the policy where an orphaned SID exists
 
 ### 2.2.0.0
+
 * Fixed bug in UserRightAssignment where Get-DscConfiguration would fail if it returns $Identity as single string
 
 ### 2.1.0.0
+
 * Updated SecurityOption to handle multi-line logon messages
 * SecurityOption: Added logic and example to handle scenario when using Interactive_logon_Message_text_for_users_attempting_to_log_on
 
 ### 2.0.0.0
+
 * Added SecurityOption and AccountPolicy
 * Removed SecuritySetting
 
 ### 1.5.0.0
-* Refactored user rights assignment to read and test easier. 
+
+* Refactored user rights assignment to read and test easier.
 
 ### 1.4.0.0
 

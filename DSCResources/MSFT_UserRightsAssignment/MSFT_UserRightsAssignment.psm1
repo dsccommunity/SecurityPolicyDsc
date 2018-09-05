@@ -1,7 +1,9 @@
+$resourceModuleRootPath = Split-Path -Path (Split-Path $PSScriptRoot -Parent) -Parent
+$modulesRootPath = Join-Path -Path $resourceModuleRootPath -ChildPath 'Modules'
+Import-Module -Name (Join-Path -Path $modulesRootPath  `
+              -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
+              -Force
 
-Import-Module -Name (Join-Path -Path ( Split-Path $PSScriptRoot -Parent ) `
-    -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
-    -Force
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_UserRightsAssignment'
 
@@ -72,7 +74,7 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [AllowEmptyCollection()]
-        [AllowEmptyString()]      
+        [AllowEmptyString()]
         [System.String[]]
         $Identity,
 
@@ -179,8 +181,8 @@ function Set-TargetResource
     $userRightConstant = Get-UserRightConstant -Policy $Policy
 
     $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
-    $userRightsToAddInf   = "$env:TEMP\userRightsToAdd.inf" 
-    
+    $userRightsToAddInf   = "$env:TEMP\userRightsToAdd.inf"
+
     if (Test-IdentityIsNull -Identity $Identity)
     {
         Write-Verbose -Message ($script:localizedData.IdentityIsNullRemovingAll -f $Policy)
@@ -194,7 +196,7 @@ function Set-TargetResource
         switch ($Identity)
         {
             "[Local Account]" { $accounts += (Get-CimInstance win32_useraccount -Filter "LocalAccount='True'").SID }
-            "[Local Account|Administrator]" 
+            "[Local Account|Administrator]"
             {
                 $administratorsGroup = Get-CimInstance -class win32_group -filter "SID='S-1-5-32-544'"
                 $groupUsers = Get-CimInstance -query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($administratorsGroup.name)'`""
@@ -202,16 +204,16 @@ function Set-TargetResource
                 $users += $usersList | Where-Object {$_ -match $env:COMPUTERNAME}
                 $accounts += $users | ForEach-Object {(Get-CimInstance win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
             }
-            Default 
+            Default
             {
                 $accounts += ConvertTo-LocalFriendlyName -Identity $PSItem -Policy $Policy -Scope 'Set'
-            } 
+            }
         }
 
         if ($Ensure -eq "Present")
         {
             if (!$Force)
-            {   
+            {
                 foreach ($id in $currentRights.Identity)
                 {
                     if ($id -notin $accounts)
@@ -224,7 +226,7 @@ function Set-TargetResource
         else
         {
             if ($currentRights.Identity.Count -gt 1)
-            {            
+            {
                 [collections.arraylist]$currentIdentities = $currentRights.Identity
 
                 foreach ($account in $accounts)
@@ -236,7 +238,7 @@ function Set-TargetResource
             }
             else
             {
-                $accounts = ""    
+                $accounts = ""
             }
         }
 
@@ -263,7 +265,7 @@ function Set-TargetResource
         $seceditResult = Get-Content -Path $script:seceditOutput
         Write-Verbose -Message ($script:localizedData.TaskFail)
         throw "$($script:localizedData.TaskFail) $($seceditResult[-1])"
-    }    
+    }
 }
 
 <#
@@ -332,7 +334,7 @@ function Test-TargetResource
         $Policy,
 
         [Parameter(Mandatory = $true)]
-        [AllowEmptyCollection()] 
+        [AllowEmptyCollection()]
         [AllowEmptyString()]
         [System.String[]]
         $Identity,
@@ -371,7 +373,7 @@ function Test-TargetResource
     switch ($Identity)
     {
         "[Local Account]" { $accounts += (Get-CimInstance Win32_UserAccount -Filter "LocalAccount='True'").SID }
-        "[Local Account|Administrator]" 
+        "[Local Account|Administrator]"
         {
             $administratorsGroup = Get-CimInstance -class Win32_Group -filter "SID='S-1-5-32-544'"
             $groupUsers = Get-CimInstance -Query "select * from win32_groupuser where GroupComponent = `"Win32_Group.Domain='$($env:COMPUTERNAME)'`,Name='$($administratorsGroup.name)'`""
@@ -381,12 +383,12 @@ function Test-TargetResource
         }
         Default
         {
-            $accounts += ConvertTo-LocalFriendlyName -Identity $PSItem -Policy $Policy             
+            $accounts += ConvertTo-LocalFriendlyName -Identity $PSItem -Policy $Policy
         }
     }
 
     if ($Ensure -eq "Present")
-    {        
+    {
         $usersWithoutRight = $accounts | Where-Object { $_ -notin $currentUserRights.Identity }
         if ($usersWithoutRight)
         {
@@ -395,7 +397,7 @@ function Test-TargetResource
         }
 
         if ($Force)
-        { 
+        {
             $effectiveUsers = $currentUserRights.Identity | Where-Object {$_ -notin $accounts}
             if ($effectiveUsers.Count -gt 0)
             {
@@ -417,7 +419,7 @@ function Test-TargetResource
 
         $returnValue = $true
     }
-    
+
     return $returnValue
 }
 
@@ -499,7 +501,7 @@ function Get-UserRightPolicy
 }
 
 <#
-    .SYNOPSIS 
+    .SYNOPSIS
         Creates Inf with desired configuration for a user rights assignment that is passed to secedit.exe
     .PARAMETER InfPolicy
         Name of user rights assignment policy

@@ -141,6 +141,24 @@ try
                     $testResult | Should Be $true
                 }
             }
+            Context 'Null handler' {
+                BeforeAll {
+                    $avoidNullTestParameters = @{
+                        Name = 'Test'
+                        Network_security_Configure_encryption_types_allowed_for_Kerberos = 'AES128_HMAC_SHA1'
+                    }
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        @{
+                            Name = 'Test'
+                            Network_security_Configure_encryption_types_allowed_for_Kerberos = $null
+                        }
+                    }
+                }
+
+                It 'Should not throw when the existing value is null' {
+                    { Test-TargetResource @avoidNullTestParameters } | Should -Not -Throw
+                }
+            }
         }
         Describe 'Set-TargetResource' {
             Mock -CommandName Invoke-Secedit -MockWith {}

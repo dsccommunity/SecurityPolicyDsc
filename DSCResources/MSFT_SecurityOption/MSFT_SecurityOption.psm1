@@ -1,7 +1,8 @@
-
-Import-Module -Name (Join-Path -Path ( Split-Path $PSScriptRoot -Parent ) `
-    -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
-    -Force
+$resourceModuleRootPath = Split-Path -Path (Split-Path $PSScriptRoot -Parent) -Parent
+$modulesRootPath = Join-Path -Path $resourceModuleRootPath -ChildPath 'Modules'
+Import-Module -Name (Join-Path -Path $modulesRootPath  `
+              -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
+              -Force
 
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SecurityOption'
 
@@ -10,7 +11,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SecurityOption'
         Returns all the Security Options that are currently configured
 
     .PARAMETER Name
-        Describes the security option to be managed. This could be anything as long as it is unique. This property is not 
+        Describes the security option to be managed. This could be anything as long as it is unique. This property is not
         used during the configuration process.
 #>
 function Get-TargetResource
@@ -28,7 +29,7 @@ function Get-TargetResource
     $currentSecurityPolicy = Get-SecurityPolicy -Area SECURITYPOLICY
     $securityOptionData = Get-PolicyOptionData -FilePath $("$PSScriptRoot\SecurityOptionData.psd1").Normalize()
     $securityOptionList = Get-PolicyOptionList -ModuleName MSFT_SecurityOption
-    
+
     foreach ( $securityOption in $securityOptionList )
     {
         $section = $securityOptionData.$securityOption.Section
@@ -39,7 +40,7 @@ function Get-TargetResource
         Write-Verbose -Message ( $script:localizedData.Option -f $($options -join ',') )
         $currentValue = $currentSecurityPolicy.$section.$valueName
         Write-Verbose -Message ( $script:localizedData.RawValue -f $($currentValue -join ',') )
-    
+
         if ( $options.keys -eq 'String' )
         {
             if ( $securityOption -eq 'Interactive_logon_Message_text_for_users_attempting_to_log_on'  )
@@ -63,7 +64,7 @@ function Get-TargetResource
                 }
                 else
                 {
-                    $resultValue = ($securityOptionData.$securityOption.Option.GetEnumerator() | 
+                    $resultValue = ($securityOptionData.$securityOption.Option.GetEnumerator() |
                         Where-Object -Property Value -eq $currentValue.Trim() ).Name
                 }
             }
@@ -71,8 +72,8 @@ function Get-TargetResource
             {
                 $resultValue = $null
             }
-        }        
-        $returnValue.Add( $securityOption, $resultValue )    
+        }
+        $returnValue.Add( $securityOption, $resultValue )
     }
     return $returnValue
 }
@@ -102,7 +103,7 @@ function Set-TargetResource
         [ValidateSet("This policy is disabled", "Users cant add Microsoft accounts", "Users cant add or log on with Microsoft accounts")]
         [System.String]
         $Accounts_Block_Microsoft_accounts,
-        
+
         [Parameter()]
         [ValidateSet("Enabled", "Disabled")]
         [System.String]
@@ -531,17 +532,17 @@ function Set-TargetResource
             {
                 if ( [String]::IsNullOrWhiteSpace( $policyData.Option.String ) )
                 {
-                    $newValue = $policy.Value                                                         
+                    $newValue = $policy.Value
                 }
                 else
-                {                    
+                {
                     if( $policy.Key -eq 'Interactive_logon_Message_text_for_users_attempting_to_log_on' )
                     {
                         $message = Format-LogonMessage -Message $policy.Value
                         $newValue = "$($policyData.Option.String)" + $message
                     }
                     else
-                    {                                           
+                    {
                         $newValue = "$($policyData.Option.String)" + "$($policy.Value)"
                     }
                 }
@@ -581,7 +582,7 @@ function Set-TargetResource
     else
     {
         Write-Verbose -Message ($script:localizedData.SetSuccess)
-    }    
+    }
 }
 
 
@@ -610,7 +611,7 @@ function Test-TargetResource
         [ValidateSet("This policy is disabled","Users cant add Microsoft accounts","Users cant add or log on with Microsoft accounts")]
         [System.String]
         $Accounts_Block_Microsoft_accounts,
-        
+
         [Parameter()]
         [ValidateSet("Enabled","Disabled")]
         [System.String]
@@ -1027,10 +1028,10 @@ function Test-TargetResource
             Write-Verbose -Message ( $script:localizedData.TestingPolicy -f $policy )
             Write-Verbose -Message ( $script:localizedData.PoliciesBeingCompared`
                 -f $($currentSecurityOptions[$policy] -join ',' ), $($desiredSecurityOptionValue -join ',' ) )
-            
+
             if ( $desiredSecurityOptionValue -is [array] )
             {
-                $compareResult = Compare-Array -ReferenceObject $currentSecurityOptions[$policy] -DifferenceObject $desiredSecurityOptionValue
+                $compareResult = Compare-Array -ReferenceObject @($currentSecurityOptions[$policy]) -DifferenceObject $desiredSecurityOptionValue
 
                 if ( -not $compareResult )
                 {
@@ -1043,7 +1044,7 @@ function Test-TargetResource
                 {
                     return $false
                 }
-            }         
+            }
         }
     }
 
@@ -1054,7 +1055,7 @@ function Test-TargetResource
 <#
     .SYNOPSIS
         Convert Kerberos encrytion numeric values to their corresponding value names
-    
+
     .PARAMETER EncryptionValue
         Specifies the encryption value to convert
 #>
@@ -1085,14 +1086,14 @@ function ConvertTo-KerberosEncryptionOption
     $result = $reverseOptions.Keys | Where-Object -FilterScript { $_ -band $newValue } | ForEach-Object -Process {$reverseOptions.Get_Item($_)}
     return $result
 }
-    
+
 <#
     .SYNOPSIS
         Converts Kerberos encryption options to their corresponding numeric value
 
     .PARAMETER EncryptionType
         Specifies the EncryptionType that will be converted to their corresponding value(s).
-    
+
     .NOTES
         The Network_security_Configure_encryption_types_allowed_for_Kerberos option has multiple values.
         Each value is represented by a number that is incremented exponentially by 2.  When allowing

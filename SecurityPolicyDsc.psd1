@@ -9,7 +9,7 @@
 @{
 
 # Version number of this module.
-moduleVersion = '2.4.0.0'
+moduleVersion = '2.5.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'e2b73194-69ef-4fa6-b949-9f62ebe04989'
@@ -47,7 +47,11 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Added additional error handling to ConvertTo-Sid helper function.
+        ReleaseNotes = '* Added handler for null value in SecurityOption
+* Moved the helper module out from DSCResource folder to the Modules folder.
+* Fixed SecurityPolicyResourceHelper.Tests.ps1 so it possible to run the tests
+  locally.
+* Fixed minor typos.
 
 '
 
@@ -56,6 +60,7 @@ PrivateData = @{
 } # End of PrivateData hashtable
 
 }
+
 
 
 
