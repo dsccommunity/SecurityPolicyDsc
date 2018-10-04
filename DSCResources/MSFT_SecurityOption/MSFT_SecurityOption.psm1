@@ -47,6 +47,10 @@ function Get-TargetResource
             {
                 $resultValue = ($currentValue -split '7,')[-1].Trim()
             }
+            elseIf ($securityOption -eq 'Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM')
+            {
+                [array]$resultValue = ConvertTo-CimRestrictedRemoteSam -InputObject $currentValue
+            }
             else
             {
                 $stringValue = ( $currentValue -split ',' )[-1]
@@ -329,6 +333,10 @@ function Set-TargetResource
         [Parameter()]
         [System.String]
         $Network_access_Restrict_anonymous_access_to_Named_Pipes_and_Shares,
+
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM,
 
         [Parameter()]
         [System.String]
@@ -839,6 +847,10 @@ function Test-TargetResource
         $Network_access_Restrict_anonymous_access_to_Named_Pipes_and_Shares,
 
         [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM,
+
+        [Parameter()]
         [System.String]
         $Network_access_Shares_that_can_be_accessed_anonymously,
 
@@ -1021,6 +1033,10 @@ function Test-TargetResource
             {
                 $desiredSecurityOptionValue = Format-LogonMessage -Message $desiredSecurityOptions[$policy]
             }
+            elseIf ( $policy -eq 'Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM' )
+            {
+                $desiredSecurityOptionValue = Format-RestricedRemoteSam -SecurityDescriptor $Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM
+            }
             else
             {
                 $desiredSecurityOptionValue = $desiredSecurityOptions[$policy]
@@ -1180,6 +1196,78 @@ function Format-LogonMessage
     }
 
     return $resultValue
+}
+
+<#
+#>
+function Format-RestricedRemoteSam
+{
+    [OutputType([string])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [object[]]
+        $SecurityDescriptor
+    )
+
+    $result = "O:BAG:BAD:"
+
+    foreach ($descriptor in $SecurityDescriptor)
+    {
+        $result = $result + "({0};;RC;;;{1})" -f $descriptor.Permission, $descriptor.Identity
+    }
+
+    return $result
+}
+
+function ConvertTo-CimRestrictedRemoteSam
+{
+    [CmdletBinding()]
+    [OutputType([Microsoft.Management.Infrastructure.CimInstance[]])]
+    param
+    (
+        [object[]]
+        $InputObject
+    )
+
+    # match anything between parenthesis
+    $pattern       = '(?<=\()[\s\S]*?(?=\))'
+    $cimProperties = @{}
+    $cimCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection`1[Microsoft.Management.Infrastructure.CimInstance]'
+
+    $cimInstanceParameters = @{
+        ClassName  = 'MSFT_RestrictedRemoteSamSecurityDescriptor'
+        Namespace  = 'root/microsoft/Windows/DesiredStateConfiguration'
+        ClientOnly = $true
+    }
+
+    # parse security descriptor from secedit output
+    $descriptorCollection = Select-String -InputObject $InputObject -Pattern $pattern -AllMatches
+    
+    foreach ($descriptor in $descriptorCollection.Matches.Value)
+    {
+        $permission, $identity = $descriptor -split ';' | Select-Object -First 1 -Last 1
+        # resolve permission
+        switch ($permission)
+        {
+            'A' { $cimProperties.Add('Permission', 'Allow') }
+            'D' { $cimProperties.Add('Permission', 'Deny')  }
+        }
+
+        # resolve identity
+        switch ($identity)
+        {
+            'BA'    { $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity 'S-1-5-32-544'))}
+            default { $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity $identity))     }
+        }
+
+        $cimInstanceParameters.Add('Property',$cimProperties)
+
+        $cimCollection += New-CimInstance @cimInstanceParameters
+    }
+
+    return $cimCollection
 }
 
 Export-ModuleMember -Function *-TargetResource

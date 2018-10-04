@@ -1,5 +1,11 @@
+[ClassVersion("1.0.0.0")]
+class MSFT_RestrictedRemoteSamSecurityDescriptor
+{
+    [Write, ValueMap{"Allow","Deny"},Value{"Allow","Deny"}] String Permission;
+    [Write] String Identity;
+};
 
-[ClassVersion("1.0.0.0"), FriendlyName("SecurityOption")]
+[ClassVersion("2.0.0.0"), FriendlyName("SecurityOption")]
 class MSFT_SecurityOption : OMI_BaseResource
 {
     [Key, Description("Describes the security option to be managed. This could be anything as long as it is unique")] String Name;
@@ -59,6 +65,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write] String Network_access_Remotely_accessible_registry_paths;
     [Write] String Network_access_Remotely_accessible_registry_paths_and_subpaths;
     [Write] String Network_access_Restrict_anonymous_access_to_Named_Pipes_and_Shares;
+    [Write, EmbeddedInstance("MSFT_RestrictedRemoteSamSecurityDescriptor"), Description("The Permission and Identity required for restricted remote Sam access")] String SecurityDescriptor;
     [Write] String Network_access_Shares_that_can_be_accessed_anonymously;
     [Write, ValueMap{"Classic - Local users authenticate as themselves","Guest only - Local users authenticate as Guest"}, Values{"Classic - Local users authenticate as themselves","Guest only - Local users authenticate as Guest"}] String Network_access_Sharing_and_security_model_for_local_accounts;
     [Write] String Network_security_Allow_Local_System_to_use_computer_identity_for_NTLM;
@@ -99,4 +106,3 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write] String User_Account_Control_Switch_to_the_secure_desktop_when_prompting_for_elevation;
     [Write] String User_Account_Control_Virtualize_file_and_registry_write_failures_to_per_user_locations;
 };
-

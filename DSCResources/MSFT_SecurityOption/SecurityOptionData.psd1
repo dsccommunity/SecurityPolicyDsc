@@ -109,7 +109,7 @@
         Value = "MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\UndockWithoutLogon" 
         Section = 'Registry Values'
         Option = @{
-            Enabled = '4,1'
+            Enabled  = '4,1'
             Disabled = '4,0' 
         }
     }
@@ -128,7 +128,7 @@
         Value   = "MACHINE\System\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers\AddPrinterDrivers"
         Section = 'Registry Values'
         Option  = @{
-            Enabled = '4,1'
+            Enabled  = '4,1'
             Disabled = '4,0'
         }    
     }
@@ -493,6 +493,14 @@
         Option  = @{
             Enabled  = '4,1'
             Disabled = '4,0'
+        }
+    }
+
+    "Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM" = @{
+        Value = "MACHINE\System\CurrentControlSet\Control\Lsa\RestrictRemoteSAM"
+        Section = 'Registry Values'
+        Option = @{
+            String = '1,'           
         }
     }
 
