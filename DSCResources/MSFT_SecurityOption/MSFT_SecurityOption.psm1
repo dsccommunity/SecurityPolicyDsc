@@ -8,7 +8,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SecurityOption'
 
 <#
     .SYNOPSIS
-        Returns all the Security Options that are currently configured
+        Returns all the Security Options that are currently configured.
 
     .PARAMETER Name
         Describes the security option to be managed. This could be anything as long as it is unique. This property is not
@@ -528,8 +528,8 @@ function Set-TargetResource
         }
 
         <# 
-            define what policies are not in a desired state so we only add those policies
-            that need to be changed to the INF
+            Define what policies are not in a desired state so we only add those policies
+            that need to be changed to the INF consumed by secedit.exe.
         #>
         $isInDesiredState = Test-TargetResource @testParameters
         if (-not ($isInDesiredState))
@@ -597,7 +597,6 @@ function Set-TargetResource
         Write-Verbose -Message ($script:localizedData.SetSuccess)
     }
 }
-
 
 <#
     .SYNOPSIS
@@ -1066,16 +1065,10 @@ function Test-TargetResource
             }
             else
             {
-                if ($currentSecurityOptions[$policy] -ne $desiredSecurityOptionValue)
-                {
-                    return $false
-                }
+                return ($currentSecurityOptions[$policy] -eq $desiredSecurityOptionValue)
             }
         }
     }
-
-    # if the code made it this far we must be in a desired state
-    return $true
 }
 
 <#
@@ -1275,11 +1268,11 @@ function ConvertTo-CimRestrictedRemoteSam
         $InputObject
     )
 
-    # match anything between parenthesis
+    # Match anything between parenthesis.
     $pattern       = '(?<=\()[\s\S]*?(?=\))'    
     $cimCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection`1[Microsoft.Management.Infrastructure.CimInstance]'
 
-    # parse security descriptor from secedit output
+    # Parse security descriptor from secedit output.
     $descriptorCollection = Select-String -InputObject $InputObject -Pattern $pattern -AllMatches
     
     foreach ($descriptor in $descriptorCollection.Matches.Value)
@@ -1360,6 +1353,7 @@ function Test-RestrictedRemoteSam
 
     $result = $identitiesNotInDesiredState + $permissionsNotInDesiredState
 
+    # If nothing is added to $result then we are in a desired state.
     return ($result.Length -eq 0)   
 }
 
