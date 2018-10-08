@@ -1,7 +1,7 @@
 [ClassVersion("1.0.0.0")]
 class MSFT_RestrictedRemoteSamSecurityDescriptor
 {
-    [Write, ValueMap{"Allow","Deny"},Value{"Allow","Deny"}] String Permission;
+    [Write, ValueMap{"Allow","Deny"},Values{"Allow","Deny"}] String Permission;
     [Write] String Identity;
 };
 
@@ -65,7 +65,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write] String Network_access_Remotely_accessible_registry_paths;
     [Write] String Network_access_Remotely_accessible_registry_paths_and_subpaths;
     [Write] String Network_access_Restrict_anonymous_access_to_Named_Pipes_and_Shares;
-    [Write, EmbeddedInstance("MSFT_RestrictedRemoteSamSecurityDescriptor"), Description("The Permission and Identity required for restricted remote Sam access")] String SecurityDescriptor;
+    [Write, EmbeddedInstance("MSFT_RestrictedRemoteSamSecurityDescriptor"), Description("The Permission and Identity required for restricted remote Sam access")] String Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM[];
     [Write] String Network_access_Shares_that_can_be_accessed_anonymously;
     [Write, ValueMap{"Classic - Local users authenticate as themselves","Guest only - Local users authenticate as Guest"}, Values{"Classic - Local users authenticate as themselves","Guest only - Local users authenticate as Guest"}] String Network_access_Sharing_and_security_model_for_local_accounts;
     [Write] String Network_security_Allow_Local_System_to_use_computer_identity_for_NTLM;

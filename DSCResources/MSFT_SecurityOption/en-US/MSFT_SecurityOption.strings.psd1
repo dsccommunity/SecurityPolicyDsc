@@ -8,4 +8,6 @@ ConvertFrom-StringData @'
     SetSuccess    = Successfully update security option
     PoliciesBeingCompared = Current policy: {0} Desired policy: {1}
     RetrievingValue = Retrieving value for {0}
+    RestrictedRemoteSamIdentity =  Network access Restrict clients allowed to make remote calls to SAM: Identity {0} not found
+    RestrictedRemoteSamPermission =  Network access Restrict clients allowed to make remote calls to SAM: Permission '{0}' not in desired state for {1}
 '@
