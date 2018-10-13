@@ -38,35 +38,32 @@ try
             Context 'Get-PolicyOptionData' {
                 $dataFilePath = Join-Path -Path $dscResourceInfo.ParentPath -ChildPath SecurityOptionData.psd1
                 $securityOptionData = Get-PolicyOptionData -FilePath $dataFilePath.Normalize()
-                $securityOptionPropertyList    = $dscResourceInfo.Properties | Where-Object -FilterScript { $PSItem.Name -match '_' }
+                $securityOptionPropertyList = $dscResourceInfo.Properties | Where-Object -FilterScript { $PSItem.Name -match '_' }
 
                 It 'Should have the same count as property count' {
-                    $securityOptionDataPropertyCount = $securityOptionData.Count                    
+                    $securityOptionDataPropertyCount = $securityOptionData.Count
                     $securityOptionDataPropertyCount | Should Be $securityOptionPropertyList.Name.Count
                 }
 
-                foreach ( $name in $securityOptionData.Keys )
-                {
-                    It "Should contain property name: $name" {                        
-                        $securityOptionPropertyList.Name -contains $name | Should Be $true                        
+                foreach ( $name in $securityOptionData.Keys ) {
+                    It "Should contain property name: $name" {
+                        $securityOptionPropertyList.Name -contains $name | Should Be $true
                     }
                 }
                 
                 $optionData = Get-PolicyOptionData -FilePath $dataFilePath.Normalize()
                 
-                foreach ($option in $optionData.GetEnumerator())
-                {
-                    Context "$($option.Name)"{
+                foreach ($option in $optionData.GetEnumerator()) {
+                    Context "$($option.Name)" {
                         $options = $option.Value.Option
                     
-                        foreach ($entry in $options.GetEnumerator())
-                        {
+                        foreach ($entry in $options.GetEnumerator()) {
                             It "$($entry.Name) Should have string as Option type" {
                                 $entry.value.GetType().Name -is [string] | Should Be $true
                             }
                         }
                     }
-                }                
+                }
             }
 
             Context 'Add-PolicyOption' {
@@ -98,6 +95,67 @@ try
                 It 'Should match SingleLineMessage' {
                     $result = Format-LogonMessage -Message $multiLineMessage
                     $result -eq $singleLineMessage | Should be $true
+                }
+            }
+        
+            Context 'Test-RestrictedRemoteSam' {
+                $desiredSettingInput = ConvertTo-CimRestrictedRemoteSam -InputObject "(A;;RC;;;S-1-5-32-544)"
+
+                It 'Should be true' {
+                    $currentSettingInput = ConvertTo-CimRestrictedRemoteSam -InputObject "(A;;RC;;;S-1-5-32-544)"
+                    $result = Test-RestrictedRemoteSam -DesiredSetting $desiredSettingInput -CurrentSetting $currentSettingInput
+
+                    $result | Should Be $true
+                }
+
+                It 'Should be false' {
+                    $currentSettingInput = ConvertTo-CimRestrictedRemoteSam -InputObject "(A;;RC;;;S-1-5-20)"
+                    $result = Test-RestrictedRemoteSam -DesiredSetting $desiredSettingInput -CurrentSetting $currentSettingInput
+
+                    $result | Should Be $false
+                }
+            }
+        
+            Context 'ConvertTo-CimRestrictedRemoteSam' {
+
+                It 'Should return BuiltIn\Administrators' {
+                    $result = ConvertTo-CimRestrictedRemoteSam -InputObject "(D;;RC;;;BA)"
+
+                    $result.Permission | Should Be 'Deny'
+                    $result.Identity | Should Be 'BuiltIn\Administrators'
+                }
+
+                It 'Should return NT AUTHORITY\NETWORK SERVICE' {
+                    $result = ConvertTo-CimRestrictedRemoteSam -InputObject "(A;;RC;;;S-1-5-20)"
+
+                    $result.Permission | Should Be 'Allow'
+                    $result.Identity | Should Be 'NT AUTHORITY\NETWORK SERVICE'
+                }
+            }
+        
+            Context 'Format-RestricedRemoteSam' {
+                $formatDescriptorDenyParameters = @{
+                    Identity   = 'BUILTIN\Administrators'
+                    Permission = 'Deny'
+                }
+
+                $formatDescriptorAllowParameters = @{
+                    Identity   = 'NT AUTHORITY\NETWORK SERVICE'
+                    Permission = 'Allow'
+                }
+
+                It 'Should Deny BUILTIN\Administrators' {
+                    $result = Format-RestricedRemoteSam -SecurityDescriptor $formatDescriptorDenyParameters
+
+                    $result.Identity   | Should Be 'BA'
+                    $result.Permission | Should Be 'D'
+                }
+
+                It 'Should Allow NT AUTHORITY\NETWORK SERVICE' {
+                    $result = Format-RestricedRemoteSam -SecurityDescriptor $formatDescriptorAllowParameters
+
+                    $result.Identity   | Should Be 'S-1-5-20'
+                    $result.Permission | Should Be 'A'
                 }
             }
         }
@@ -185,8 +243,8 @@ try
             }
 
             It "Should call Invoke-Secedit 2 times" {
-                Assert-MockCalled -CommandName Invoke-Secedit -Times 2                
-            }            
+                Assert-MockCalled -CommandName Invoke-Secedit -Times 2
+            }
         }
     }
 }

@@ -1241,7 +1241,7 @@ function Format-RestricedRemoteSam
         }
         else
         {
-            $permission = 'A'    
+            $permission = 'A'
         }
 
         $result = $result + "({0};;RC;;;{1})" -f $permission, $resolvedIdentity
@@ -1263,32 +1263,31 @@ function ConvertTo-CimRestrictedRemoteSam
     [OutputType([Microsoft.Management.Infrastructure.CimInstance[]])]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [AllowNull()]
         [object[]]
         $InputObject
     )
 
     # Match anything between parenthesis.
-    $pattern       = '(?<=\()[\s\S]*?(?=\))'    
+    $pattern = '(?<=\()[\s\S]*?(?=\))'
     $cimCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection`1[Microsoft.Management.Infrastructure.CimInstance]'
 
     # Parse security descriptor from secedit output.
     $descriptorCollection = Select-String -InputObject $InputObject -Pattern $pattern -AllMatches
     
-    foreach ($descriptor in $descriptorCollection.Matches.Value)
-    {
+    foreach ($descriptor in $descriptorCollection.Matches.Value) {
         $cimProperties = @{}
         $permission, $identity = $descriptor -split ';' | Select-Object -First 1 -Last 1
 
-        switch ($permission)
-        {
+        switch ($permission) {
             'A' { $cimProperties.Add('Permission', 'Allow') }
             'D' { $cimProperties.Add('Permission', 'Deny')  }
         }
 
-        switch ($identity)
-        {
-            'BA'    { $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity 'S-1-5-32-544'))}
+        switch ($identity) {
+            'BA' { $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity 'S-1-5-32-544'))}
             default { $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity $identity))     }
         }
 
@@ -1354,7 +1353,7 @@ function Test-RestrictedRemoteSam
     $result = $identitiesNotInDesiredState + $permissionsNotInDesiredState
 
     # If nothing is added to $result then we are in a desired state.
-    return ($result.Length -eq 0)   
+    return ($result.Length -eq 0)
 }
 
 Export-ModuleMember -Function *-TargetResource
