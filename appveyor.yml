@@ -22,10 +22,7 @@ build: false
 
 test_script:
     - ps: |
-        Invoke-AppveyorTestScriptTask `
-            -Type 'Default' `
-            -CodeCoverage `
-            -CodeCovIo
+        Invoke-AppveyorTestScriptTask -Type 'Default' -CodeCoverage -CodeCovIo
 
 #---------------------------------# 
 #      deployment configuration   # 
@@ -36,5 +33,4 @@ test_script:
 deploy_script: 
 
   - ps: |
-        Invoke-AppveyorAfterTestTask `
-            -ResourceModuleName $moduleName
+        Invoke-AppveyorAfterTestTask -ResourceModuleName $moduleName
