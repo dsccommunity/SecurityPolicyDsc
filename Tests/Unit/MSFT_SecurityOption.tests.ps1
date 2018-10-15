@@ -1,4 +1,3 @@
-
 #region HEADER
 
 # Unit Test Template Version: 1.2.1
@@ -32,6 +31,14 @@ try
             Name = 'Test'
             User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users = 'Automatically deny elevation request'
             Accounts_Administrator_account_status = 'Enabled'
+        }
+
+        $kerberosValueMap = @{
+            DES_CBC_CRC      = '4,1'
+            DES_CBC_MD5      = '4,2'
+            RC4_HMAC_MD5     = '4,4'
+            AES128_HMAC_SHA1 = '4,8'
+            AES256_HMAC_SHA1 = '4,16'
         }
 
         Describe 'SecurityOptionHelperTests' {
@@ -97,7 +104,7 @@ try
                     $result -eq $singleLineMessage | Should be $true
                 }
             }
-        
+
             Context 'Test-RestrictedRemoteSam' {
                 $desiredSettingInput = ConvertTo-CimRestrictedRemoteSam -InputObject "(A;;RC;;;S-1-5-32-544)"
 
@@ -115,9 +122,8 @@ try
                     $result | Should Be $false
                 }
             }
-        
-            Context 'ConvertTo-CimRestrictedRemoteSam' {
 
+            Context 'ConvertTo-CimRestrictedRemoteSam' {
                 It 'Should return BuiltIn\Administrators' {
                     $result = ConvertTo-CimRestrictedRemoteSam -InputObject "(D;;RC;;;BA)"
 
@@ -132,7 +138,7 @@ try
                     $result.Identity | Should Be 'NT AUTHORITY\NETWORK SERVICE'
                 }
             }
-        
+
             Context 'Format-RestricedRemoteSam' {
                 $formatDescriptorDenyParameters = @{
                     Identity   = 'BUILTIN\Administrators'
@@ -147,15 +153,41 @@ try
                 It 'Should Deny BUILTIN\Administrators' {
                     $result = Format-RestricedRemoteSam -SecurityDescriptor $formatDescriptorDenyParameters
 
-                    $result.Identity   | Should Be 'BA'
-                    $result.Permission | Should Be 'D'
+                    $result | Should Be '"O:BAG:BAD:(D;;RC;;;BA)"'
                 }
 
                 It 'Should Allow NT AUTHORITY\NETWORK SERVICE' {
                     $result = Format-RestricedRemoteSam -SecurityDescriptor $formatDescriptorAllowParameters
 
-                    $result.Identity   | Should Be 'S-1-5-20'
-                    $result.Permission | Should Be 'A'
+                    $result | Should Be '"O:BAG:BAD:(A;;RC;;;S-1-5-20)"'
+                }
+            }
+        
+            Context 'ConvertTo-KerberosEncryptionValue' {
+                $validateSet = (Get-Command -Name ConvertTo-KerberosEncryptionValue).Parameters.EncryptionType.Attributes.ValidValues
+                $testCases = $validateSet | ForEach-Object -Process { @{EncryptionType = $PSItem} }
+
+                It 'ValidateSet should match valueMap' {
+                    $validateSet.Count | Should Be $kerberosValueMap.Count
+                }
+
+                It 'Should match valueMap <EncryptionType>' -TestCases $testCases {
+                    param ($EncryptionType)
+
+                    $result = ConvertTo-KerberosEncryptionValue -EncryptionType $EncryptionType
+                    $result | Should Be $kerberosValueMap.$EncryptionType
+                }
+            }
+
+            Context 'ConvertTo-KerberosEncryptionOption' {
+                $testCases = $kerberosValueMap.Values | ForEach-Object -Process { @{OptionValue = $PSItem} }
+
+                It 'Should match Kerberos Option <OptionValue>' -TestCases $testCases {
+                    param ($OptionValue)
+
+                    $result = ConvertTo-KerberosEncryptionOption -EncryptionValue $OptionValue
+                    $shouldResult = $kerberosValueMap.GetEnumerator() | Where-Object -FilterScript { $PSItem.value -eq $OptionValue }
+                    $result | Should Be $shouldResult.Name
                 }
             }
         }
@@ -177,12 +209,14 @@ try
             $falseMockResult = @{
                 User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users = 'Prompt for crendentials'
             }
+
             Context 'General operation tests' {
                 It 'Should return a bool' {
                     $testResult = Test-TargetResource @testParameters
                     $testResult -is [bool] | Should Be $true
                 }
             }
+
             Context 'Not in a desired state' {
                 It 'Should return false when NOT in desired state' {
                     Mock -CommandName Get-TargetResource -MockWith { $falseMockResult }
@@ -190,6 +224,7 @@ try
                     $testResult | Should Be $false
                 }
             }
+
             Context 'In a desired State' {
                 $trueMockResult = $testParameters.Clone()
                 $trueMockResult.Remove('Name')
@@ -199,28 +234,46 @@ try
                     $testResult | Should Be $true
                 }
             }
+
             Context 'Null handler' {
-                BeforeAll {
-                    $avoidNullTestParameters = @{
+                $avoidNullTestParameters = @{
+                    Name = 'Test'
+                    Network_security_Configure_encryption_types_allowed_for_Kerberos = 'AES128_HMAC_SHA1'
+                }
+
+                Mock -CommandName Get-TargetResource -MockWith {
+                    @{
                         Name = 'Test'
-                        Network_security_Configure_encryption_types_allowed_for_Kerberos = 'AES128_HMAC_SHA1'
-                    }
-                    Mock -CommandName Get-TargetResource -MockWith {
-                        @{
-                            Name = 'Test'
-                            Network_security_Configure_encryption_types_allowed_for_Kerberos = $null
-                        }
+                        Network_security_Configure_encryption_types_allowed_for_Kerberos = $null
                     }
                 }
 
                 It 'Should not throw when the existing value is null' {
-                    { Test-TargetResource @avoidNullTestParameters } | Should -Not -Throw
+                    { Test-TargetResource @avoidNullTestParameters } | Should Not Throw
                 }
+            }
+
+            Context 'Restricted Remote Sam' {
+                $restrictedSamvalue = ConvertTo-CimRestrictedRemoteSam -InputObject "(A;;RC;;;S-1-5-20)"
+                $parameters = @{
+                    Name = 'Test'
+                    Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM = $restrictedSamvalue
+                }
+
+                Mock -CommandName Get-TargetResource -MockWith {
+                    @{
+                        Name = 'Test'
+                        Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM = $restrictedSamvalue
+                    }
+                }
+                
+                $result = Test-TargetResource @parameters
+                $result | Should Be $true
             }
         }
         Describe 'Set-TargetResource' {
             Mock -CommandName Invoke-Secedit -MockWith {}
-            
+
             Context 'Successfully applied security policy' {
                 Mock -CommandName Test-TargetResource -MockWith { $true }
                 It 'Should not throw when successfully updated security option' {
@@ -231,6 +284,7 @@ try
                     Assert-MockCalled -CommandName Test-TargetResource -Times 2
                 }
             }
+
             Context 'Failed to apply security policy' {
                 Mock -CommandName Test-TargetResource -MockWith { $false }
                 It 'Should throw when failed to apply security policy' {
@@ -239,6 +293,43 @@ try
 
                 It 'Should call Test-TargetResource 2 times' {
                     Assert-MockCalled -CommandName Test-TargetResource -Times 2
+                }
+            }
+
+            Context 'Call correct helper functions' {
+                Mock -CommandName Test-TargetResource
+                Mock -CommandName Format-LogonMessage
+                Mock -CommandName ConvertTo-KerberosEncryptionValue
+                Mock -CommandName Format-RestricedRemoteSam
+
+                $settingsThatRequireHelpers = @(
+                    @{
+                        Name = 'Test'
+                        Interactive_logon_Message_text_for_users_attempting_to_log_on = 'You must accept the EULA before preceeding.'
+                        HelperFunction = 'Format-LogonMessage'
+                    }
+                    @{
+                        Name = 'Test'
+                        Network_security_Configure_encryption_types_allowed_for_Kerberos = 'AES256_HMAC_SHA1'
+                        HelperFunction = 'ConvertTo-KerberosEncryptionValue'
+                    }
+                    @{
+                        Name = 'Test'
+                        Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM = (ConvertTo-CimRestrictedRemoteSam "O:BAG:BAD:(D;;RC;;;BA)")
+                        HelperFunction = 'Format-RestricedRemoteSam'
+                    }
+                )
+
+                foreach ($setting in $settingsThatRequireHelpers)
+                {
+                    $parameters = $setting.Clone()
+                    $parameters.Remove('HelperFunction')
+
+                    Set-TargetResource @parameters
+
+                    It 'Should call correct helper function' {
+                        Assert-MockCalled -CommandName $setting.HelperFunction -Times 1
+                    }
                 }
             }
 

@@ -540,7 +540,7 @@ function Set-TargetResource
 
             if ($policyData.Option.GetEnumerator().Name -eq 'String')
             {
-                if ([String]::IsNullOrWhiteSpace( $policyData.Option.String))
+                if ([String]::IsNullOrWhiteSpace($policyData.Option.String))
                 {
                     $newValue = $policy.Value
                 }
@@ -1266,7 +1266,7 @@ function ConvertTo-CimRestrictedRemoteSam
         [Parameter(Mandatory = $true)]
         [AllowEmptyCollection()]
         [AllowNull()]
-        [object[]]
+        [System.String]
         $InputObject
     )
 
@@ -1287,8 +1287,8 @@ function ConvertTo-CimRestrictedRemoteSam
         }
 
         switch ($identity) {
-            'BA' { $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity 'S-1-5-32-544'))}
-            default { $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity $identity))     }
+            'BA' { $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity 'S-1-5-32-544')) }
+            default { $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity $identity)) }
         }
 
         $cimInstanceParameters = @{
