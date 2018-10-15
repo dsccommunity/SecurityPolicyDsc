@@ -115,6 +115,7 @@ to ensure the resource configuration instance is unique.
 * **Network_access_Remotely_accessible_registry_paths**
 * **Network_access_Remotely_accessible_registry_paths_and_subpaths**
 * **Network_access_Restrict_anonymous_access_to_Named_Pipes_and_Shares**
+* **Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM**
 * **Network_access_Shares_that_can_be_accessed_anonymously**
 * **Network_access_Sharing_and_security_model_for_local_accounts**
 * **Network_security_Allow_Local_System_to_use_computer_identity_for_NTLM**
@@ -158,6 +159,8 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
+
+* Added SecurityOption - Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM
 
 ### 2.5.0.0
 
