@@ -780,7 +780,7 @@
         }
     }
 
-    "User_Account_Control_Admin_Approval_Mode_for_the_Built_in_Administrator_account" = @
+    "User_Account_Control_Admin_Approval_Mode_for_the_Built_in_Administrator_account" = @{
         Value   = "MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\FilterAdministratorToken"
         Section = 'Registry Values'
         Option  = @{
