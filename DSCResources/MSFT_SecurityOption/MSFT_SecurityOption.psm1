@@ -1264,8 +1264,7 @@ function ConvertTo-CimRestrictedRemoteSam
     param
     (
         [Parameter(Mandatory = $true)]
-        [AllowEmptyCollection()]
-        [AllowNull()]
+        [AllowEmptyString()]
         [System.String]
         $InputObject
     )
@@ -1277,7 +1276,8 @@ function ConvertTo-CimRestrictedRemoteSam
     # Parse security descriptor from secedit output.
     $descriptorCollection = Select-String -InputObject $InputObject -Pattern $pattern -AllMatches
     
-    foreach ($descriptor in $descriptorCollection.Matches.Value) {
+    foreach ($descriptor in $descriptorCollection.Matches.Value)
+    {
         $cimProperties = @{}
         $permission, $identity = $descriptor -split ';' | Select-Object -First 1 -Last 1
 
