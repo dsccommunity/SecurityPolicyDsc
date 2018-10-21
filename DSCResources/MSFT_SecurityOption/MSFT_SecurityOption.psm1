@@ -553,7 +553,7 @@ function Set-TargetResource
                     }
                     elseIf ($policy.Key -eq 'Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM')
                     {
-                        $message = Format-RestricedRemoteSam -SecurityDescriptor $policy.Value
+                        $message = Format-RestrictedRemoteSam -SecurityDescriptor $policy.Value
                         $newValue = "$($policyData.Option.String)" + $message
                     }
                     else
@@ -1209,7 +1209,7 @@ function Format-LogonMessage
     .PARAMETER SecurityDescriptor
         A collection containing the Permission and Identity for the 'Network access Restrict clients allowed to make remote calls to SAM' setting.
 #>
-function Format-RestricedRemoteSam
+function Format-RestrictedRemoteSam
 {
     [OutputType([System.String])]
     [CmdletBinding()]

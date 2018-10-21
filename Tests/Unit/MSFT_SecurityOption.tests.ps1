@@ -139,7 +139,7 @@ try
                 }
             }
 
-            Context 'Format-RestricedRemoteSam' {
+            Context 'Format-RestrictedRemoteSam' {
                 $formatDescriptorDenyParameters = @{
                     Identity   = 'BUILTIN\Administrators'
                     Permission = 'Deny'
@@ -151,13 +151,13 @@ try
                 }
 
                 It 'Should Deny BUILTIN\Administrators' {
-                    $result = Format-RestricedRemoteSam -SecurityDescriptor $formatDescriptorDenyParameters
+                    $result = Format-RestrictedRemoteSam -SecurityDescriptor $formatDescriptorDenyParameters
 
                     $result | Should Be '"O:BAG:BAD:(D;;RC;;;BA)"'
                 }
 
                 It 'Should Allow NT AUTHORITY\NETWORK SERVICE' {
-                    $result = Format-RestricedRemoteSam -SecurityDescriptor $formatDescriptorAllowParameters
+                    $result = Format-RestrictedRemoteSam -SecurityDescriptor $formatDescriptorAllowParameters
 
                     $result | Should Be '"O:BAG:BAD:(A;;RC;;;S-1-5-20)"'
                 }
@@ -300,7 +300,7 @@ try
                 Mock -CommandName Test-TargetResource
                 Mock -CommandName Format-LogonMessage
                 Mock -CommandName ConvertTo-KerberosEncryptionValue
-                Mock -CommandName Format-RestricedRemoteSam
+                Mock -CommandName Format-RestrictedRemoteSam
 
                 $settingsThatRequireHelpers = @(
                     @{
@@ -316,7 +316,7 @@ try
                     @{
                         Name = 'Test'
                         Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM = (ConvertTo-CimRestrictedRemoteSam "O:BAG:BAD:(D;;RC;;;BA)")
-                        HelperFunction = 'Format-RestricedRemoteSam'
+                        HelperFunction = 'Format-RestrictedRemoteSam'
                     }
                 )
 

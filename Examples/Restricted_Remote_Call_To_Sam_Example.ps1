@@ -21,7 +21,6 @@ configuration RemoteSam
             )
 
             Network_access_Allow_anonymous_SID_Name_translation = 'Disabled'
-
         }
     }
 }
