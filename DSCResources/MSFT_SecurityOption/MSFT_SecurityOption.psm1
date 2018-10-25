@@ -1046,6 +1046,7 @@ function Test-TargetResource
                 }
 
                 $results += Test-RestrictedRemoteSam @testRemoteSamParameters
+                continue
             }
             else
             {
@@ -1061,7 +1062,7 @@ function Test-TargetResource
 
                 if ( -not $compareResult )
                 {
-                    $results +=  $false
+                    $results += $false
                 }
             }
             else
