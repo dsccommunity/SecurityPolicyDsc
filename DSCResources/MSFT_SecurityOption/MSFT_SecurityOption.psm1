@@ -1025,6 +1025,7 @@ function Test-TargetResource
         $User_Account_Control_Virtualize_file_and_registry_write_failures_to_per_user_locations
     )
 
+    $results = @()
     $currentSecurityOptions = Get-TargetResource -Name $Name -Verbose:0
 
     $desiredSecurityOptions = $PSBoundParameters
@@ -1044,14 +1045,14 @@ function Test-TargetResource
                     CurrentSetting = $currentSecurityOptions.Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM
                 }
 
-                return (Test-RestrictedRemoteSam @testRemoteSamParameters)
+                $results += Test-RestrictedRemoteSam @testRemoteSamParameters
             }
             else
             {
                 $desiredSecurityOptionValue = $desiredSecurityOptions[$policy]
             }
             Write-Verbose -Message ( $script:localizedData.TestingPolicy -f $policy )
-            Write-Verbose -Message ( $script:localizedData.PoliciesBeingCompared`
+            Write-Verbose -Message ( $script:localizedData.PoliciesBeingCompared `
                 -f $($currentSecurityOptions[$policy] -join ',' ), $($desiredSecurityOptionValue -join ',' ) )
 
             if ($desiredSecurityOptionValue -is [array])
@@ -1060,15 +1061,17 @@ function Test-TargetResource
 
                 if ( -not $compareResult )
                 {
-                    return $false
+                    $results +=  $false
                 }
             }
             else
             {
-                return ($currentSecurityOptions[$policy] -eq $desiredSecurityOptionValue)
+                $results += ($currentSecurityOptions[$policy] -eq $desiredSecurityOptionValue)
             }
         }
     }
+
+    return ($results -notcontains $false)
 }
 
 <#
@@ -1205,7 +1208,7 @@ function Format-LogonMessage
     .SYNOPSIS
         Converts the Permission and Identity for the 'Network access Restrict clients allowed to make remote calls to SAM' setting
         before it's written to the INF file consumed by secedit.exe
-    
+
     .PARAMETER SecurityDescriptor
         A collection containing the Permission and Identity for the 'Network access Restrict clients allowed to make remote calls to SAM' setting.
 #>
@@ -1235,16 +1238,7 @@ function Format-RestrictedRemoteSam
             $resolvedIdentity = ConvertTo-Sid -Identity $resolvedIdentity -Scope Set
         }
 
-        if ($descriptor.Permission -eq 'Deny')
-        {
-            $permission = 'D'
-        }
-        else
-        {
-            $permission = 'A'
-        }
-
-        $result = $result + "({0};;RC;;;{1})" -f $permission, $resolvedIdentity
+        $result = $result + "({0};;RC;;;{1})" -f $descriptor.Permission[0], $resolvedIdentity
     }
 
     return ('"' + $preamble + $result + '"')
@@ -1253,7 +1247,7 @@ function Format-RestrictedRemoteSam
 <#
     .SYNOPSIS
         Converts a security descriptor to a MSFT_RestrictedRemoteSamSecurityDescriptor CimInstance.
-    
+
     .PARAMETER InputObject
         Specifies the security descriptor to convert.
 #>
@@ -1275,18 +1269,20 @@ function ConvertTo-CimRestrictedRemoteSam
 
     # Parse security descriptor from secedit output.
     $descriptorCollection = Select-String -InputObject $InputObject -Pattern $pattern -AllMatches
-    
+
     foreach ($descriptor in $descriptorCollection.Matches.Value)
     {
         $cimProperties = @{}
         $permission, $identity = $descriptor -split ';' | Select-Object -First 1 -Last 1
 
-        switch ($permission) {
+        switch ($permission)
+        {
             'A' { $cimProperties.Add('Permission', 'Allow') }
             'D' { $cimProperties.Add('Permission', 'Deny')  }
         }
 
-        switch ($identity) {
+        switch ($identity)
+        {
             'BA' { $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity 'S-1-5-32-544')) }
             default { $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity $identity)) }
         }
@@ -1310,7 +1306,7 @@ function ConvertTo-CimRestrictedRemoteSam
 
     .PARAMETER DesiredSetting
         Specifies the desired settings.
-    
+
     .PARAMETER CurrentSetting
         Specifies the current state of the security setting.
 #>
@@ -1336,7 +1332,7 @@ function Test-RestrictedRemoteSam
     {
         $resolvedIdentity = ConvertTo-LocalFriendlyName -Identity $setting.Identity
         $permissionToTest = ($CurrentSetting | Where-Object -Property Identity -eq $resolvedIdentity).Permission
-        
+
         if ($resolvedIdentity -notin $CurrentSetting.Identity)
         {
             Write-Verbose -Message ($script:localizedData.RestrictedRemoteSamIdentity -f $resolvedIdentity)

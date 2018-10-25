@@ -10,13 +10,13 @@ configuration RemoteSam
             Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM = @(
                 MSFT_RestrictedRemoteSamSecurityDescriptor
                 {
-                    Permission = 'Allow'
-                    Identity   = 'Administrators'
+                    Permission = 'Deny'
+                    Identity   = 'ServerAdmin'
                 }
                  MSFT_RestrictedRemoteSamSecurityDescriptor
                 {
-                    Permission = 'Deny'
-                    Identity   = 'joeadmin'
+                    Permission = 'Allow'
+                    Identity   = 'Administrators'
                 }
             )
 
