@@ -1238,10 +1238,17 @@ function Format-RestrictedRemoteSam
             $resolvedIdentity = ConvertTo-Sid -Identity $resolvedIdentity -Scope Set
         }
 
+        # secpol.msc will display an error message if permissions pertaining to the builtin Administrators group is not displayed last in the security descriptor.
+        if ($resolvedIdentity -eq 'BA')
+        {
+            $ending = "({0};;RC;;;{1})" -f $descriptor.Permission[0], $resolvedIdentity
+            continue
+        }
+
         $result = $result + "({0};;RC;;;{1})" -f $descriptor.Permission[0], $resolvedIdentity
     }
 
-    return ('"' + $preamble + $result + '"')
+    return ('"' + $preamble + $result + $ending + '"')
 }
 
 <#
