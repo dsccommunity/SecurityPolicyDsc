@@ -25,7 +25,7 @@ function Invoke-TestCleanup {
 try
 {
     InModuleScope 'MSFT_SecurityOption' {
-        
+
         $dscResourceInfo = Get-DscResource -Name SecurityOption
         $testParameters = @{
             Name = 'Test'
@@ -57,14 +57,15 @@ try
                         $securityOptionPropertyList.Name -contains $name | Should Be $true
                     }
                 }
-                
+
                 $optionData = Get-PolicyOptionData -FilePath $dataFilePath.Normalize()
-                
+
                 foreach ($option in $optionData.GetEnumerator()) {
                     Context "$($option.Name)" {
                         $options = $option.Value.Option
-                    
-                        foreach ($entry in $options.GetEnumerator()) {
+
+                        foreach ($entry in $options.GetEnumerator())
+                        {
                             It "$($entry.Name) Should have string as Option type" {
                                 $entry.value.GetType().Name -is [string] | Should Be $true
                             }
@@ -162,7 +163,7 @@ try
                     $result | Should Be '"O:BAG:BAD:(A;;RC;;;S-1-5-20)"'
                 }
             }
-        
+
             Context 'ConvertTo-KerberosEncryptionValue' {
                 $validateSet = (Get-Command -Name ConvertTo-KerberosEncryptionValue).Parameters.EncryptionType.Attributes.ValidValues
                 $testCases = $validateSet | ForEach-Object -Process { @{EncryptionType = $PSItem} }
@@ -266,7 +267,7 @@ try
                         Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM = $restrictedSamvalue
                     }
                 }
-                
+
                 $result = Test-TargetResource @parameters
                 $result | Should Be $true
             }
