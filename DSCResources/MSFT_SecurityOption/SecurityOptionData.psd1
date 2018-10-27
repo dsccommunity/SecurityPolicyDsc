@@ -817,7 +817,7 @@
         Option  = @{
             'Automatically deny elevation request' = '4,0'
             'Prompt for credentials on the secure desktop' = '4,1'
-            'Prompt for crendentials' = '4,3'
+            'Prompt for credentials' = '4,3'
         }
     }
 
