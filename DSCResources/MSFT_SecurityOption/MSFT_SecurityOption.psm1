@@ -294,7 +294,7 @@ function Set-TargetResource
         $Microsoft_network_server_Disconnect_clients_when_logon_hours_expire,
 
         [Parameter()]
-        [ValidateSet("Off", "Accept if provided by the client", "Required from client")]
+        [ValidateSet("Off", "Accept if provided by client", "Required from client")]
         [System.String]
         $Microsoft_network_server_Server_SPN_target_name_validation_level,
 
@@ -810,7 +810,7 @@ function Test-TargetResource
         $Microsoft_network_server_Disconnect_clients_when_logon_hours_expire,
 
         [Parameter()]
-        [ValidateSet("Off","Accept if provided by the client","Required from client")]
+        [ValidateSet("Off","Accept if provided by client","Required from client")]
         [System.String]
         $Microsoft_network_server_Server_SPN_target_name_validation_level,
 

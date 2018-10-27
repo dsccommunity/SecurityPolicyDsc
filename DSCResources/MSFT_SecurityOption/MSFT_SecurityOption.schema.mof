@@ -55,7 +55,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write] String Microsoft_network_server_Digitally_sign_communications_always;
     [Write] String Microsoft_network_server_Digitally_sign_communications_if_client_agrees;
     [Write] String Microsoft_network_server_Disconnect_clients_when_logon_hours_expire;
-    [Write, ValueMap{"Off","Accept if provided by the client","Required from client"}, Values{"Off","Accept if provided by the client","Required from client"}] String Microsoft_network_server_Server_SPN_target_name_validation_level;
+    [Write, ValueMap{"Off","Accept if provided by client","Required from client"}, Values{"Off","Accept if provided by client","Required from client"}] String Microsoft_network_server_Server_SPN_target_name_validation_level;
     [Write] String Network_access_Allow_anonymous_SID_Name_translation;
     [Write] String Network_access_Do_not_allow_anonymous_enumeration_of_SAM_accounts;
     [Write] String Network_access_Do_not_allow_anonymous_enumeration_of_SAM_accounts_and_shares;

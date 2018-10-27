@@ -161,6 +161,7 @@ to ensure the resource configuration instance is unique.
 ### Unreleased
 
 * Added SecurityOption - Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM
+* Bug fix - Issue 105 - Spelling error in SecurityOption'User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users'
 
 ### 2.5.0.0
 

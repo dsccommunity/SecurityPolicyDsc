@@ -412,7 +412,7 @@
         Section = 'Registry Values'
         Option  = @{
             'Off' = '4,0'
-            'Accept if provided by the client' = '4,1'
+            'Accept if provided by client' = '4,1'
             'Required from client' = '4,2'
         }
     }
