@@ -55,7 +55,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write] String Microsoft_network_server_Digitally_sign_communications_always;
     [Write] String Microsoft_network_server_Digitally_sign_communications_if_client_agrees;
     [Write] String Microsoft_network_server_Disconnect_clients_when_logon_hours_expire;
-    [Write, ValueMap{"Off","Accept if provided by the client","Required from client"}, Values{"Off","Accept if provided by the client","Required from client"}] String Microsoft_network_server_Server_SPN_target_name_validation_level;
+    [Write, ValueMap{"Off","Accept if provided by client","Required from client"}, Values{"Off","Accept if provided by client","Required from client"}] String Microsoft_network_server_Server_SPN_target_name_validation_level;
     [Write] String Network_access_Allow_anonymous_SID_Name_translation;
     [Write] String Network_access_Do_not_allow_anonymous_enumeration_of_SAM_accounts;
     [Write] String Network_access_Do_not_allow_anonymous_enumeration_of_SAM_accounts_and_shares;
@@ -98,7 +98,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write] String User_Account_Control_Admin_Approval_Mode_for_the_Built_in_Administrator_account;
     [Write] String User_Account_Control_Allow_UIAccess_applications_to_prompt_for_elevation_without_using_the_secure_desktop;
     [Write, ValueMap{"Elevate without prompting","Prompt for credentials on the secure desktop","Prompt for consent on the secure desktop","Prompt for credentials","Prompt for consent","Prompt for consent for non-Windows binaries"}, Values{"Elevate without prompting","Prompt for credentials on the secure desktop","Prompt for consent on the secure desktop","Prompt for credentials","Prompt for consent","Prompt for consent for non-Windows binaries"}] String User_Account_Control_Behavior_of_the_elevation_prompt_for_administrators_in_Admin_Approval_Mode;
-    [Write, ValueMap{"Automatically deny elevation request","Prompt for credentials on the secure desktop","Prompt for crendentials"}, Values{"Automatically deny elevation request","Prompt for credentials on the secure desktop","Prompt for crendentials"}] String User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users;
+    [Write, ValueMap{"Automatically deny elevation request","Prompt for credentials on the secure desktop","Prompt for credentials"}, Values{"Automatically deny elevation request","Prompt for credentials on the secure desktop","Prompt for credentials"}] String User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users;
     [Write] String User_Account_Control_Detect_application_installations_and_prompt_for_elevation;
     [Write] String User_Account_Control_Only_elevate_executables_that_are_signed_and_validated;
     [Write] String User_Account_Control_Only_elevate_UIAccess_applications_that_are_installed_in_secure_locations;

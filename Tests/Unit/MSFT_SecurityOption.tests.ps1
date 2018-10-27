@@ -208,7 +208,7 @@ try
         }
         Describe 'Test-TargetResource' {
             $falseMockResult = @{
-                User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users = 'Prompt for crendentials'
+                User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users = 'Prompt for credentials'
             }
 
             Context 'General operation tests' {

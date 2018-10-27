@@ -294,7 +294,7 @@ function Set-TargetResource
         $Microsoft_network_server_Disconnect_clients_when_logon_hours_expire,
 
         [Parameter()]
-        [ValidateSet("Off", "Accept if provided by the client", "Required from client")]
+        [ValidateSet("Off", "Accept if provided by client", "Required from client")]
         [System.String]
         $Microsoft_network_server_Server_SPN_target_name_validation_level,
 
@@ -480,7 +480,7 @@ function Set-TargetResource
         $User_Account_Control_Behavior_of_the_elevation_prompt_for_administrators_in_Admin_Approval_Mode,
 
         [Parameter()]
-        [ValidateSet("Automatically deny elevation request", "Prompt for credentials on the secure desktop", "Prompt for crendentials")]
+        [ValidateSet("Automatically deny elevation request", "Prompt for credentials on the secure desktop", "Prompt for credentials")]
         [System.String]
         $User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users,
 
@@ -810,7 +810,7 @@ function Test-TargetResource
         $Microsoft_network_server_Disconnect_clients_when_logon_hours_expire,
 
         [Parameter()]
-        [ValidateSet("Off","Accept if provided by the client","Required from client")]
+        [ValidateSet("Off","Accept if provided by client","Required from client")]
         [System.String]
         $Microsoft_network_server_Server_SPN_target_name_validation_level,
 
@@ -996,7 +996,7 @@ function Test-TargetResource
         $User_Account_Control_Behavior_of_the_elevation_prompt_for_administrators_in_Admin_Approval_Mode,
 
         [Parameter()]
-        [ValidateSet("Automatically deny elevation request","Prompt for credentials on the secure desktop","Prompt for crendentials")]
+        [ValidateSet("Automatically deny elevation request","Prompt for credentials on the secure desktop","Prompt for credentials")]
         [System.String]
         $User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users,
 
@@ -1067,7 +1067,7 @@ function Test-TargetResource
             }
             else
             {
-                $results += ($currentSecurityOptions[$policy] -eq $desiredSecurityOptionValue)
+                $results += ($($currentSecurityOptions[$policy]) -eq $desiredSecurityOptionValue)
             }
         }
     }
