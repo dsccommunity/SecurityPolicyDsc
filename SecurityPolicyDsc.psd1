@@ -9,7 +9,7 @@
 @{
 
 # Version number of this module.
-moduleVersion = '2.5.0.0'
+moduleVersion = '2.6.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'e2b73194-69ef-4fa6-b949-9f62ebe04989'
@@ -47,11 +47,9 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Added handler for null value in SecurityOption
-* Moved the helper module out from DSCResource folder to the Modules folder.
-* Fixed SecurityPolicyResourceHelper.Tests.ps1 so it possible to run the tests
-  locally.
-* Fixed minor typos.
+        ReleaseNotes = '* Added SecurityOption - Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM
+* Bug fix - Issue 105 - Spelling error in SecurityOption"User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users"
+* Bug fix - Issue 90 - Corrected value for Microsoft_network_server_Server_SPN_target_name_validation_level policy
 
 '
 
@@ -60,6 +58,7 @@ PrivateData = @{
 } # End of PrivateData hashtable
 
 }
+
 
 
 

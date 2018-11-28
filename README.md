@@ -160,6 +160,8 @@ to ensure the resource configuration instance is unique.
 
 ### Unreleased
 
+### 2.6.0.0
+
 * Added SecurityOption - Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM
 * Bug fix - Issue 105 - Spelling error in SecurityOption'User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users'
 * Bug fix - Issue 90 - Corrected value for Microsoft_network_server_Server_SPN_target_name_validation_level policy
