@@ -1,5 +1,11 @@
+[ClassVersion("1.0.0.0")]
+class MSFT_RestrictedRemoteSamSecurityDescriptor
+{
+    [Write, ValueMap{"Allow","Deny"},Values{"Allow","Deny"}] String Permission;
+    [Write] String Identity;
+};
 
-[ClassVersion("1.0.0.0"), FriendlyName("SecurityOption")]
+[ClassVersion("2.0.0.0"), FriendlyName("SecurityOption")]
 class MSFT_SecurityOption : OMI_BaseResource
 {
     [Key, Description("Describes the security option to be managed. This could be anything as long as it is unique")] String Name;
@@ -49,7 +55,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write] String Microsoft_network_server_Digitally_sign_communications_always;
     [Write] String Microsoft_network_server_Digitally_sign_communications_if_client_agrees;
     [Write] String Microsoft_network_server_Disconnect_clients_when_logon_hours_expire;
-    [Write, ValueMap{"Off","Accept if provided by the client","Required from client"}, Values{"Off","Accept if provided by the client","Required from client"}] String Microsoft_network_server_Server_SPN_target_name_validation_level;
+    [Write, ValueMap{"Off","Accept if provided by client","Required from client"}, Values{"Off","Accept if provided by client","Required from client"}] String Microsoft_network_server_Server_SPN_target_name_validation_level;
     [Write] String Network_access_Allow_anonymous_SID_Name_translation;
     [Write] String Network_access_Do_not_allow_anonymous_enumeration_of_SAM_accounts;
     [Write] String Network_access_Do_not_allow_anonymous_enumeration_of_SAM_accounts_and_shares;
@@ -59,6 +65,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write] String Network_access_Remotely_accessible_registry_paths;
     [Write] String Network_access_Remotely_accessible_registry_paths_and_subpaths;
     [Write] String Network_access_Restrict_anonymous_access_to_Named_Pipes_and_Shares;
+    [Write, EmbeddedInstance("MSFT_RestrictedRemoteSamSecurityDescriptor"), Description("The Permission and Identity required for restricted remote Sam access")] String Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM[];
     [Write] String Network_access_Shares_that_can_be_accessed_anonymously;
     [Write, ValueMap{"Classic - Local users authenticate as themselves","Guest only - Local users authenticate as Guest"}, Values{"Classic - Local users authenticate as themselves","Guest only - Local users authenticate as Guest"}] String Network_access_Sharing_and_security_model_for_local_accounts;
     [Write] String Network_security_Allow_Local_System_to_use_computer_identity_for_NTLM;
@@ -91,7 +98,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write] String User_Account_Control_Admin_Approval_Mode_for_the_Built_in_Administrator_account;
     [Write] String User_Account_Control_Allow_UIAccess_applications_to_prompt_for_elevation_without_using_the_secure_desktop;
     [Write, ValueMap{"Elevate without prompting","Prompt for credentials on the secure desktop","Prompt for consent on the secure desktop","Prompt for credentials","Prompt for consent","Prompt for consent for non-Windows binaries"}, Values{"Elevate without prompting","Prompt for credentials on the secure desktop","Prompt for consent on the secure desktop","Prompt for credentials","Prompt for consent","Prompt for consent for non-Windows binaries"}] String User_Account_Control_Behavior_of_the_elevation_prompt_for_administrators_in_Admin_Approval_Mode;
-    [Write, ValueMap{"Automatically deny elevation request","Prompt for credentials on the secure desktop","Prompt for crendentials"}, Values{"Automatically deny elevation request","Prompt for credentials on the secure desktop","Prompt for crendentials"}] String User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users;
+    [Write, ValueMap{"Automatically deny elevation request","Prompt for credentials on the secure desktop","Prompt for credentials"}, Values{"Automatically deny elevation request","Prompt for credentials on the secure desktop","Prompt for credentials"}] String User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users;
     [Write] String User_Account_Control_Detect_application_installations_and_prompt_for_elevation;
     [Write] String User_Account_Control_Only_elevate_executables_that_are_signed_and_validated;
     [Write] String User_Account_Control_Only_elevate_UIAccess_applications_that_are_installed_in_secure_locations;
@@ -99,4 +106,3 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write] String User_Account_Control_Switch_to_the_secure_desktop_when_prompting_for_elevation;
     [Write] String User_Account_Control_Virtualize_file_and_registry_write_failures_to_per_user_locations;
 };
-

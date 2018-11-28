@@ -11,7 +11,7 @@ configuration MSFT_SecurityOption_config {
 
     node localhost {
 
-        SecurityOption Integration_Test 
+        SecurityOption Integration_Test
         {
             Name = 'IntegrationTest'
             Accounts_Guest_account_status = "$($securityOptions.Accounts_Guest_account_status)"
