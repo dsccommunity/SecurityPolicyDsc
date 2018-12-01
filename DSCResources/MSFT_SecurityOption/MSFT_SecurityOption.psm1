@@ -53,8 +53,8 @@ function Get-TargetResource
             }
             else
             {
-                $stringValue = ($currentValue -split ',')[-1]
-                $resultValue = ($stringValue -replace '"').Trim()
+                $null, $stringValue = $currentValue -split ','
+                $resultValue = (($stringValue -replace '"').Trim()) -join ','
             }
         }
         else
