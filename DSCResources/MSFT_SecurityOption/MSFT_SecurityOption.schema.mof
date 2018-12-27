@@ -27,7 +27,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Devices_Restrict_CD_ROM_access_to_locally_logged_on_user_only;
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Devices_Restrict_floppy_access_to_locally_logged_on_user_only;
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Domain_controller_Allow_server_operators_to_schedule_tasks;
-    [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Domain_controller_LDAP_server_signing_requirements;
+    [Write, ValueMap{"None","Require Signature"}, Values{"None","Require Signature"}] String Domain_controller_LDAP_server_signing_requirements;
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Domain_controller_Refuse_machine_account_password_changes;
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Domain_member_Digitally_encrypt_or_sign_secure_channel_data_always;
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Domain_member_Digitally_encrypt_secure_channel_data_when_possible;
@@ -73,7 +73,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Network_Security_Allow_PKU2U_authentication_requests_to_this_computer_to_use_online_identities;
     [Write, ValueMap{"DES_CBC_CRC","DES_CBC_MD5","RC4_HMAC_MD5","AES128_HMAC_SHA1","AES256_HMAC_SHA1"}, Values{"DES_CBC_CRC","DES_CBC_MD5","RC4_HMAC_MD5","AES128_HMAC_SHA1","AES256_HMAC_SHA1"}] String Network_security_Configure_encryption_types_allowed_for_Kerberos[];
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Network_security_Do_not_store_LAN_Manager_hash_value_on_next_password_change;
-    [Write] String Network_security_Force_logoff_when_logon_hours_expire;
+    [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Network_security_Force_logoff_when_logon_hours_expire;
     [Write, ValueMap{"Send LM & NTLM responses","Send LM & NTLM - use NTLMv2 session security if negotiated","Send NTLM responses only","Send NTLMv2 responses only","Send NTLMv2 responses only. Refuse LM","Send NTLMv2 responses only. Refuse LM & NTLM"}, Values{"Send LM & NTLM responses","Send LM & NTLM - use NTLMv2 session security if negotiated","Send NTLM responses only","Send NTLMv2 responses only","Send NTLMv2 responses only. Refuse LM","Send NTLMv2 responses only. Refuse LM & NTLM"}] String Network_security_LAN_Manager_authentication_level;
     [Write, ValueMap{"None","Negotiate Signing","Require Signing"}, Values{"None","Negotiate Signing","Require Signing"}] String Network_security_LDAP_client_signing_requirements;
     [Write, ValueMap{"Require NTLMv2 session security","Require 128-bit encryption","Both options checked"}, Values{"Require NTLMv2 session security","Require 128-bit encryption","Both options checked"}] String Network_security_Minimum_session_security_for_NTLM_SSP_based_including_secure_RPC_clients;
