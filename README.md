@@ -160,6 +160,8 @@ to ensure the resource configuration instance is unique.
 
 ### Unreleased
 
+### 2.7.0.0
+
 * Bug fix - Issue 83 - Network_access_Remotely_accessible_registry_paths_and_subpaths correctly applies multiple paths
 * Update LICENSE file to match the Microsoft Open Source Team standard
 ### 2.6.0.0
