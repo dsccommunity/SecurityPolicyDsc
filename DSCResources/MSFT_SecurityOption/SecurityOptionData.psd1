@@ -636,7 +636,7 @@
         }
     }
 
-    "Network_Security_Restrict_NTLM_Incoming_NTLM_Traffic" = @{
+    "Network_Security_Restrict_NTLM_Audit_Incoming_NTLM_Traffic" = @{
         Value   = "MACHINE\System\CurrentControlSet\Control\Lsa\MSV1_0\AuditReceivingNTLMTraffic"
         Section = 'Registry Values'
         Option  = @{
@@ -646,7 +646,7 @@
         }
     }
 
-    "Network_Security_Restrict_NTLM_NTLM_authentication_in_this_domain" = @{
+    "Network_Security_Restrict_NTLM_Audit_NTLM_authentication_in_this_domain" = @{
         Value   = "MACHINE\System\CurrentControlSet\Services\Netlogon\Parameters\AuditNTLMInDomain"
         Section = 'Registry Values'
         Option  = @{
@@ -658,7 +658,7 @@
         }
     }
 
-    "Network_Security_Restrict_NTLM_Outgoing_NTLM_traffic_to_remote_servers" = @{
+    "Network_Security_Restrict_NTLM_Incoming_NTLM_Traffic" = @{
         Value   = "MACHINE\System\CurrentControlSet\Control\Lsa\MSV1_0\RestrictReceivingNTLMTraffic"
         Section = 'Registry Values'
         Option  = @{
@@ -668,7 +668,7 @@
         }
     }
 
-    "Network_Security_Restrict_NTLM_Audit_Incoming_NTLM_Traffic" = @{
+    "Network_Security_Restrict_NTLM_NTLM_authentication_in_this_domain" = @{
         Value   = "MACHINE\System\CurrentControlSet\Services\Netlogon\Parameters\RestrictNTLMInDomain"
         Section = 'Registry Values'
         Option  = @{
@@ -680,7 +680,7 @@
         }
     }
 
-    "Network_Security_Restrict_NTLM_Audit_NTLM_authentication_in_this_domain" = @{
+    "Network_Security_Restrict_NTLM_Outgoing_NTLM_traffic_to_remote_servers" = @{
         Value   = "MACHINE\System\CurrentControlSet\Control\Lsa\MSV1_0\RestrictSendingNTLMTraffic"
         Section = 'Registry Values'
         Option  = @{
