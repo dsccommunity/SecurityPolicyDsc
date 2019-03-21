@@ -159,7 +159,7 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
-* Bug fix - Network_security_Restrict_NTLM security option names correctly map to underlying registry keys
+* Bug fix - Network_security_Restrict_NTLM security option names now maps to correct keys. This fix could impact your systems.
 
 ### 2.7.0.0
 
