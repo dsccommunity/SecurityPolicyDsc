@@ -39,6 +39,7 @@ try
             RC4_HMAC_MD5     = '4,4'
             AES128_HMAC_SHA1 = '4,8'
             AES256_HMAC_SHA1 = '4,16'
+            FUTURE           = '4,2147483616'
         }
 
         Describe 'SecurityOptionHelperTests' {
@@ -280,7 +281,7 @@ try
                 It 'Should not throw when successfully updated security option' {
                     { Set-TargetResource @testParameters } | Should Not throw
                 }
-                
+
                 It 'Should call Test-TargetResource 2 times' {
                     Assert-MockCalled -CommandName Test-TargetResource -Times 2
                 }
