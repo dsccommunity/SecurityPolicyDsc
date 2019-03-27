@@ -159,6 +159,8 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
+
+* Bug fix - Issue 71 - Issue Added Validation Attributes to AccountPolicy & SecurityOption
 * Bug fix - Network_security_Restrict_NTLM security option names now maps to correct keys. This fix could impact your systems.
 
 ### 2.7.0.0
