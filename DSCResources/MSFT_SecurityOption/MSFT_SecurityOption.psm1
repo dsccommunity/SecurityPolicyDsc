@@ -247,7 +247,7 @@ function Set-TargetResource
         $Interactive_logon_Do_not_require_CTRL_ALT_DEL,
 
         [Parameter()]
-        [ValidateRange(4, 999)]
+        [ValidateRange(0, 999)]
         [System.String]
         $Interactive_logon_Machine_account_lockout_threshold,
 
@@ -818,7 +818,7 @@ function Test-TargetResource
         $Interactive_logon_Do_not_require_CTRL_ALT_DEL,
 
         [Parameter()]
-        [ValidateRange(4, 999)]
+        [ValidateRange(0, 999)]
         [System.String]
         $Interactive_logon_Machine_account_lockout_threshold,
 
