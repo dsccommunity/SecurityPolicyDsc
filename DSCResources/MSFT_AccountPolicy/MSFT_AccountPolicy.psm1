@@ -78,61 +78,72 @@ function Set-TargetResource
         $Name,
 
         [Parameter()]
+        [ValidateRange(0, 24)]
         [System.UInt32]
         $Enforce_password_history,
 
         [Parameter()]
+        [ValidateRange(0, 999)]
         [System.UInt32]
         $Maximum_Password_Age,
 
         [Parameter()]
+        [ValidateRange(0, 998)]
         [System.UInt32]
         $Minimum_Password_Age,
 
         [Parameter()]
+        [ValidateRange(0, 14)]
         [System.UInt32]
         $Minimum_Password_Length,
 
         [Parameter()]
-        [ValidateSet("Enabled","Disabled")]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
         $Password_must_meet_complexity_requirements,
 
         [Parameter()]
-        [ValidateSet("Enabled","Disabled")]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
         $Store_passwords_using_reversible_encryption,
 
         [Parameter()]
+        [ValidateRange(0, 99999)]
         [System.UInt32]
         $Account_lockout_duration,
 
         [Parameter()]
+        [ValidateRange(0, 999)]
         [System.UInt32]
         $Account_lockout_threshold,
 
         [Parameter()]
+        [ValidateRange(0, 99999)]
         [System.UInt32]
         $Reset_account_lockout_counter_after,
 
         [Parameter()]
-        [ValidateSet("Enabled","Disabled")]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
         $Enforce_user_logon_restrictions,
 
         [Parameter()]
+        [ValidateRange(10, 99999)]
         [System.UInt32]
         $Maximum_lifetime_for_service_ticket,
 
         [Parameter()]
+        [ValidateRange(0, 99999)]
         [System.UInt32]
         $Maximum_lifetime_for_user_ticket,
 
         [Parameter()]
+        [ValidateRange(0, 99999)]
         [System.UInt32]
         $Maximum_lifetime_for_user_ticket_renewal,
 
         [Parameter()]
+        [ValidateRange(0, 99999)]
         [System.UInt32]
         $Maximum_tolerance_for_computer_clock_synchronization
     )
@@ -150,9 +161,9 @@ function Set-TargetResource
     foreach ( $policy in $desiredPolicies )
     {
         $testParameters = @{
-            Name = 'Test'
+            Name        = 'Test'
             $policy.Key = $policy.Value
-            Verbose = $false
+            Verbose     = $false
         }
 
         # define what policies are not in a desired state so we only add those policies
@@ -228,61 +239,72 @@ function Test-TargetResource
         $Name,
 
         [Parameter()]
+        [ValidateRange(0, 24)]
         [System.UInt32]
         $Enforce_password_history,
 
         [Parameter()]
+        [ValidateRange(0, 999)]
         [System.UInt32]
         $Maximum_Password_Age,
 
         [Parameter()]
+        [ValidateRange(0, 998)]
         [System.UInt32]
         $Minimum_Password_Age,
 
         [Parameter()]
+        [ValidateRange(0, 14)]
         [System.UInt32]
         $Minimum_Password_Length,
 
         [Parameter()]
-        [ValidateSet("Enabled","Disabled")]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
         $Password_must_meet_complexity_requirements,
 
         [Parameter()]
-        [ValidateSet("Enabled","Disabled")]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
         $Store_passwords_using_reversible_encryption,
 
         [Parameter()]
+        [ValidateRange(0, 99999)]
         [System.UInt32]
         $Account_lockout_duration,
 
         [Parameter()]
+        [ValidateRange(0, 999)]
         [System.UInt32]
         $Account_lockout_threshold,
 
         [Parameter()]
+        [ValidateRange(0, 99999)]
         [System.UInt32]
         $Reset_account_lockout_counter_after,
 
         [Parameter()]
-        [ValidateSet("Enabled","Disabled")]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
         $Enforce_user_logon_restrictions,
 
         [Parameter()]
+        [ValidateRange(10, 99999)]
         [System.UInt32]
         $Maximum_lifetime_for_service_ticket,
 
         [Parameter()]
+        [ValidateRange(0, 99999)]
         [System.UInt32]
         $Maximum_lifetime_for_user_ticket,
 
         [Parameter()]
+        [ValidateRange(0, 99999)]
         [System.UInt32]
         $Maximum_lifetime_for_user_ticket_renewal,
 
         [Parameter()]
+        [ValidateRange(0, 99999)]
         [System.UInt32]
         $Maximum_tolerance_for_computer_clock_synchronization
     )
@@ -310,4 +332,3 @@ function Test-TargetResource
 }
 
 Export-ModuleMember -Function *-TargetResource
-
