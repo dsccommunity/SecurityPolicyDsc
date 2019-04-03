@@ -164,17 +164,22 @@ to ensure the resource configuration instance is unique.
 
 * Bug fix - Issue 71 - Issue Added Validation Attributes to AccountPolicy & SecurityOption
 * Bug fix - Network_security_Restrict_NTLM security option names now maps to correct keys. This fix could impact your systems.
+* Updated LICENSE file to match the Microsoft Open Source Team standard. Fixes [Issue #108](https://github.com/PowerShell/SecurityPolicyDsc/issues/108)
+* Refactored the SID translation process to not throw a terminating error when called from Test-TargetResource
+* Updated verbose message during the SID translation process to identify the policy where an orphaned SID exists
+* Added the EType "FUTURE" to the security option "Network\_security\_Configure\_encryption\_types\_allowed\_for\_Kerberos"
+* Documentation update to include all valid settings for security options and account policies
 
 ### 2.7.0.0
 
 * Bug fix - Issue 83 - Network_access_Remotely_accessible_registry_paths_and_subpaths correctly applies multiple paths
 * Update LICENSE file to match the Microsoft Open Source Team standard
+
 ### 2.6.0.0
 
 * Added SecurityOption - Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM
 * Bug fix - Issue 105 - Spelling error in SecurityOption User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users
 * Bug fix - Issue 90 - Corrected value for Microsoft_network_server_Server_SPN_target_name_validation_level policy
-* Updated LICENSE file to match the Microsoft Open Source Team standard. Fixes [Issue #108](https://github.com/PowerShell/SecurityPolicyDsc/issues/108)
 
 ### 2.5.0.0
 
@@ -193,10 +198,6 @@ to ensure the resource configuration instance is unique.
 * Updated documentation.
   * Add example of applying Kerberos policies
   * Added hyper links to readme
-  * Refactored the SID translation process to not throw a terminating error when called from Test-TargetResource
-  * Updated verbose message during the SID translation process to identify the policy where an orphaned SID exists
-  * Added the EType "FUTURE" to the security option "Network\_security\_Configure\_encryption\_types\_allowed\_for\_Kerberos"
-  * Documentation update to include all valid settings for security options and account policies
 
 ### 2.2.0.0
 
