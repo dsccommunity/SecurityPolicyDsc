@@ -9,7 +9,7 @@
 @{
 
 # Version number of this module.
-moduleVersion = '2.7.0.0'
+moduleVersion = '2.8.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'e2b73194-69ef-4fa6-b949-9f62ebe04989'
@@ -47,8 +47,9 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Bug fix - Issue 83 - Network_access_Remotely_accessible_registry_paths_and_subpaths correctly applies multiple paths
-* Update LICENSE file to match the Microsoft Open Source Team standard
+        ReleaseNotes = '* Bug fix - Issue 71 - Issue Added Validation Attributes to AccountPolicy & SecurityOption
+* Bug fix - Network_security_Restrict_NTLM security option names now maps to correct keys. This fix could impact your systems.
+
 '
 
     } # End of PSData hashtable
@@ -56,6 +57,7 @@ PrivateData = @{
 } # End of PrivateData hashtable
 
 }
+
 
 
 
