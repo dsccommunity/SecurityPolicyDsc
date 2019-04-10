@@ -160,6 +160,8 @@ to ensure the resource configuration instance is unique.
 
 ### Unreleased
 
+* Bug fix - Issue 81 - A resource conflict occurs when trying to remove and add Identities in the same configuration
+
 ### 2.8.0.0
 
 * Bug fix - Issue 71 - Issue Added Validation Attributes to AccountPolicy & SecurityOption
