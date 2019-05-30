@@ -192,7 +192,7 @@ function Set-TargetResource
         $Domain_controller_Allow_server_operators_to_schedule_tasks,
 
         [Parameter()]
-        [ValidateSet("None", "Require Signature")]
+        [ValidateSet("None", "Require Signing")]
         [System.String]
         $Domain_controller_LDAP_server_signing_requirements,
 

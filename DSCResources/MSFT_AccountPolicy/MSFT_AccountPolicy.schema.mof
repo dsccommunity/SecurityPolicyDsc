@@ -4,7 +4,7 @@ class MSFT_AccountPolicy : OMI_BaseResource
 {
     [Key, Description("A unique name of the AccountPolicy resource instance. This is not used during configuration.")] String Name;
     [Write] Uint32 Enforce_password_history;
-    [Write] Uint32 Maximum_Password_Age;
+    [Write] int32 Maximum_Password_Age;
     [Write] Uint32 Minimum_Password_Age;
     [Write] Uint32 Minimum_Password_Length;
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Password_must_meet_complexity_requirements;

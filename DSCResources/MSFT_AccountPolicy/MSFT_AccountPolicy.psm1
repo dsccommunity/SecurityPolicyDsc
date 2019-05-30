@@ -83,13 +83,13 @@ function Set-TargetResource
         $Enforce_password_history,
 
         [Parameter()]
-        [ValidateRange(0, 999)]
-        [System.UInt32]
+        [ValidateRange(-1, 999)]
+        [System.Int32]
         $Maximum_Password_Age,
 
         [Parameter()]
         [ValidateRange(0, 998)]
-        [System.UInt32]
+        [System.Int32]
         $Minimum_Password_Age,
 
         [Parameter()]
@@ -244,13 +244,13 @@ function Test-TargetResource
         $Enforce_password_history,
 
         [Parameter()]
-        [ValidateRange(0, 999)]
-        [System.UInt32]
+        [ValidateRange(-1, 999)]
+        [System.Int32]
         $Maximum_Password_Age,
 
         [Parameter()]
         [ValidateRange(0, 998)]
-        [System.UInt32]
+        [System.Int32]
         $Minimum_Password_Age,
 
         [Parameter()]
