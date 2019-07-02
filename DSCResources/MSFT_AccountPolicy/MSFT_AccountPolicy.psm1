@@ -28,7 +28,7 @@ function Get-TargetResource
 
     foreach ( $accountPolicy in $accountPolicyList )
     {
-        Write-Verbose $accountPolicy
+        Write-Verbose -Message $accountPolicy
         $section = $accountPolicyData.$accountPolicy.Section
         Write-Verbose -Message ( $script:localizedData.Section -f $section )
         $valueName = $accountPolicyData.$accountPolicy.Value
@@ -42,6 +42,11 @@ function Get-TargetResource
         {
             $stringValue = ( $currentValue -split ',' )[-1]
             $resultValue = ( $stringValue -replace '"' ).Trim()
+
+            if ($resultValue -eq -1 -and $accountPolicy -eq 'Maximum_Password_Age')
+            {
+                $resultValue = 0
+            }
         }
         else
         {
@@ -60,7 +65,6 @@ function Get-TargetResource
     }
     return $returnValue
 }
-
 
 <#
     .SYNOPSIS
@@ -83,7 +87,7 @@ function Set-TargetResource
         $Enforce_password_history,
 
         [Parameter()]
-        [ValidateRange(-1, 999)]
+        [ValidateRange(0, 999)]
         [System.Int32]
         $Maximum_Password_Age,
 
@@ -166,8 +170,10 @@ function Set-TargetResource
             Verbose     = $false
         }
 
-        # define what policies are not in a desired state so we only add those policies
-        # that need to be changed to the INF
+        <# 
+            Define what policies are not in a desired state so we only add those policies
+            that need to be changed to the INF.
+         #>
         $isInDesiredState = Test-TargetResource @testParameters
         if ( -not ( $isInDesiredState ) )
         {
@@ -179,7 +185,18 @@ function Set-TargetResource
             {
                 if ( [String]::IsNullOrWhiteSpace( $policyData.Option.String ) )
                 {
-                    $newValue = $policy.value
+                    if ($policy.Key -eq 'Maximum_Password_Age' -and $policy.Value -eq 0)
+                    {
+                        <#
+                            This addresses the scenario when the desired value of Maximum_Password_Age is 0.
+                            The INF file consumed by secedit.exe requires the value to be -1.
+                        #>
+                        $newValue = -1                        
+                    }
+                    else
+                    {
+                        $newValue = $policy.value
+                    }
                 }
                 else
                 {
@@ -221,7 +238,6 @@ function Set-TargetResource
     }
 }
 
-
 <#
     .SYNOPSIS
         Tests the desired account policy configuration against the current configuration
@@ -244,7 +260,7 @@ function Test-TargetResource
         $Enforce_password_history,
 
         [Parameter()]
-        [ValidateRange(-1, 999)]
+        [ValidateRange(0, 999)]
         [System.Int32]
         $Maximum_Password_Age,
 
