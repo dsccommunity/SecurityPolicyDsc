@@ -88,12 +88,12 @@ function Set-TargetResource
 
         [Parameter()]
         [ValidateRange(0, 999)]
-        [System.Int32]
+        [System.UInt32]
         $Maximum_Password_Age,
 
         [Parameter()]
         [ValidateRange(0, 998)]
-        [System.Int32]
+        [System.UInt32]
         $Minimum_Password_Age,
 
         [Parameter()]
@@ -261,12 +261,12 @@ function Test-TargetResource
 
         [Parameter()]
         [ValidateRange(0, 999)]
-        [System.Int32]
+        [System.UInt32]
         $Maximum_Password_Age,
 
         [Parameter()]
         [ValidateRange(0, 998)]
-        [System.Int32]
+        [System.UInt32]
         $Minimum_Password_Age,
 
         [Parameter()]
