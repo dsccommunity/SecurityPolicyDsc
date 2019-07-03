@@ -26,22 +26,22 @@ function Get-TargetResource
     $accountPolicyData = Get-PolicyOptionData -FilePath $("$PSScriptRoot\AccountPolicyData.psd1").Normalize()
     $accountPolicyList = Get-PolicyOptionList -ModuleName MSFT_AccountPolicy
 
-    foreach ( $accountPolicy in $accountPolicyList )
+    foreach ($accountPolicy in $accountPolicyList)
     {
         Write-Verbose -Message $accountPolicy
         $section = $accountPolicyData.$accountPolicy.Section
-        Write-Verbose -Message ( $script:localizedData.Section -f $section )
+        Write-Verbose -Message ($script:localizedData.Section -f $section)
         $valueName = $accountPolicyData.$accountPolicy.Value
-        Write-Verbose -Message ( $script:localizedData.Value -f $valueName )
+        Write-Verbose -Message ($script:localizedData.Value -f $valueName)
         $options = $accountPolicyData.$accountPolicy.Option
-        Write-Verbose -Message ( $script:localizedData.Option -f $($options -join ',') )
+        Write-Verbose -Message ($script:localizedData.Option -f $($options -join ','))
         $currentValue = $currentSecurityPolicy.$section.$valueName
-        Write-Verbose -Message ( $script:localizedData.RawValue -f $($currentValue -join ',') )
+        Write-Verbose -Message ($script:localizedData.RawValue -f $($currentValue -join ','))
 
-        if ( $options.keys -eq 'String' )
+        if ($options.keys -eq 'String')
         {
-            $stringValue = ( $currentValue -split ',' )[-1]
-            $resultValue = ( $stringValue -replace '"' ).Trim()
+            $stringValue = ($currentValue -split ',')[-1]
+            $resultValue = ($stringValue -replace '"').Trim()
 
             if ($resultValue -eq -1 -and $accountPolicy -eq 'Maximum_Password_Age')
             {
@@ -50,18 +50,18 @@ function Get-TargetResource
         }
         else
         {
-            Write-Verbose -Message ( $script:localizedData.RetrievingValue -f $valueName )
-            if ( $currentSecurityPolicy.$section.keys -contains $valueName )
+            Write-Verbose -Message ($script:localizedData.RetrievingValue -f $valueName)
+            if ($currentSecurityPolicy.$section.keys -contains $valueName)
             {
-                $resultValue = ( $accountPolicyData.$accountPolicy.Option.GetEnumerator() |
-                    Where-Object -Property Value -eq $currentValue.Trim() ).Name
+                $resultValue = ($accountPolicyData.$accountPolicy.Option.GetEnumerator() |
+                    Where-Object -Property Value -eq $currentValue.Trim()).Name
             }
             else
             {
                 $resultValue = $null
             }
         }
-        $returnValue.Add( $accountPolicy, $resultValue )
+        $returnValue.Add($accountPolicy, $resultValue)
     }
     return $returnValue
 }
@@ -162,7 +162,7 @@ function Set-TargetResource
 
     $desiredPolicies = $PSBoundParameters.GetEnumerator() | Where-Object -FilterScript { $PSItem.key -in $accountPolicyList }
 
-    foreach ( $policy in $desiredPolicies )
+    foreach ($policy in $desiredPolicies)
     {
         $testParameters = @{
             Name        = 'Test'
@@ -175,15 +175,15 @@ function Set-TargetResource
             that need to be changed to the INF.
          #>
         $isInDesiredState = Test-TargetResource @testParameters
-        if ( -not ( $isInDesiredState ) )
+        if (-not ($isInDesiredState))
         {
             $policyKey = $policy.Key
             $policyData = $accountPolicyData.$policyKey
             $nonComplaintPolicies += $policyKey
 
-            if ( $policyData.Option.GetEnumerator().Name -eq 'String' )
+            if ($policyData.Option.GetEnumerator().Name -eq 'String')
             {
-                if ( [String]::IsNullOrWhiteSpace( $policyData.Option.String ) )
+                if ([String]::IsNullOrWhiteSpace($policyData.Option.String))
                 {
                     if ($policy.Key -eq 'Maximum_Password_Age' -and $policy.Value -eq 0)
                     {
@@ -208,7 +208,7 @@ function Set-TargetResource
                 $newValue = $($policyData.Option[$policy.value])
             }
 
-            if ( $policyData.Section -eq 'System Access' )
+            if ($policyData.Section -eq 'System Access')
             {
                 $systemAccessPolicies += "$($policyData.Value)=$newValue"
             }
@@ -228,7 +228,7 @@ function Set-TargetResource
 
     $successResult = Test-TargetResource @PSBoundParameters
 
-    if ( $successResult -eq $false )
+    if ($successResult -eq $false)
     {
         throw "$($script:localizedData.SetFailed -f $($nonComplaintPolicies -join ','))"
     }
@@ -329,14 +329,14 @@ function Test-TargetResource
 
     $desiredAccountPolicies = $PSBoundParameters
 
-    foreach ( $policy in $desiredAccountPolicies.Keys )
+    foreach ($policy in $desiredAccountPolicies.Keys)
     {
-        if ( $currentAccountPolicies.ContainsKey( $policy ) )
+        if ($currentAccountPolicies.ContainsKey($policy))
         {
-            Write-Verbose -Message ( $script:localizedData.TestingPolicy -f $policy )
-            Write-Verbose -Message ( $script:localizedData.PoliciesBeingCompared -f $($currentAccountPolicies[$policy] -join ',' ), $($desiredAccountPolicies[$policy] -join ',' ) )
+            Write-Verbose -Message ($script:localizedData.TestingPolicy -f $policy)
+            Write-Verbose -Message ($script:localizedData.PoliciesBeingCompared -f $($currentAccountPolicies[$policy] -join ','), $($desiredAccountPolicies[$policy] -join ','))
 
-            if ( $currentAccountPolicies[$policy] -ne $desiredAccountPolicies[$policy] )
+            if ($currentAccountPolicies[$policy] -ne $desiredAccountPolicies[$policy])
             {
                 return $false
             }
