@@ -76,7 +76,7 @@ function Get-TargetResource
                 else
                 {
                     $resultValue = ($securityOptionData.$securityOption.Option.GetEnumerator() |
-                            Where-Object -Property Value -eq $currentValue.Trim() ).Name
+                            Where-Object -Property Value -eq $currentValue.Trim()).Name
                 }
             }
             else
@@ -1169,15 +1169,15 @@ function Test-TargetResource
             {
                 $desiredSecurityOptionValue = $desiredSecurityOptions[$policy]
             }
-            Write-Verbose -Message ( $script:localizedData.TestingPolicy -f $policy )
-            Write-Verbose -Message ( $script:localizedData.PoliciesBeingCompared `
-                    -f $($currentSecurityOptions[$policy] -join ',' ), $($desiredSecurityOptionValue -join ',' ) )
+            Write-Verbose -Message ($script:localizedData.TestingPolicy -f $policy)
+            Write-Verbose -Message ($script:localizedData.PoliciesBeingCompared `
+                    -f $($currentSecurityOptions[$policy] -join ','), $($desiredSecurityOptionValue -join ','))
 
             if ($desiredSecurityOptionValue -is [array])
             {
                 $compareResult = Compare-Array -ReferenceObject @($currentSecurityOptions[$policy]) -DifferenceObject $desiredSecurityOptionValue
 
-                if ( -not $compareResult )
+                if (-not $compareResult)
                 {
                     $results += $false
                 }
