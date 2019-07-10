@@ -160,6 +160,9 @@ to ensure the resource configuration instance is unique.
 
 ### Unreleased
 
+* Bug fix - Max password age fails when setting to 0. Fixes [Issue #121](https://github.com/PowerShell/SecurityPolicyDsc/issues/121)
+* Bug fix - Domain_controller_LDAP_server_signing_requirements - Require Signing.  Fixes [Issue #122](https://github.com/PowerShell/SecurityPolicyDsc/issues/122)
+
 ### 2.8.0.0
 
 * Bug fix - Issue 71 - Issue Added Validation Attributes to AccountPolicy & SecurityOption

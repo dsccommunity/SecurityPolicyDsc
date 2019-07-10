@@ -27,7 +27,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Devices_Restrict_CD_ROM_access_to_locally_logged_on_user_only;
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Devices_Restrict_floppy_access_to_locally_logged_on_user_only;
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Domain_controller_Allow_server_operators_to_schedule_tasks;
-    [Write, ValueMap{"None","Require Signature"}, Values{"None","Require Signature"}] String Domain_controller_LDAP_server_signing_requirements;
+    [Write, ValueMap{"None","Require Signing"}, Values{"None","Require Signing"}] String Domain_controller_LDAP_server_signing_requirements;
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Domain_controller_Refuse_machine_account_password_changes;
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Domain_member_Digitally_encrypt_or_sign_secure_channel_data_always;
     [Write, ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Domain_member_Digitally_encrypt_secure_channel_data_when_possible;
