@@ -1019,7 +1019,7 @@ function Test-TargetResource
         $Network_security_Restrict_NTLM_Add_server_exceptions_in_this_domain,
 
         [Parameter()]
-        [ValidateSet("Disabled", "Enable auditing for domain accounts", "Enable auditing for all accounts")]
+        [ValidateSet("Allow all", "Deny all domain accounts", "Deny all accounts")]
         [System.String]
         $Network_Security_Restrict_NTLM_Incoming_NTLM_Traffic,
 
@@ -1034,7 +1034,7 @@ function Test-TargetResource
         $Network_Security_Restrict_NTLM_Outgoing_NTLM_traffic_to_remote_servers,
 
         [Parameter()]
-        [ValidateSet("Disable", "Deny for domain accounts to domain servers", "Deny for domain accounts", "Deny for domain servers", "Deny all")]
+        [ValidateSet("Disabled", "Enable auditing for domain accounts", "Enable auditing for all accounts")]
         [System.String]
         $Network_Security_Restrict_NTLM_Audit_Incoming_NTLM_Traffic,
 
