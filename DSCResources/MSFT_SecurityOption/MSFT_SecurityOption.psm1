@@ -463,7 +463,7 @@ function Set-TargetResource
         $Network_Security_Restrict_NTLM_Outgoing_NTLM_traffic_to_remote_servers,
 
         [Parameter()]
-        [ValidateSet("Disable", "Deny for domain accounts to domain servers", "Deny for domain accounts", "Deny for domain servers", "Deny all")]
+        [ValidateSet("Disabled", "Enable auditing for domain accounts", "Enable auditing for all accounts")]
         [System.String]
         $Network_Security_Restrict_NTLM_Audit_Incoming_NTLM_Traffic,
 
