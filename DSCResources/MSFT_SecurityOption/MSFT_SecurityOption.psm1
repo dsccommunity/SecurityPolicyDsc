@@ -448,7 +448,7 @@ function Set-TargetResource
         $Network_security_Restrict_NTLM_Add_server_exceptions_in_this_domain,
 
         [Parameter()]
-        [ValidateSet("Disabled", "Enable auditing for domain accounts", "Enable auditing for all accounts")]
+        [ValidateSet("Allow all", "Deny all domain accounts", "Deny all accounts")]
         [System.String]
         $Network_Security_Restrict_NTLM_Incoming_NTLM_Traffic,
 
