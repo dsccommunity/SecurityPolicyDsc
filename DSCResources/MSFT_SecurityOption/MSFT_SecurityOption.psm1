@@ -448,27 +448,27 @@ function Set-TargetResource
         $Network_security_Restrict_NTLM_Add_server_exceptions_in_this_domain,
 
         [Parameter()]
-        [ValidateSet("Disabled", "Enable auditing for domain accounts", "Enable auditing for all accounts")]
+        [ValidateSet("Allow all", "Deny all domain accounts", "Deny all accounts")]
         [System.String]
         $Network_Security_Restrict_NTLM_Incoming_NTLM_Traffic,
 
         [Parameter()]
-        [ValidateSet("Disable", "Enable for domain accounts to domain servers", "Enable for domain accounts", "Enable for domain servers", "Enable all")]
+        [ValidateSet("Disable", "Deny for domain accounts to domain servers", "Deny for domain accounts", "Deny for domain servers", "Deny all")]
         [System.String]
         $Network_Security_Restrict_NTLM_NTLM_authentication_in_this_domain,
 
         [Parameter()]
-        [ValidateSet("Allow all", "Deny all domain accounts", "Deny all accounts")]
+        [ValidateSet("Allow all", "Audit all", "Deny all")]
         [System.String]
         $Network_Security_Restrict_NTLM_Outgoing_NTLM_traffic_to_remote_servers,
 
         [Parameter()]
-        [ValidateSet("Disable", "Deny for domain accounts to domain servers", "Deny for domain accounts", "Deny for domain servers", "Deny all")]
+        [ValidateSet("Disabled", "Enable auditing for domain accounts", "Enable auditing for all accounts")]
         [System.String]
         $Network_Security_Restrict_NTLM_Audit_Incoming_NTLM_Traffic,
 
         [Parameter()]
-        [ValidateSet("Allow all", "Audit all", "Deny all")]
+        [ValidateSet("Disable", "Enable for domain accounts to domain servers", "Enable for domain accounts", "Enable for domain servers", "Enable all")]
         [System.String]
         $Network_Security_Restrict_NTLM_Audit_NTLM_authentication_in_this_domain,
 
@@ -1019,27 +1019,27 @@ function Test-TargetResource
         $Network_security_Restrict_NTLM_Add_server_exceptions_in_this_domain,
 
         [Parameter()]
-        [ValidateSet("Disabled", "Enable auditing for domain accounts", "Enable auditing for all accounts")]
+        [ValidateSet("Allow all", "Deny all domain accounts", "Deny all accounts")]
         [System.String]
         $Network_Security_Restrict_NTLM_Incoming_NTLM_Traffic,
 
         [Parameter()]
-        [ValidateSet("Disable", "Enable for domain accounts to domain servers", "Enable for domain accounts", "Enable for domain servers", "Enable all")]
+        [ValidateSet("Disable", "Deny for domain accounts to domain servers", "Deny for domain accounts", "Deny for domain servers", "Deny all")]
         [System.String]
         $Network_Security_Restrict_NTLM_NTLM_authentication_in_this_domain,
 
         [Parameter()]
-        [ValidateSet("Allow all", "Deny all domain accounts", "Deny all accounts")]
+        [ValidateSet("Allow all", "Audit all", "Deny all")]
         [System.String]
         $Network_Security_Restrict_NTLM_Outgoing_NTLM_traffic_to_remote_servers,
 
         [Parameter()]
-        [ValidateSet("Disable", "Deny for domain accounts to domain servers", "Deny for domain accounts", "Deny for domain servers", "Deny all")]
+        [ValidateSet("Disabled", "Enable auditing for domain accounts", "Enable auditing for all accounts")]
         [System.String]
         $Network_Security_Restrict_NTLM_Audit_Incoming_NTLM_Traffic,
 
         [Parameter()]
-        [ValidateSet("Allow all", "Audit all", "Deny all")]
+        [ValidateSet("Disable", "Enable for domain accounts to domain servers", "Enable for domain accounts", "Enable for domain servers", "Enable all")]
         [System.String]
         $Network_Security_Restrict_NTLM_Audit_NTLM_authentication_in_this_domain,
 
