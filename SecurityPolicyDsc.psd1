@@ -9,7 +9,7 @@
 @{
 
 # Version number of this module.
-moduleVersion = '2.8.0.0'
+moduleVersion = '2.9.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'e2b73194-69ef-4fa6-b949-9f62ebe04989'
@@ -47,13 +47,10 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Bug fix - Issue 71 - Issue Added Validation Attributes to AccountPolicy & SecurityOption
-* Bug fix - Network_security_Restrict_NTLM security option names now maps to correct keys. This fix could impact your systems.
-* Updated LICENSE file to match the Microsoft Open Source Team standard. Fixes [Issue 108](https://github.com/PowerShell/SecurityPolicyDsc/issues/108)
-* Refactored the SID translation process to not throw a terminating error when called from Test-TargetResource
-* Updated verbose message during the SID translation process to identify the policy where an orphaned SID exists
-* Added the EType "FUTURE" to the security option "Network\_security\_Configure\_encryption\_types\_allowed\_for\_Kerberos"
-* Documentation update to include all valid settings for security options and account policies
+        ReleaseNotes = '* Bug fix - Max password age fails when setting to 0. Fixes [Issue 121](https://github.com/PowerShell/SecurityPolicyDsc/issues/121)
+* Bug fix - Domain_controller_LDAP_server_signing_requirements - Require Signing.  Fixes [Issue 122](https://github.com/PowerShell/SecurityPolicyDsc/issues/122)
+* Bug fix - Network_security_Restrict_NTLM security options correct parameter validation. This fix could impact your systems.
+
 '
 
     } # End of PSData hashtable
@@ -61,6 +58,7 @@ PrivateData = @{
 } # End of PrivateData hashtable
 
 }
+
 
 
 
