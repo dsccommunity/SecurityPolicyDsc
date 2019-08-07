@@ -453,7 +453,7 @@ function Set-TargetResource
         $Network_Security_Restrict_NTLM_Incoming_NTLM_Traffic,
 
         [Parameter()]
-        [ValidateSet("Disable", "Enable for domain accounts to domain servers", "Enable for domain accounts", "Enable for domain servers", "Enable all")]
+        [ValidateSet("Disable", "Deny for domain accounts to domain servers", "Deny for domain accounts", "Deny for domain servers", "Deny all")]
         [System.String]
         $Network_Security_Restrict_NTLM_NTLM_authentication_in_this_domain,
 
@@ -468,7 +468,7 @@ function Set-TargetResource
         $Network_Security_Restrict_NTLM_Audit_Incoming_NTLM_Traffic,
 
         [Parameter()]
-        [ValidateSet("Allow all", "Audit all", "Deny all")]
+        [ValidateSet("Disable", "Enable for domain accounts to domain servers", "Enable for domain accounts", "Enable for domain servers", "Enable all")]
         [System.String]
         $Network_Security_Restrict_NTLM_Audit_NTLM_authentication_in_this_domain,
 
@@ -1024,7 +1024,7 @@ function Test-TargetResource
         $Network_Security_Restrict_NTLM_Incoming_NTLM_Traffic,
 
         [Parameter()]
-        [ValidateSet("Disable", "Enable for domain accounts to domain servers", "Enable for domain accounts", "Enable for domain servers", "Enable all")]
+        [ValidateSet("Disable", "Deny for domain accounts to domain servers", "Deny for domain accounts", "Deny for domain servers", "Deny all")]
         [System.String]
         $Network_Security_Restrict_NTLM_NTLM_authentication_in_this_domain,
 
@@ -1039,7 +1039,7 @@ function Test-TargetResource
         $Network_Security_Restrict_NTLM_Audit_Incoming_NTLM_Traffic,
 
         [Parameter()]
-        [ValidateSet("Allow all", "Audit all", "Deny all")]
+        [ValidateSet("Disable", "Enable for domain accounts to domain servers", "Enable for domain accounts", "Enable for domain servers", "Enable all")]
         [System.String]
         $Network_Security_Restrict_NTLM_Audit_NTLM_authentication_in_this_domain,
 
