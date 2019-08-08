@@ -57,7 +57,7 @@ to ensure the resource configuration is unique.
 * **Name**: Name of security option configuration. This is not used during the configuration process but needed
 to ensure the resource configuration instance is unique.
 
-## For explanation of below settings, please consult [Security Options Reference]https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/jj852268(v%3dws.11).
+## For explanation of below settings, please consult [Security Options Reference](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/jj852268(v%3dws.11)).
 
 * **`[String]` Accounts\_Administrator\_account\_status** (Write) : Please see the link above for a full description. { Disabled | Enabled }
 * **`[String]` Accounts\_Block\_Microsoft\_accounts** (Write) : Please see the link above for a full description. { This policy is disabled | Users cant add Microsoft accounts | Users cant add or log on with Microsoft accounts }
@@ -159,6 +159,12 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
+
+### 2.9.0.0
+
+* Bug fix - Max password age fails when setting to 0. Fixes [Issue #121](https://github.com/PowerShell/SecurityPolicyDsc/issues/121)
+* Bug fix - Domain_controller_LDAP_server_signing_requirements - Require Signing.  Fixes [Issue #122](https://github.com/PowerShell/SecurityPolicyDsc/issues/122)
+* Bug fix - Network_security_Restrict_NTLM security options correct parameter validation. This fix could impact your systems.
 
 ### 2.8.0.0
 

@@ -97,6 +97,17 @@ try
                     $getTargetResult.GetType().Name | Should Be 'Hashtable'
                 }
             }
+
+            Context 'Functional tests' {
+                $securityPolicyMock = @{
+                    'System Access' = @{ MaximumPasswordAge = -1}
+                }
+                Mock -CommandName 'Get-SecurityPolicy' -MockWith {$securityPolicyMock}
+                It 'Should return -1 for Max password age' {
+                    $getResult = Get-TargetResource -Name Test
+                    $getResult.Maximum_Password_Age | Should Be 0
+                }
+            }
         }
         Describe 'Test-TargetResource' {
             $falseMockResult = @{
