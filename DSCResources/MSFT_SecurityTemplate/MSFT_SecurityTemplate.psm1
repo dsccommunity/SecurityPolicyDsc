@@ -30,6 +30,7 @@ function Get-TargetResource
         $Path
     )
 
+    Write-Verbose -Message ($script:localizedData.GettingPolicyTemplate)
     $securityCmdlets = Get-Module -Name SecurityCmdlets -ListAvailable
     $currentUserRightsInf = ([System.IO.Path]::GetTempFileName()).Replace('tmp','inf')
 
