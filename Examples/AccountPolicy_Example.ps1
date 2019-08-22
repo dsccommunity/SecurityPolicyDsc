@@ -1,4 +1,4 @@
-﻿configuration AccountPolicies
+configuration AccountPolicies
 {
     Import-DscResource -ModuleName SecurityPolicyDsc
 
