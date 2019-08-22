@@ -161,6 +161,15 @@ to ensure the resource configuration instance is unique.
 
 * Changes to SecurityPolicyDsc
   * Opt-in to the following DSC Resource Common Meta Tests:
+    * Common Tests - Validate Module Files
+    * Common Tests - Validate Script Files
+    * Common Tests - Validate Markdown Files
+    * Common Tests - Required Script Analyzer Rules
+    * Common Tests - Flagged Script Analyzer Rules
+    * Common Tests - New Error-Level Script Analyzer Rules
+    * Common Tests - Custom Script Analyzer Rules
+    * Common Tests - Validate Markdown Links
+    * Common Tests - Relative Path Length
     * Common Tests - Validate Example Files
     * Common Tests - Validate Example Files To Be Published
 
