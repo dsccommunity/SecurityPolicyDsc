@@ -1,4 +1,4 @@
-﻿
+
 # create test user and security template
 $userName = "TestUser" + ([guid]::NewGuid().guid).substring(0,6)
 $policy = 'SeTrustedCredManAccessPrivilege'

@@ -1,4 +1,4 @@
-﻿
+
 $script:DSCModuleName    = 'SecurityPolicyDsc'
 $script:DSCResourceName  = 'MSFT_SecurityTemplate'
 
