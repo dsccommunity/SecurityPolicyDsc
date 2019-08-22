@@ -159,6 +159,18 @@ to ensure the resource configuration instance is unique.
 
 ### Unreleased
 
+* Changes to SecurityPolicyDsc
+  * Opt-in to the following DSC Resource Common Meta Tests:
+    * Common Tests - Validate Module Files
+    * Common Tests - Validate Script Files
+    * Common Tests - Validate Markdown Files
+    * Common Tests - Required Script Analyzer Rules
+    * Common Tests - Flagged Script Analyzer Rules
+    * Common Tests - New Error-Level Script Analyzer Rules
+    * Common Tests - Custom Script Analyzer Rules
+    * Common Tests - Validate Markdown Links
+    * Common Tests - Relative Path Length
+
 ### 2.9.0.0
 
 * Bug fix - Max password age fails when setting to 0. Fixes [Issue #121](https://github.com/PowerShell/SecurityPolicyDsc/issues/121)
