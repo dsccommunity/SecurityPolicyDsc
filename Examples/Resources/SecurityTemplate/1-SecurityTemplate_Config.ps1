@@ -22,7 +22,7 @@
         This configuration will manage user rights assignments that are defined
         in a security policy INF file.
 #>
-Configuration SecurityTemplate_Example
+Configuration SecurityTemplate_Config
 {
     Import-DscResource -ModuleName SecurityPolicyDsc
 
