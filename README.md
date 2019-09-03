@@ -160,6 +160,11 @@ to ensure the resource configuration instance is unique.
 
 ### Unreleased
 
+* Changes to SecurityPolicyDsc
+  * Opt-in to the following DSC Resource Common Meta Tests:
+    * Common Tests - Validate Example Files
+    * Common Tests - Validate Example Files To Be Published
+
 ### 2.9.0.0
 
 * Bug fix - Max password age fails when setting to 0. Fixes [Issue #121](https://github.com/PowerShell/SecurityPolicyDsc/issues/121)
