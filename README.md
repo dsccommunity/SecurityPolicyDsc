@@ -159,7 +159,7 @@ to ensure the resource configuration instance is unique.
 
 ### master
 
-[![Build status](https://ci.appveyor.com/api/projects/status/github/PowerShell/SecurityPolicyDsc?branch=master?svg=true)](https://ci.appveyor.com/project/PowerShell/SecurityPolicyDsc/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/github/PowerShell/SecurityPolicyDsc?branch=master&svg=true)](https://ci.appveyor.com/project/PowerShell/SecurityPolicyDsc/branch/master)
 [![codecov](https://codecov.io/gh/PowerShell/SecurityPolicyDsc/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/SecurityPolicyDsc/branch/master)
 
 This is the branch containing the latest release -
@@ -167,7 +167,7 @@ no contributions should be made directly to this branch.
 
 ### dev
 
-[![Build status](https://ci.appveyor.com/api/projects/status/github/PowerShell/SecurityPolicyDsc?branch=dev?svg=true)](https://ci.appveyor.com/project/PowerShell/SecurityPolicyDsc/branch/dev)
+[![Build status](https://ci.appveyor.com/api/projects/status/github/PowerShell/SecurityPolicyDsc?branch=dev&svg=true)](https://ci.appveyor.com/project/PowerShell/SecurityPolicyDsc/branch/dev)
 [![codecov](https://codecov.io/gh/PowerShell/SecurityPolicyDsc/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/SecurityPolicyDsc/branch/dev)
 
 This is the development branch
