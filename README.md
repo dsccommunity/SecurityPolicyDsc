@@ -155,114 +155,26 @@ to ensure the resource configuration instance is unique.
 * **`[String]` User\_Account\_Control\_Switch\_to\_the\_secure\_desktop\_when\_prompting\_for\_elevation** (Write) : Please see the link above for a full description. { Disabled | Enabled }
 * **`[String]` User\_Account\_Control\_Virtualize\_file\_and\_registry\_write\_failures\_to\_per\_user\_locations** (Write) : Please see the link above for a full description. { Disabled | Enabled }
 
-## Versions
+## Branches
 
-### Unreleased
+### master
 
-### 2.10.0.0
+[![Build status](https://ci.appveyor.com/api/projects/status/github/PowerShell/SecurityPolicyDsc?branch=master?svg=true)](https://ci.appveyor.com/project/PowerShell/SecurityPolicyDsc/branch/master)
+[![codecov](https://codecov.io/gh/PowerShell/SecurityPolicyDsc/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/SecurityPolicyDsc/branch/master)
 
-* Changes to SecurityPolicyDsc
-  * Opt-in to the following DSC Resource Common Meta Tests:
-    * Common Tests - Validate Module Files
-    * Common Tests - Validate Script Files
-    * Common Tests - Validate Markdown Files
-    * Common Tests - Required Script Analyzer Rules
-    * Common Tests - Flagged Script Analyzer Rules
-    * Common Tests - New Error-Level Script Analyzer Rules
-    * Common Tests - Custom Script Analyzer Rules
-    * Common Tests - Validate Markdown Links
-    * Common Tests - Relative Path Length
-    * Common Tests - Validate Example Files
-    * Common Tests - Validate Example Files To Be Published
-  * Fix keywords to lower-case to align with guideline.
+This is the branch containing the latest release -
+no contributions should be made directly to this branch.
 
-### 2.9.0.0
+### dev
 
-* Bug fix - Max password age fails when setting to 0. Fixes [Issue #121](https://github.com/PowerShell/SecurityPolicyDsc/issues/121)
-* Bug fix - Domain_controller_LDAP_server_signing_requirements - Require Signing.  Fixes [Issue #122](https://github.com/PowerShell/SecurityPolicyDsc/issues/122)
-* Bug fix - Network_security_Restrict_NTLM security options correct parameter validation. This fix could impact your systems.
+[![Build status](https://ci.appveyor.com/api/projects/status/github/PowerShell/SecurityPolicyDsc?branch=dev?svg=true)](https://ci.appveyor.com/project/PowerShell/SecurityPolicyDsc/branch/dev)
+[![codecov](https://codecov.io/gh/PowerShell/SecurityPolicyDsc/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/SecurityPolicyDsc/branch/dev)
 
-### 2.8.0.0
+This is the development branch
+to which contributions should be proposed by contributors as pull requests.
+This development branch will periodically be merged to the master branch,
+and be released to [PowerShell Gallery](https://www.powershellgallery.com/).
 
-* Bug fix - Issue 71 - Issue Added Validation Attributes to AccountPolicy & SecurityOption
-* Bug fix - Network_security_Restrict_NTLM security option names now maps to correct keys. This fix could impact your systems.
-* Updated LICENSE file to match the Microsoft Open Source Team standard. Fixes [Issue #108](https://github.com/PowerShell/SecurityPolicyDsc/issues/108)
-* Refactored the SID translation process to not throw a terminating error when called from Test-TargetResource
-* Updated verbose message during the SID translation process to identify the policy where an orphaned SID exists
-* Added the EType "FUTURE" to the security option "Network\_security\_Configure\_encryption\_types\_allowed\_for\_Kerberos"
-* Documentation update to include all valid settings for security options and account policies
+## Change log
 
-### 2.7.0.0
-
-* Bug fix - Issue 83 - Network_access_Remotely_accessible_registry_paths_and_subpaths correctly applies multiple paths
-* Update LICENSE file to match the Microsoft Open Source Team standard
-
-### 2.6.0.0
-
-* Added SecurityOption - Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM
-* Bug fix - Issue 105 - Spelling error in SecurityOption User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users
-* Bug fix - Issue 90 - Corrected value for Microsoft_network_server_Server_SPN_target_name_validation_level policy
-
-### 2.5.0.0
-
-* Added handler for null value in SecurityOption
-* Moved the helper module out from DSCResource folder to the Modules folder.
-* Fixed SecurityPolicyResourceHelper.Tests.ps1 so it possible to run the tests
-  locally.
-* Fixed minor typos.
-
-### 2.4.0.0
-
-* Added additional error handling to ConvertTo-Sid helper function.
-
-### 2.3.0.0
-
-* Updated documentation.
-  * Add example of applying Kerberos policies
-  * Added hyper links to readme
-
-### 2.2.0.0
-
-* Fixed bug in UserRightAssignment where Get-DscConfiguration would fail if it returns $Identity as single string
-
-### 2.1.0.0
-
-* Updated SecurityOption to handle multi-line logon messages
-* SecurityOption: Added logic and example to handle scenario when using Interactive_logon_Message_text_for_users_attempting_to_log_on
-
-### 2.0.0.0
-
-* Added SecurityOption and AccountPolicy
-* Removed SecuritySetting
-
-### 1.5.0.0
-
-* Refactored user rights assignment to read and test easier.
-
-### 1.4.0.0
-
-* Fixed bug in which friendly name translation may fail if user or group contains 'S-'.
-* Fixed bug identified in issue 33 and 34 where Test-TargetResource would return false but was true
-
-### 1.3.0.0
-
-* Added functionality to support BaselineManagement Module.
-* Updated UserRightsAssignment resource to respect dynamic local accounts.
-* Added SecuritySetting resource to process additional INF settings.
-
-### 1.2.0.0
-
-* SecurityTemplate: Remove [ValidateNotNullOrEmpty()] attribute for IsSingleInstance parameter
-* Fixed typos
-
-### 1.1.0.0
-
-* SecurityTemplate:
-  * Made SecurityTemplate compatible with Nano Server
-  * Fixed bug in which Path parameter failed when no User section was present
-
-### 1.0.0.0
-
-* Initial release with the following resources:
-  * UserRightsAssignment
-  * SecurityTemplate
+A full list of changes in each version can be found in the [change log](CHANGELOG.md).
