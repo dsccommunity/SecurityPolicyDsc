@@ -20,7 +20,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
-| **Policy** | Key | String | The policy name of the user rights assignment to be configured. |Create_a_token_object, Access_this_computer_from_the_network, Change_the_system_time, Deny_log_on_as_a_batch_job, Deny_log_on_through_Remote_Desktop_Services, Create_global_objects, Remove_computer_from_docking_station, Deny_access_to_this_computer_from_the_network, Act_as_part_of_the_operating_system, Modify_firmware_environment_values, Deny_log_on_locally, Access_Credential_Manager_as_a_trusted_caller, Restore_files_and_directories, Change_the_time_zone, Replace_a_process_level_token, Manage_auditing_and_security_log, Create_symbolic_links, Modify_an_object_label, Enable_computer_and_user_accounts_to_be_trusted_for_delegation, Generate_security_audits, Increase_a_process_working_set, Take_ownership_of_files_or_other_objects, Bypass_traverse_checking, Log_on_as_a_service, Shut_down_the_system, Lock_pages_in_memory, Impersonate_a_client_after_authentication, Profile_system_performance, Debug_programs, Profile_single_process, Allow_log_on_through_Remote_Desktop_Services, Allow_log_on_locally, Increase_scheduling_priority, Synchronize_directory_service_data, Add_workstations_to_domain, Adjust_memory_quotas_for_a_process, Obtain_an_impersonation_token_for_another_user_in_the_same_session, Perform_volume_maintenance_tasks, Load_and_unload_device_drivers, Force_shutdown_from_a_remote_system, Back_up_files_and_directories, Create_a_pagefile, Deny_log_on_as_a_service, Log_on_as_a_batch_job, Create_permanent_shared_objects|
+| **Policy** | Key | String | The policy name of the user rights assignment to be configured. |Create_a_token_object, Access_this_computer_from_the_network, Change_the_system_time, Deny_log_on_as_a_batch_job, Deny_log_on_through_Remote_Desktop_Services, Create_global_objects, Remove_computer_from_docking_station, Deny_access_to_this_computer_from_the_network, Act_as_part_of_the_operating_system, Modify_firmware_environment_values, Deny_log_on_locally, Access_Credential_Manager_ as_a_trusted_caller, Restore_files_and_directories, Change_the_time_zone, Replace_a_process_level_token, Manage_auditing_and_security_log, Create_symbolic_links, Modify_an_object_label, Enable_computer_and_user_accounts_ to_be_trusted_for_delegation, Generate_security_audits, Increase_a_process_working_set, Take_ownership_of_files_ or_other_objects, Bypass_traverse_checking, Log_on_as_a_service, Shut_down_the_system, Lock_pages_in_memory, Impersonate_a_client_ after_authentication, Profile_system_performance, Debug_programs, Profile_single_process, Allow_log_on_through_ Remote_Desktop_Services, Allow_log_on_locally, Increase_scheduling_priority, Synchronize_directory_service_data, Add_workstations_to_domain, Adjust_memory_quotas_for_a_process, Obtain_an_impersonation_token_for_ another_user_in_the_same_session, Perform_volume_maintenance_tasks, Load_and_unload_device_drivers, Force_shutdown_from_a_remote_system, Back_up_files_and_directories, Create_a_pagefile, Deny_log_on_as_a_service, Log_on_as_a_batch_job, Create_permanent_shared_objects|
 | **Identity** | Required | String[] | The identity of the user or group to be added or removed from the user rights assignment. ||
 | **Force** | Write | Boolean | Specifies to explicitly assign only the identities defined ||
 | **Ensure** | Write | String | Desired state of resource. |Present, Absent|
@@ -34,7 +34,7 @@ If you would like to contribute to this repository, please read the DSC Resource
 
 ### AccountPolicy
 
-**For explanation of below settings, please consult [Account Policies Reference](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/account-policies).**
+**For further explanation of these settings, please consult [Account Policies Reference](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/account-policies).**
 
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
@@ -49,22 +49,19 @@ If you would like to contribute to this repository, please read the DSC Resource
 | **Account_lockout_threshold** | Write | Uint32 | Specifies the number of failed sign-in attempts that will cause a user account to be locked ||
 | **Reset_account_lockout_ counter_after** | Write | Uint32 | Specifies the number of minutes that must elapse from the time a user fails to log on before the failed logon attempt counter is reset to 0 ||
 
-(Note: The below settings pertain to Kerberos policies and must be set by a member in the domain admins group.
+**Note:** The below settings pertain to Kerberos policies and must be set by a member in the domain admins group.
 
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
-| **Enforce_user_logon_restrictions** | Write | String | Specifies whether the Kerberos V5 Key Distribution Center (KDC) validates every request for a session ticket against the user rights policy of the user account |Enabled, Disabled|
-| **Maximum_lifetime_for_service_ticket** | Write | Uint32 | Specifies the maximum number of minutes that a granted session ticket can be used to access a particular service. A number from 10 to the value of the 'Maximum lifetime for service ticket' policy setting can be specified ||
-| **Maximum_lifetime_for_user_ticket** | Write | Uint32 | Specifies the maximum amount of time (in hours) that a userâ€™s ticket-granting ticket can be used. A number from 0 to 99,999 can be specified ||
-| **Maximum_lifetime_for_user_ticket_ renewal** | Write | Uint32 | Specifies the period of time (in days) during which a userâ€™s ticket-granting ticket can be renewed. A number from 0 to 99,999 can be specified ||
-| **Maximum_tolerance_for_computer_ clock_synchronization** | Write | Uint32 | Specifies the maximum time difference (in minutes) that Kerberos V5 tolerates between the time on the client clock and the time on the domain controller that provides Kerberos authentication ||
+| **Enforce_user_logon_ restrictions** | Write | String | Specifies whether the Kerberos V5 Key Distribution Center (KDC) validates every request for a session ticket against the user rights policy of the user account |Enabled, Disabled|
+| **Maximum_lifetime_ for_service_ticket** | Write | Uint32 | Specifies the maximum number of minutes that a granted session ticket can be used to access a particular service. A number from 10 to the value of the 'Maximum lifetime for service ticket' policy setting can be specified ||
+| **Maximum_lifetime_ for_user_ticket** | Write | Uint32 | Specifies the maximum amount of time (in hours) that a user's ticket-granting ticket can be used. A number from 0 to 99,999 can be specified ||
+| **Maximum_lifetime_ for_user_ticket_ renewal** | Write | Uint32 | Specifies the period of time (in days) during which a user's ticket-granting ticket can be renewed. A number from 0 to 99,999 can be specified ||
+| **Maximum_tolerance_ for_computer_clock_ synchronization** | Write | Uint32 | Specifies the maximum time difference (in minutes) that Kerberos V5 tolerates between the time on the client clock and the time on the domain controller that provides Kerberos authentication ||
 
 ### SecurityOption
 
-* **Name**: Name of security option configuration. This is not used during the configuration process but needed
-to ensure the resource configuration instance is unique.
-
-**For explanation of below settings, please consult [Security Options Reference](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-options).**
+**For further explanation of these settings, please consult [Security Options Reference](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-options).**
 
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
