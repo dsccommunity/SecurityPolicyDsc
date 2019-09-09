@@ -172,6 +172,7 @@ to ensure the resource configuration instance is unique.
     * Common Tests - Relative Path Length
     * Common Tests - Validate Example Files
     * Common Tests - Validate Example Files To Be Published
+  * Fix keywords to lower-case to align with guideline.
 
 ### 2.9.0.0
 
