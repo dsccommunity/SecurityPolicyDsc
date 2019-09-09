@@ -47,7 +47,7 @@ function Get-TargetResource
             {
                 $resultValue = ($currentValue -split '7,')[-1].Trim()
             }
-            elseIf ($securityOption -eq 'Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM')
+            elseif ($securityOption -eq 'Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM')
             {
                 [array]$resultValue = ConvertTo-CimRestrictedRemoteSam -InputObject $currentValue
             }
@@ -613,7 +613,7 @@ function Set-TargetResource
                         $message = Format-LogonMessage -Message $policy.Value
                         $newValue = "$($policyData.Option.String)" + $message
                     }
-                    elseIf ($policy.Key -eq 'Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM')
+                    elseif ($policy.Key -eq 'Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM')
                     {
                         $message = Format-RestrictedRemoteSam -SecurityDescriptor $policy.Value
                         $newValue = "$($policyData.Option.String)" + $message
@@ -624,7 +624,7 @@ function Set-TargetResource
                     }
                 }
             }
-            elseIf ($policy.Key -eq 'Network_security_Configure_encryption_types_allowed_for_Kerberos')
+            elseif ($policy.Key -eq 'Network_security_Configure_encryption_types_allowed_for_Kerberos')
             {
                 $newValue = ConvertTo-KerberosEncryptionValue -EncryptionType $policy.Value
             }
@@ -1155,7 +1155,7 @@ function Test-TargetResource
             {
                 $desiredSecurityOptionValue = Format-LogonMessage -Message $desiredSecurityOptions[$policy]
             }
-            elseIf ($policy -eq 'Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM')
+            elseif ($policy -eq 'Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM')
             {
                 $testRemoteSamParameters = @{
                     DesiredSetting = $Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM
