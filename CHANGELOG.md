@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+* Changes to SecurityPolicyDsc:
+  * Move change log to CHANGELOG.md
+
 ### 2.10.0.0
 
 * Changes to SecurityPolicyDsc:
