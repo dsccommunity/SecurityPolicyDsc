@@ -15,6 +15,7 @@
     * Common Tests - Relative Path Length
     * Common Tests - Validate Example Files
     * Common Tests - Validate Example Files To Be Published
+  * Fix keywords to lower-case to align with guideline.
   * Move change log to CHANGELOG.md
 
 ## 2.9.0.0
