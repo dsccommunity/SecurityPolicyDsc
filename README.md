@@ -159,6 +159,8 @@ to ensure the resource configuration instance is unique.
 
 ### Unreleased
 
+### 2.10.0.0
+
 * Changes to SecurityPolicyDsc
   * Opt-in to the following DSC Resource Common Meta Tests:
     * Common Tests - Validate Module Files
