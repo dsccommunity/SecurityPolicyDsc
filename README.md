@@ -31,15 +31,14 @@ If you would like to contribute to this repository, please read the DSC Resource
 * **Name**: A unique name of the AccountPolicy resource instance. This is not used during configuration but needed
 to ensure the resource configuration is unique.
 
-## For explanation of below settings, please consult [Account Policies Reference](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/jj852214(v%3dws.11)).
+## For explanation of below settings, please consult [Account Policies Reference](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/jj852214(v%3dws.11))
+
 * **`[String]` Enforce\_password\_history** (Write) : Please see the link above for a full description. { Passwords Remembered }
 * **`[String]` Maximum\_Password\_Age** (Write) : Please see the link above for a full description. { days }
 * **`[String]` Minimum\_Password\_Age** (Write) : Please see the link above for a full description. { days }
 * **`[String]` Minimum\_Password\_Length** (Write) : Please see the link above for a full description. { Character Count }
 * **`[String]` Password\_must\_meet\_complexity\_requirements** (Write) : Please see the link above for a full description. { Disabled | Enabled }
 * **`[String]` Store\_passwords\_using\_reversible\_encryption** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-
-
 * **`[String]` Account\_lockout\_duration** (Write) : Please see the link above for a full description. { minutes }
 * **`[String]` Account\_lockout\_threshold** (Write) : Please see the link above for a full description. { invalid logon attempts}
 * **`[String]` Reset\_account\_lockout\_counter\_after** (Write) : Please see the link above for a full description. { minutes }
@@ -57,7 +56,7 @@ to ensure the resource configuration is unique.
 * **Name**: Name of security option configuration. This is not used during the configuration process but needed
 to ensure the resource configuration instance is unique.
 
-## For explanation of below settings, please consult [Security Options Reference](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/jj852268(v%3dws.11)).
+## For explanation of below settings, please consult [Security Options Reference](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/jj852268(v%3dws.11))
 
 * **`[String]` Accounts\_Administrator\_account\_status** (Write) : Please see the link above for a full description. { Disabled | Enabled }
 * **`[String]` Accounts\_Block\_Microsoft\_accounts** (Write) : Please see the link above for a full description. { This policy is disabled | Users cant add Microsoft accounts | Users cant add or log on with Microsoft accounts }
@@ -159,6 +158,23 @@ to ensure the resource configuration instance is unique.
 ## Versions
 
 ### Unreleased
+
+### 2.10.0.0
+
+* Changes to SecurityPolicyDsc
+  * Opt-in to the following DSC Resource Common Meta Tests:
+    * Common Tests - Validate Module Files
+    * Common Tests - Validate Script Files
+    * Common Tests - Validate Markdown Files
+    * Common Tests - Required Script Analyzer Rules
+    * Common Tests - Flagged Script Analyzer Rules
+    * Common Tests - New Error-Level Script Analyzer Rules
+    * Common Tests - Custom Script Analyzer Rules
+    * Common Tests - Validate Markdown Links
+    * Common Tests - Relative Path Length
+    * Common Tests - Validate Example Files
+    * Common Tests - Validate Example Files To Be Published
+  * Fix keywords to lower-case to align with guideline.
 
 ### 2.9.0.0
 

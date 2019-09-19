@@ -9,7 +9,7 @@
 @{
 
 # Version number of this module.
-moduleVersion = '2.9.0.0'
+moduleVersion = '2.10.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'e2b73194-69ef-4fa6-b949-9f62ebe04989'
@@ -47,9 +47,20 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Bug fix - Max password age fails when setting to 0. Fixes [Issue 121](https://github.com/PowerShell/SecurityPolicyDsc/issues/121)
-* Bug fix - Domain_controller_LDAP_server_signing_requirements - Require Signing.  Fixes [Issue 122](https://github.com/PowerShell/SecurityPolicyDsc/issues/122)
-* Bug fix - Network_security_Restrict_NTLM security options correct parameter validation. This fix could impact your systems.
+        ReleaseNotes = '* Changes to SecurityPolicyDsc
+  * Opt-in to the following DSC Resource Common Meta Tests:
+    * Common Tests - Validate Module Files
+    * Common Tests - Validate Script Files
+    * Common Tests - Validate Markdown Files
+    * Common Tests - Required Script Analyzer Rules
+    * Common Tests - Flagged Script Analyzer Rules
+    * Common Tests - New Error-Level Script Analyzer Rules
+    * Common Tests - Custom Script Analyzer Rules
+    * Common Tests - Validate Markdown Links
+    * Common Tests - Relative Path Length
+    * Common Tests - Validate Example Files
+    * Common Tests - Validate Example Files To Be Published
+  * Fix keywords to lower-case to align with guideline.
 
 '
 
@@ -58,6 +69,7 @@ PrivateData = @{
 } # End of PrivateData hashtable
 
 }
+
 
 
 
