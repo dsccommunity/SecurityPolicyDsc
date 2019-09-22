@@ -1,4 +1,4 @@
-# Versions
+# Change log for SecurityPolicyDsc
 
 ## Unreleased
 
