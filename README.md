@@ -159,6 +159,9 @@ to ensure the resource configuration instance is unique.
 
 ### Unreleased
 
+* Changes to SecurityPolicyDsc
+  * Resolved custom Script Analyzer rules that was added to the test framework.
+
 ### 2.10.0.0
 
 * Changes to SecurityPolicyDsc
