@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Changes to SecurityPolicyDsc:
+  * Resolved custom Script Analyzer rules that was added to the test framework.
   * Move change log to CHANGELOG.md
 
 ## 2.10.0.0
