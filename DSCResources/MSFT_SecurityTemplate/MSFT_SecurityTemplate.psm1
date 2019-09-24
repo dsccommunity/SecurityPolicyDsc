@@ -156,7 +156,7 @@ function Test-TargetResource
             $policiesMatch = $null -eq ( Compare-Object -ReferenceObject ($currentPolicies[$policy]).Trim() -DifferenceObject ($desiredPolicies[$policy]).Trim() )
         }
 
-        if(-not $policiesMatch)
+        if (-not $policiesMatch)
         {
             Write-Verbose -Message ($script:localizedData.NotDesiredState -f $Policy)
             return $false
