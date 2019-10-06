@@ -1,0 +1,36 @@
+.NAME
+    SecurityTemplate
+
+.DESCRIPTION
+    This resource can be used to manage user rights assignment that are definied an
+    INF file.
+
+.PARAMETER IsSingleInstance
+    Key - String
+    Allowed values: Yes
+    Specifies the resource is a single instance, the value must be 'Yes'
+
+.PARAMETER Path
+    Required - String
+    The path to the desired security policy template (.inf)
+
+.EXAMPLE 1
+
+This configuration will manage user rights assignments that are defined
+in a security policy INF file.
+
+Configuration SecurityTemplate_Config
+{
+    Import-DscResource -ModuleName SecurityPolicyDsc
+
+    node localhost
+    {
+        SecurityTemplate TrustedCredentialAccess
+        {
+            Path             = "C:\scratch\SecurityPolicyBackup.inf"
+            IsSingleInstance = 'Yes'
+        }
+    }
+}
+
+
