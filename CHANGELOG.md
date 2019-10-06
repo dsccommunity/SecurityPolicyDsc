@@ -5,6 +5,7 @@
 - Changes to SecurityPolicyDsc:
   - Resolved custom Script Analyzer rules that was added to the test framework.
   - Move change log to CHANGELOG.md
+  - Added PowerShell Dsc Resource Help Files
 
 ## 2.10.0.0
 
