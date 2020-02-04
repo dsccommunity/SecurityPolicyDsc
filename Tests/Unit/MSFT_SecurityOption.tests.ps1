@@ -134,7 +134,7 @@ try
                 }
 
                 It 'Should return NT AUTHORITY\NETWORK SERVICE' {
-                    $result = ConvertTo-CimRestrictedRemoteSam -InputObject "(A;;RC;;;NS)"
+                    $result = ConvertTo-CimRestrictedRemoteSam -InputObject "(A;;RC;;;S-1-5-20)"
 
                     $result.Permission | Should Be 'Allow'
                     $result.Identity | Should Be 'NT AUTHORITY\NETWORK SERVICE'
@@ -187,7 +187,7 @@ try
                 It 'Should Allow NT AUTHORITY\NETWORK SERVICE' {
                     $result = Format-RestrictedRemoteSam -SecurityDescriptor $formatDescriptorAllowParameters
 
-                    $result | Should Be '"O:BAG:BAD:(A;;RC;;;S-1-5-20)"'
+                    $result | Should Be '"O:BAG:BAD:(A;;RC;;;NS)"'
                 }
 
                 It 'Should Allow NT AUTHORITY\SYSTEM' {
