@@ -134,7 +134,7 @@ try
                 }
 
                 It 'Should return NT AUTHORITY\NETWORK SERVICE' {
-                    $result = ConvertTo-CimRestrictedRemoteSam -InputObject "(A;;RC;;;S-1-5-20)"
+                    $result = ConvertTo-CimRestrictedRemoteSam -InputObject "(A;;RC;;;NS)"
 
                     $result.Permission | Should Be 'Allow'
                     $result.Identity | Should Be 'NT AUTHORITY\NETWORK SERVICE'
