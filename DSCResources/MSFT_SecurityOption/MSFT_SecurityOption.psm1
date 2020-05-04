@@ -1346,11 +1346,16 @@ function Format-RestrictedRemoteSam
     foreach ($descriptor in $SecurityDescriptor)
     {
         $resolvedIdentity = ConvertTo-LocalFriendlyName -Identity $descriptor.Identity -Scope Set
+        
+        # If possible, Identity to SDDL SID constant
+        $sddl_identity = ConvertTo-SDDLDescriptor $resolvedIdentity
 
-        if ($resolvedIdentity -eq 'BUILTIN\Administrators')
+        # If the Identity has a Identity constant, set $resolvedIdentity to that constant
+        if ( [string]::IsNullOrWhiteSpace( $sddl_identity ) -eq $false )
         {
-            $resolvedIdentity = 'BA'
+            $resolvedIdentity = $sddl_identity
         }
+        # Otherwise, lookup the SID of the given Identity
         else
         {
             $resolvedIdentity = ConvertTo-Sid -Identity $resolvedIdentity -Scope Set
@@ -1412,17 +1417,17 @@ function ConvertTo-CimRestrictedRemoteSam
             }
         }
 
-        switch ($identity)
+        # Take Identity and convert to a searchable string and send the result to ConvertTo-LocalFriendlyName
+        $identity = ConvertFrom-SDDLDescriptor($identity) | ConvertTo-LocalFriendlyName
+
+        # Verify ConvertTo-LocalFriendlyName found a valid identity, otherwise, skip the identity
+        if ( [string]::IsNullOrWhiteSpace( $identity ) -eq $true )
         {
-            'BA'
-            {
-                $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity 'S-1-5-32-544'))
-            }
-            default
-            {
-                $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity $identity))
-            }
+            Write-Verbose -Message ($script:localizedData.CimRestrictedRemoteSam -f $identity)
+            continue
         }
+
+        $cimProperties.Add('Identity', (ConvertTo-LocalFriendlyName -Identity $identity))
 
         $cimInstanceParameters = @{
             ClassName  = 'MSFT_RestrictedRemoteSamSecurityDescriptor'
