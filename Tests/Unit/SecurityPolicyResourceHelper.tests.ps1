@@ -24,7 +24,6 @@ InModuleScope $script:subModuleName {
             ConvertTo-LocalFriendlyName -Identity $sid | should be 'BUILTIN\Administrators'
         }
 
-        write-warning (Get-LocalUser|fl|out-string)
         It "Should return $env:COMPUTERNAME\Guest" {
             ConvertTo-LocalFriendlyName -Identity 'Guest' -Verbose | Should be "$env:COMPUTERNAME\Guest"
         }
