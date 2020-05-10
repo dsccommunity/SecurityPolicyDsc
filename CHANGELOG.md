@@ -10,6 +10,7 @@
     - Changed Format-RestrictedRemoteSAM to use new function to create strings with additional SDDL SID constants
     - Changed ConvertTo-CimRestrictedRemoteSam to use new function to accept more possible SDDL SID constants
     - Changed ConvertTo-CimRestrictedRemoteSam to skip CimInstance creation if no valid Identity was found
+  - Add schema descriptions for all properties and update README.
   - Added PowerShell Dsc Resource Help Files
 
 ## 2.10.0.0
