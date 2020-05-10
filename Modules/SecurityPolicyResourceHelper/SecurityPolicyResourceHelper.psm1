@@ -561,3 +561,137 @@ function Get-UserRightConstant
 
     return $friendlyNames[$Policy]
 }
+
+<#
+    .SYNOPSIS
+        Converts an identity from a SDDL identity
+
+    .PARAMETER Identity
+        Specifies the identity to convert
+
+    .NOTES
+        General notes
+#>
+function ConvertFrom-SDDLDescriptor
+{
+    [OutputType([string])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [System.String]
+        $Identity
+    )
+
+    $descriptors = @{
+        'AO' = 'Account Operators'
+        'AN' = 'NT AUTHORITY\ANONYMOUS LOGON'
+        'AU' = 'NT AUTHORITY\Authenticated Users'
+        'BA' = 'BUILTIN\Administrators'
+        'BG' = 'BUILTIN\Guests'
+        'BO' = 'BUILTIN\Backup Operators'
+        'BU' = 'BUILTIN\Users'
+        'CG' = 'CREATOR GROUP'
+        'CO' = 'CREATOR OWNER'
+        'DA' = 'Domain Admins'
+        'DC' = 'Domain Computers'
+        'DD' = 'Domain Controllers'
+        'DG' = 'Domain Guests'
+        'DU' = 'Domain Users'
+        'EA' = 'Enterprise Admins'
+        'ED' = 'Enterprise Domain Controllers'
+        'WD' = 'Everyone'
+        'IU' = 'NT AUTHORITY\INTERACTIVE'
+        'SY' = 'System'
+        'NU' = 'NT AUTHORITY\NETWORK'
+        'NO' = 'BUILTIN\Network Configuration Operators'
+        'NS' = 'NT AUTHORITY\NETWORK SERVICE'
+        'PO' = 'BUILTIN\Print Operators'
+        'PS' = 'NT AUTHORITY\SELF'
+        'PU' = 'BUILTIN\Power Users'
+        'RS' = 'RAS and IAS Servers'
+        'RD' = 'NT AUTHORITY\TERMINAL SERVER USER'
+        'RE' = 'BUILTIN\Replicator'
+        'SA' = 'Schema Admins'
+        'SO' = 'Server Operators'
+        'SU' = 'NT AUTHORITY\SERVICE'
+    }
+
+    $result = $descriptors[$Identity]
+
+    if ( [string]::IsNullOrWhiteSpace( $result ) -eq $true )
+    {
+        $result = $Identity
+    }
+
+    return $result
+}
+
+<#
+    .SYNOPSIS
+        Converts an identity to an SDDL identity constant if applicable
+
+    .PARAMETER Identity
+        Specifies the identity to convert
+
+    .NOTES
+        Returns null if there is no match to an SDDL constant SID
+#>
+function ConvertTo-SDDLDescriptor
+{
+    [OutputType([string])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [System.String]
+        $Identity
+    )
+
+    $descriptors = @{
+        '.*\\Account Operators$' = 'AO'
+        'NT AUTHORITY\\ANONYMOUS LOGON$' = 'AN'
+        'NT AUTHORITY\\Authenticated Users$' = 'AU'
+        'BUILTIN\\Administrators$' = 'BA'
+        'BUILTIN\\Guests$' = 'BG'
+        'BUILTIN\\Backup Operators$' = 'BO'
+        'BUILTIN\\Users$' = 'BU'
+        'CREATOR GROUP$' = 'CG'
+        'CREATOR OWNER$' = 'CO'
+        '.*\\Domain Admins$' = 'DA'
+        '.*\\Domain Computers$' = 'DC'
+        '.*\\Domain Controllers$' = 'DD'
+        '.*\\Domain Guests$' = 'DG'
+        '.*\\Domain Users$' = 'DU'
+        '.*\\Enterprise Admins$' = 'EA'
+        '.*\\Enterprise Domain Controllers$' = 'ED'
+        'Everyone$' = 'WD'
+        'NT AUTHORITY\\INTERACTIVE$' = 'IU'
+        'System$' = 'SY'
+        'NT AUTHORITY\\NETWORK$' = 'NU'
+        'BUILTIN\\Network Configuration Operators$' = 'NO'
+        'NT AUTHORITY\\NETWORK SERVICE$' = 'NS'
+        'BUILTIN\\Print Operators$' = 'PO'
+        'NT AUTHORITY\\SELF$' = 'PS'
+        'BUILTIN\\Power Users$' = 'PU'
+        '.*\\RAS and IAS Servers$' = 'RS'
+        'NT AUTHORITY\\TERMINAL SERVER USER$' = 'RD'
+        'BUILTIN\\Replicator$' = 'RE'
+        '.*\\Schema Admins$' = 'SA'
+        '.*\\Server Operators$' = 'SO'
+        'NT AUTHORITY\\SERVICE$' = 'SU'
+    }
+
+    # Set $result to null
+    $result = $null
+    foreach ($descriptor in $descriptors.GetEnumerator())
+    {
+        if ($Identity -match $descriptor.Name)
+        {
+            $result = $descriptor.Value
+            break
+        }
+    }
+
+    return $result
+}
