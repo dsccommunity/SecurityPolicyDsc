@@ -20,11 +20,11 @@ Import-Module $script:subModuleFile -Force -ErrorAction 'Stop'
 InModuleScope $script:subModuleName {
     Describe 'SecurityPolicyResourceHelper\ConvertTo-LocalFriendlyName' {
         $sid = 'S-1-5-32-544'
-        write-warning (Get-LocalGroup|fl|out-string)
         It 'Should be BUILTIN\Administrators' {
             ConvertTo-LocalFriendlyName -Identity $sid | should be 'BUILTIN\Administrators'
         }
 
+        write-warning (Get-LocalUser|fl|out-string)
         It "Should return $env:COMPUTERNAME\administrator" {
             ConvertTo-LocalFriendlyName -Identity 'administrator' -Verbose | Should be "$env:COMPUTERNAME\administrator"
         }
