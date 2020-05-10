@@ -63,7 +63,7 @@ InModuleScope $script:subModuleName {
             }
         }
         Context 'Test Get-UserRightsAssignment' {
-            $ini = "$PSScriptRoot..\TestHelpers\TestIni.txt"
+            $ini = "$PSScriptRoot\..\TestHelpers\TestIni.txt"
             Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {'Value1'}
 
             $result = Get-UserRightsAssignment $ini
@@ -96,7 +96,7 @@ InModuleScope $script:subModuleName {
             }
         }
         Context 'Get-SecurityPolicy' {
-            $ini = "$PSScriptRoot..\TestHelpers\sample.inf"
+            $ini = "$PSScriptRoot\..\TestHelpers\sample.inf"
             $iniPath = Get-Item -Path $ini
             Mock -CommandName Join-Path -MockWith {$iniPath.FullName}
             Mock -CommandName Remove-Item -MockWith {}
