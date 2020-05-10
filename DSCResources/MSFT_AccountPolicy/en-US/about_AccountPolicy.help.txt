@@ -1,0 +1,128 @@
+.NAME
+    AccountPolicy
+
+.DESCRIPTION
+    This resource can be used to manage the policies under the Account Policy node
+    in local security policies.
+
+.PARAMETER Name
+    Key - String
+    A unique name of the AccountPolicy resource instance. This is not used during configuration.
+
+.PARAMETER Enforce_password_history
+    Write - Uint32
+    
+
+.PARAMETER Maximum_Password_Age
+    Write - Uint32
+    
+
+.PARAMETER Minimum_Password_Age
+    Write - Uint32
+    
+
+.PARAMETER Minimum_Password_Length
+    Write - Uint32
+    
+
+.PARAMETER Password_must_meet_complexity_requirements
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Store_passwords_using_reversible_encryption
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Account_lockout_duration
+    Write - Uint32
+    
+
+.PARAMETER Account_lockout_threshold
+    Write - Uint32
+    
+
+.PARAMETER Reset_account_lockout_counter_after
+    Write - Uint32
+    
+
+.PARAMETER Enforce_user_logon_restrictions
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Maximum_lifetime_for_service_ticket
+    Write - Uint32
+    
+
+.PARAMETER Maximum_lifetime_for_user_ticket
+    Write - Uint32
+    
+
+.PARAMETER Maximum_lifetime_for_user_ticket_renewal
+    Write - Uint32
+    
+
+.PARAMETER Maximum_tolerance_for_computer_clock_synchronization
+    Write - Uint32
+    
+
+.EXAMPLE 1
+
+This configuration will manage the local security account policy.
+
+Configuration AccountPolicy_Config
+{
+    Import-DscResource -ModuleName SecurityPolicyDsc
+
+    node localhost
+    {
+        AccountPolicy AccountPolicies
+        {
+            Name                                        = 'PasswordPolicies'
+            Enforce_password_history                    = 15
+            Maximum_Password_Age                        = 42
+            Minimum_Password_Age                        = 1
+            Minimum_Password_Length                     = 12
+            Password_must_meet_complexity_requirements  = 'Enabled'
+            Store_passwords_using_reversible_encryption = 'Disabled'
+        }
+    }
+}
+
+.EXAMPLE 2
+
+This configuration will manage the kerberos security policies.
+
+Since kerberos policies are domain policies they can only be modified with
+domain admin privileges.
+
+Configuration AccountPolicy_KerberosPolicies_Config
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $DomainCred
+    )
+
+    Import-DscResource -ModuleName SecurityPolicyDsc
+
+    node localhost
+    {
+        AccountPolicy KerberosPolicies
+        {
+            Name                                                 = 'KerberosPolicies'
+            Enforce_user_logon_restrictions                      = 'Enabled'
+            Maximum_lifetime_for_service_ticket                  = 600
+            Maximum_lifetime_for_user_ticket                     = 10
+            Maximum_lifetime_for_user_ticket_renewal             = 7
+            Maximum_tolerance_for_computer_clock_synchronization = 5
+            PsDscRunAsCredential                                 = $DomainCred
+        }
+    }
+}
+
+
