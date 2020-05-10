@@ -124,7 +124,7 @@ try
 
         Describe 'The system is in a desired state' {
             Context 'Test for Test method' {
-                $mockResults = Import-Clixml -Path "$PSScriptRoot..\TestHelpers\MockObjects\MockResults.xml"
+                $mockResults = Import-Clixml -Path "$PSScriptRoot\..\TestHelpers\MockObjects\MockResults.xml"
 
                 It 'Should return true when in a desired state' {
                     Mock -CommandName Get-UserRightsAssignment -MockWith {$mockResults}
