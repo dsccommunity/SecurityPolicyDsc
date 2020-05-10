@@ -21,11 +21,11 @@ InModuleScope $script:subModuleName {
     Describe 'SecurityPolicyResourceHelper\ConvertTo-LocalFriendlyName' {
         $sid = 'S-1-5-32-544'
         It 'Should be BUILTIN\Administrators' {
-            ConvertTo-LocalFriendlyName -Identity $sid -Verbose | should be 'BUILTIN\Administrators'
+            ConvertTo-LocalFriendlyName -Identity $sid | should be 'BUILTIN\Administrators'
         }
 
         It "Should return $env:COMPUTERNAME\administrator" {
-            ConvertTo-LocalFriendlyName -Identity 'administrator' | Should be "$env:COMPUTERNAME\administrator"
+            ConvertTo-LocalFriendlyName -Identity 'administrator' -Verbose | Should be "$env:COMPUTERNAME\administrator"
         }
 
         It "Should not Throw when Scope is 'GET'" {
@@ -81,11 +81,11 @@ InModuleScope $script:subModuleName {
         }
     }
     Describe 'SecurityPolicyResourceHelper\Test-IdentityIsNull' {
-
         It 'Should return true when Identity is null' {
             $IdentityIsNull = Test-IdentityIsNull -Identity $null
             $IdentityIsNull | Should Be $true
         }
+
         It 'Should return true when Identity is empty' {
             $IdentityIsNull = Test-IdentityIsNull -Identity ''
             $IdentityIsNull | Should Be $true
@@ -99,7 +99,7 @@ InModuleScope $script:subModuleName {
         BeforeAll {
             $ini = "$PSScriptRoot\..\TestHelpers\sample.inf"
             $iniPath = Get-Item -Path $ini
-            Mock -CommandName Join-Path -MockWith { $iniPath.FullName }
+            Mock -CommandName Join-Path -MockWith {$iniPath.FullName}
             Mock -CommandName Remove-Item
             $securityPolicy = Get-SecurityPolicy -Area 'USER_RIGHTS'
         }
@@ -108,6 +108,7 @@ InModuleScope $script:subModuleName {
             $securityPolicy.SeLoadDriverPrivilege | Should Be 'BUILTIN\Administrators'
         }
     }
+
     Describe 'SecurityPolicyResourceHelper\Add-PolicyOption' {
         It 'Should have [System Access]' {
             $testString = @('EnableAdminAccount=1')
@@ -115,6 +116,7 @@ InModuleScope $script:subModuleName {
 
             $addOptionResult | Should Match '[System Access]'
         }
+
         It 'Should have [Kerberos Policy]' {
             $testString = @('MaxClockSkew=5')
             [string]$addOptionResult = Add-PolicyOption -KerberosPolicies $testString
@@ -122,6 +124,7 @@ InModuleScope $script:subModuleName {
             $addOptionResult | Should Match '[Kerberos Policy]'
         }
     }
+
     Describe 'SecurityPolicyResourceHelper\Test ConvertFrom-SDDLDescriptor' {
         It 'Should be "NT AUTHORITY\NETWORK"' {
             $identity = 'NU'

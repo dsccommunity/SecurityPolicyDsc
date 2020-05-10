@@ -36,7 +36,7 @@ function Get-LocalizedData
     {
         # Step up one additional level to build the correct path to the resource culture.
         $resourceDirectory = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) `
-                                       -ChildPath "DSCResources\$ResourceName"
+            -ChildPath "DSCResources\$ResourceName"
     }
 
     $localizedStringFileLocation = Join-Path -Path $resourceDirectory -ChildPath $PSUICulture
@@ -98,7 +98,8 @@ function Invoke-Secedit
     }
 
     Write-Verbose "secedit arguments: $arguments"
-    Start-Process -FilePath secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput -NoNewWindow -Wait
+    Start-Process -FilePath secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput `
+        -NoNewWindow -Wait
 }
 
 <#
@@ -118,7 +119,7 @@ function Get-SecurityPolicy
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet("SECURITYPOLICY","GROUP_MGMT","USER_RIGHTS","REGKEYS","FILESTORE","SERVICES")]
+        [ValidateSet("SECURITYPOLICY", "GROUP_MGMT", "USER_RIGHTS", "REGKEYS", "FILESTORE", "SERVICES")]
         [System.String]
         $Area,
 
@@ -158,7 +159,7 @@ function Get-SecurityPolicy
         }
         "(.+?)\s*=(.*)" # Key
         {
-            $name,$value =  $matches[1..2] -replace "\*"
+            $name, $value = $matches[1..2] -replace "\*"
             $policyConfiguration[$section][$name] = $value
         }
     }
@@ -172,8 +173,9 @@ function Get-SecurityPolicy
             foreach ($key in $privilegeRights.keys )
             {
                 $policyName = Get-UserRightConstant -Policy $key -Inverse
-                $identity = ConvertTo-LocalFriendlyName -Identity $($privilegeRights[$key] -split ",").Trim() -Policy $policyName -Verbose:$VerbosePreference
-                $returnValue.Add( $key,$identity )
+                $identity = ConvertTo-LocalFriendlyName -Identity $($privilegeRights[$key] -split ",").Trim() `
+                    -Policy $policyName -Verbose:$VerbosePreference
+                $returnValue.Add( $key, $identity )
             }
 
             continue
@@ -189,7 +191,8 @@ function Get-SecurityPolicy
 
 <#
     .SYNOPSIS
-        Parses an INF file produced by 'secedit.exe /export' and returns an object of identites assigned to a user rights assignment policy
+        Parses an INF file produced by 'secedit.exe /export' and returns an object of identites assigned to a user
+        rights assignment policy
     .PARAMETER FilePath
         Path to an INF file
     .EXAMPLE
@@ -224,7 +227,7 @@ function Get-UserRightsAssignment
         }
         "(.+?)\s*=(.*)" # Key
         {
-            $name,$value =  $matches[1..2] -replace "\*"
+            $name, $value = $matches[1..2] -replace "\*"
             $policyConfiguration[$section][$name] = @(ConvertTo-LocalFriendlyName -Identity $($value -split ','))
         }
     }
@@ -257,7 +260,7 @@ function ConvertTo-LocalFriendlyName
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [System.String[]]
         $Identity,
 
@@ -338,7 +341,7 @@ function ConvertTo-NTAccount
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [System.Security.Principal.SecurityIdentifier[]]
         $SID,
 
@@ -427,7 +430,8 @@ function ConvertTo-Sid
 
 <#
     .SYNOPSIS
-        Retrieves the Security Option Data to map the policy name and values as they appear in the Security Template Snap-in
+        Retrieves the Security Option Data to map the policy name and values as they appear in the Security Template
+        Snap-in.
 
     .PARAMETER FilePath
         Path to the file containing the Security Option Data
@@ -440,7 +444,7 @@ function Get-PolicyOptionData
     (
         [Parameter(Mandatory = $true)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformation()]
-        [hashtable]
+        [System.Collections.Hashtable]
         $FilePath
     )
     return $FilePath
@@ -502,17 +506,17 @@ function Add-PolicyOption
     # insert the appropriate INI section
     if ( [string]::IsNullOrWhiteSpace( $RegistryPolicies ) -eq $false )
     {
-        $RegistryPolicies.Insert(0,'[Registry Values]')
+        $RegistryPolicies.Insert(0, '[Registry Values]')
     }
 
     if ( [string]::IsNullOrWhiteSpace( $SystemAccessPolicies ) -eq $false )
     {
-        $SystemAccessPolicies.Insert(0,'[System Access]')
+        $SystemAccessPolicies.Insert(0, '[System Access]')
     }
 
     if ( [string]::IsNullOrWhiteSpace( $KerberosPolicies ) -eq $false )
     {
-        $KerberosPolicies.Insert(0,'[Kerberos Policy]')
+        $KerberosPolicies.Insert(0, '[Kerberos Policy]')
     }
 
     $iniTemplate = @(
@@ -546,12 +550,12 @@ function Get-UserRightConstant
         $Policy,
 
         [Parameter()]
-        [Switch]
+        [System.Management.Automation.SwitchParameter]
         $Inverse
     )
 
     $friendlyNames = Get-Content -Path $PSScriptRoot\UserRightsFriendlyNameConversions.psd1 -Raw |
-    ConvertFrom-StringData
+        ConvertFrom-StringData
 
     if ($Inverse)
     {
@@ -578,7 +582,7 @@ function ConvertFrom-SDDLDescriptor
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [System.String]
         $Identity
     )
@@ -643,43 +647,43 @@ function ConvertTo-SDDLDescriptor
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [System.String]
         $Identity
     )
 
     $descriptors = @{
-        '.*\\Account Operators$' = 'AO'
-        'NT AUTHORITY\\ANONYMOUS LOGON$' = 'AN'
-        'NT AUTHORITY\\Authenticated Users$' = 'AU'
-        'BUILTIN\\Administrators$' = 'BA'
-        'BUILTIN\\Guests$' = 'BG'
-        'BUILTIN\\Backup Operators$' = 'BO'
-        'BUILTIN\\Users$' = 'BU'
-        'CREATOR GROUP$' = 'CG'
-        'CREATOR OWNER$' = 'CO'
-        '.*\\Domain Admins$' = 'DA'
-        '.*\\Domain Computers$' = 'DC'
-        '.*\\Domain Controllers$' = 'DD'
-        '.*\\Domain Guests$' = 'DG'
-        '.*\\Domain Users$' = 'DU'
-        '.*\\Enterprise Admins$' = 'EA'
-        '.*\\Enterprise Domain Controllers$' = 'ED'
-        'Everyone$' = 'WD'
-        'NT AUTHORITY\\INTERACTIVE$' = 'IU'
-        'System$' = 'SY'
-        'NT AUTHORITY\\NETWORK$' = 'NU'
+        '.*\\Account Operators$'                    = 'AO'
+        'NT AUTHORITY\\ANONYMOUS LOGON$'            = 'AN'
+        'NT AUTHORITY\\Authenticated Users$'        = 'AU'
+        'BUILTIN\\Administrators$'                  = 'BA'
+        'BUILTIN\\Guests$'                          = 'BG'
+        'BUILTIN\\Backup Operators$'                = 'BO'
+        'BUILTIN\\Users$'                           = 'BU'
+        'CREATOR GROUP$'                            = 'CG'
+        'CREATOR OWNER$'                            = 'CO'
+        '.*\\Domain Admins$'                        = 'DA'
+        '.*\\Domain Computers$'                     = 'DC'
+        '.*\\Domain Controllers$'                   = 'DD'
+        '.*\\Domain Guests$'                        = 'DG'
+        '.*\\Domain Users$'                         = 'DU'
+        '.*\\Enterprise Admins$'                    = 'EA'
+        '.*\\Enterprise Domain Controllers$'        = 'ED'
+        'Everyone$'                                 = 'WD'
+        'NT AUTHORITY\\INTERACTIVE$'                = 'IU'
+        'System$'                                   = 'SY'
+        'NT AUTHORITY\\NETWORK$'                    = 'NU'
         'BUILTIN\\Network Configuration Operators$' = 'NO'
-        'NT AUTHORITY\\NETWORK SERVICE$' = 'NS'
-        'BUILTIN\\Print Operators$' = 'PO'
-        'NT AUTHORITY\\SELF$' = 'PS'
-        'BUILTIN\\Power Users$' = 'PU'
-        '.*\\RAS and IAS Servers$' = 'RS'
-        'NT AUTHORITY\\TERMINAL SERVER USER$' = 'RD'
-        'BUILTIN\\Replicator$' = 'RE'
-        '.*\\Schema Admins$' = 'SA'
-        '.*\\Server Operators$' = 'SO'
-        'NT AUTHORITY\\SERVICE$' = 'SU'
+        'NT AUTHORITY\\NETWORK SERVICE$'            = 'NS'
+        'BUILTIN\\Print Operators$'                 = 'PO'
+        'NT AUTHORITY\\SELF$'                       = 'PS'
+        'BUILTIN\\Power Users$'                     = 'PU'
+        '.*\\RAS and IAS Servers$'                  = 'RS'
+        'NT AUTHORITY\\TERMINAL SERVER USER$'       = 'RD'
+        'BUILTIN\\Replicator$'                      = 'RE'
+        '.*\\Schema Admins$'                        = 'SA'
+        '.*\\Server Operators$'                     = 'SO'
+        'NT AUTHORITY\\SERVICE$'                    = 'SU'
     }
 
     # Set $result to null
