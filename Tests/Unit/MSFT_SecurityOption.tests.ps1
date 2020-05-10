@@ -139,6 +139,12 @@ try
                     $result.Permission | Should Be 'Allow'
                     $result.Identity | Should Be 'NT AUTHORITY\NETWORK SERVICE'
                 }
+
+                It 'Should return NT AUTHORITY\SYSTEM' {
+                    $result = ConvertTo-CimRestrictedRemoteSam -InputObject "(A;;RC;;;SY)"
+                    $result.Permission | Should be 'Allow'
+                    $result.Identity | Should Be 'NT AUTHORITY\SYSTEM'
+                }
             }
 
             Context 'Format-RestrictedRemoteSam' {
@@ -152,6 +158,26 @@ try
                     Permission = 'Allow'
                 }
 
+                $formatDescriptorSystemParameters = @{
+                    Identity   = 'NT AUTHORITY\SYSTEM'
+                    Permission = 'Allow'
+                }
+
+                $fullDescriptorTestParameters = @(
+                    @{
+                        Identity   = 'BUILTIN\Administrators'
+                        Permission = 'Allow'
+                    },
+                    @{
+                        Identity   = 'BUILTIN\Cryptographic Operators'
+                        Permission = 'Deny'
+                    },
+                    @{
+                        Identity   = 'NT AUTHORITY\NETWORK SERVICE'
+                        Permission = 'Allow'
+                    }
+                )
+
                 It 'Should Deny BUILTIN\Administrators' {
                     $result = Format-RestrictedRemoteSam -SecurityDescriptor $formatDescriptorDenyParameters
 
@@ -161,7 +187,19 @@ try
                 It 'Should Allow NT AUTHORITY\NETWORK SERVICE' {
                     $result = Format-RestrictedRemoteSam -SecurityDescriptor $formatDescriptorAllowParameters
 
-                    $result | Should Be '"O:BAG:BAD:(A;;RC;;;S-1-5-20)"'
+                    $result | Should Be '"O:BAG:BAD:(A;;RC;;;NS)"'
+                }
+
+                It 'Should Allow NT AUTHORITY\SYSTEM' {
+                    $result = Format-RestrictedRemoteSam -SecurityDescriptor $formatDescriptorSystemParameters
+
+                    $result | Should Be '"O:BAG:BAD:(A;;RC;;;SY)"'
+                }
+                
+                It 'Should Create the BEST SDDL string' {
+                    $result = Format-RestrictedRemoteSam -SecurityDescriptor $fullDescriptorTestParameters
+
+                    $result | Should Be '"O:BAG:BAD:(D;;RC;;;S-1-5-32-569)(A;;RC;;;NS)(A;;RC;;;BA)"'
                 }
             }
 

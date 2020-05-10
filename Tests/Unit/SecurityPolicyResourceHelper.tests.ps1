@@ -110,5 +110,46 @@ InModuleScope 'SecurityPolicyResourceHelper' {
                 $addOptionResult | Should Match '[Kerberos Policy]'
             }
         }
+        Context 'Test ConvertFrom-SDDLDescriptor' {
+            It 'Should be "NT AUTHORITY\NETWORK"' {
+                $identity = 'NU'
+                ConvertFrom-SDDLDescriptor($identity) | should be 'NT AUTHORITY\NETWORK'
+            }
+
+            It "Should return 'S-1-5-32-544'" {
+                $identity = 'S-1-5-32-544'
+                ConvertFrom-SDDLDescriptor($identity) | Should be "S-1-5-32-544"
+            }
+
+            It "Should throw with ''" {
+                $identity = ''
+                {ConvertFrom-SDDLDescriptor($identity)} | Should throw
+            }
+
+            It "Accept from Pipe" {
+                "SY" | ConvertFrom-SDDLDescriptor | Should be 'System'
+            }
+
+        }
+        Context 'Test ConvertTo-SDDLDescriptor' {
+            It 'Should be BA' {
+                $identity = "BUILTIN\Administrators"
+                ConvertTo-SDDLDescriptor($identity) | should be 'BA'
+            }
+
+            It 'Should be DA' {
+                $identity = "Example.com\Domain Admins"
+                ConvertTo-SDDLDescriptor($identity) | should be 'DA'
+            }
+
+            It "Should throw with ''" {
+                $identity = ''
+                {ConvertTo-SDDLDescriptor($identity)} | Should throw
+            }
+
+            It "Accept from Pipe" {
+                "NT AUTHORITY\SELF" | ConvertTo-SDDLDescriptor | should be 'PS'
+            }
+        }
     }
 }
