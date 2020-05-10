@@ -1,13 +1,23 @@
-$resourceModuleRootPath = Split-Path -Path (Split-Path $PSScriptRoot -Parent) -Parent
-$modulesRootPath = Join-Path -Path $resourceModuleRootPath -ChildPath 'Modules'
-Import-Module -Name (Join-Path -Path $modulesRootPath  `
-        -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
-    -Force
-
 #region HEADER
 
-# Begin Testing
-InModuleScope 'SecurityPolicyResourceHelper' {
+$script:projectPath = "$PSScriptRoot\..\.." | Convert-Path
+$script:projectName = (Get-ChildItem -Path "$script:projectPath\*\*.psd1" | Where-Object -FilterScript {
+        ($_.Directory.Name -match 'source|src' -or $_.Directory.Name -eq $_.BaseName) -and
+        $(try { Test-ModuleManifest -Path $_.FullName -ErrorAction Stop } catch { $false })
+    }).BaseName
+
+$script:parentModule = Get-Module -Name $script:projectName -ListAvailable | Select-Object -First 1
+$script:subModulesFolder = Join-Path -Path $script:parentModule.ModuleBase -ChildPath 'Modules'
+Remove-Module -Name $script:parentModule -Force -ErrorAction 'SilentlyContinue'
+
+$script:subModuleName = (Split-Path -Path $PSCommandPath -Leaf) -replace '\.Tests.ps1'
+$script:subModuleFile = Join-Path -Path $script:subModulesFolder -ChildPath "$($script:subModuleName)"
+
+Import-Module $script:subModuleFile -Force -ErrorAction 'Stop'
+#endregion HEADER
+
+
+InModuleScope $script:subModuleName {
     Describe 'Test helper functions' {
 
         Context 'Test ConvertTo-LocalFriendlyName' {
@@ -53,7 +63,7 @@ InModuleScope 'SecurityPolicyResourceHelper' {
             }
         }
         Context 'Test Get-UserRightsAssignment' {
-            $ini = "$PSScriptRoot..\..\..\Misc\TestHelpers\TestIni.txt"
+            $ini = "$PSScriptRoot..\TestHelpers\TestIni.txt"
             Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {'Value1'}
 
             $result = Get-UserRightsAssignment $ini
@@ -86,7 +96,7 @@ InModuleScope 'SecurityPolicyResourceHelper' {
             }
         }
         Context 'Get-SecurityPolicy' {
-            $ini = "$PSScriptRoot..\..\..\Misc\TestHelpers\sample.inf"
+            $ini = "$PSScriptRoot..\TestHelpers\sample.inf"
             $iniPath = Get-Item -Path $ini
             Mock -CommandName Join-Path -MockWith {$iniPath.FullName}
             Mock -CommandName Remove-Item -MockWith {}

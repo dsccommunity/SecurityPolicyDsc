@@ -1,32 +1,36 @@
-#region HEADER
+$script:dscModuleName = 'SecurityPolicyDsc'
+$script:dscResourceName = 'MSFT_SecurityOption'
 
-# Unit Test Template Version: 1.2.1
-$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+function Invoke-TestSetup
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))
+    try
+    {
+        Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+    }
+
+    $script:testEnvironment = Initialize-TestEnvironment `
+        -DSCModuleName $script:dscModuleName `
+        -DSCResourceName $script:dscResourceName `
+        -ResourceType 'Mof' `
+        -TestType 'Unit'
 }
 
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
-
-$TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName 'SecurityPolicyDsc' `
-    -DSCResourceName 'MSFT_SecurityOption' `
-    -TestType Unit
-
-#endregion HEADER
-
-function Invoke-TestCleanup {
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment
+function Invoke-TestCleanup
+{
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
 
-# Begin Testing
+Invoke-TestSetup
+
 try
 {
     InModuleScope 'MSFT_SecurityOption' {
 
-        $dscResourceInfo = Get-DscResource -Name SecurityOption
+        $dscResourceInfo = Get-DscResource -Name SecurityOption -Module SecurityPolicyDsc
         $testParameters = @{
             Name = 'Test'
             User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users = 'Automatically deny elevation request'

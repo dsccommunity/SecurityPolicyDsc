@@ -1,11 +1,20 @@
 # Change log for SecurityPolicyDsc
 
-## Unreleased
+## [Unreleased]
 
-- Changes to SecurityPolicyDsc:
+### Added
+
+- SecurityPolicyDsc
+  - Added automatic release with a new CI pipeline.
+    [Issue #143](https://github.com/dsccommunity/SecurityPolicyDsc/issues/143).
+
+### Changed
+
+- SecurityPolicyDsc:
   - Resolved custom Script Analyzer rules that was added to the test framework.
   - Move change log to CHANGELOG.md
-  - Added support for more SDDL SID constants [Issue #126](https://github.com/dsccommunity/SecurityPolicyDsc/issues/126)
+  - Added support for more SDDL SID constants
+    [Issue #126](https://github.com/dsccommunity/SecurityPolicyDsc/issues/126).
     - Added functions to convert identity to and from SDDL SID constants
     - Changed Format-RestrictedRemoteSAM to use new function to create strings with additional SDDL SID constants
     - Changed ConvertTo-CimRestrictedRemoteSam to use new function to accept more possible SDDL SID constants
@@ -32,18 +41,24 @@
 
 ## 2.9.0.0
 
-- Bug fix - Max password age fails when setting to 0. Fixes [Issue #121](https://github.com/PowerShell/SecurityPolicyDsc/issues/121)
-- Bug fix - Domain_controller_LDAP_server_signing_requirements - Require Signing.  Fixes [Issue #122](https://github.com/PowerShell/SecurityPolicyDsc/issues/122)
-- Bug fix - Network_security_Restrict_NTLM security options correct parameter validation. This fix could impact your systems.
+- Bug fix - Max password age fails when setting to 0.
+  Fixes [Issue #121](https://github.com/dsccommunity/SecurityPolicyDsc/issues/121).
+- Bug fix - Domain_controller_LDAP_server_signing_requirements - Require Signing.
+  Fixes [Issue #122](https://github.com/dsccommunity/SecurityPolicyDsc/issues/122).
+- Bug fix - Network_security_Restrict_NTLM security options correct parameter validation.
+  This fix could impact your systems.
 
 ## 2.8.0.0
 
 - Bug fix - Issue 71 - Issue Added Validation Attributes to AccountPolicy & SecurityOption
-- Bug fix - Network_security_Restrict_NTLM security option names now maps to correct keys. This fix could impact your systems.
-- Updated LICENSE file to match the Microsoft Open Source Team standard. Fixes [Issue #108](https://github.com/PowerShell/SecurityPolicyDsc/issues/108)
+- Bug fix - Network_security_Restrict_NTLM security option names now maps to correct keys.
+  This fix could impact your systems.
+- Updated LICENSE file to match the Microsoft Open Source Team standard.
+  Fixes [Issue #108](https://github.com/dsccommunity/SecurityPolicyDsc/issues/108).
 - Refactored the SID translation process to not throw a terminating error when called from Test-TargetResource
 - Updated verbose message during the SID translation process to identify the policy where an orphaned SID exists
-- Added the EType "FUTURE" to the security option "Network\_security\_Configure\_encryption\_types\_allowed\_for\_Kerberos"
+- Added the EType "FUTURE" to the security option 
+  "Network\_security\_Configure\_encryption\_types\_allowed\_for\_Kerberos"
 - Documentation update to include all valid settings for security options and account policies
 
 ## 2.7.0.0
@@ -54,7 +69,8 @@
 ## 2.6.0.0
 
 - Added SecurityOption - Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM
-- Bug fix - Issue 105 - Spelling error in SecurityOption User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users
+- Bug fix - Issue 105 - Spelling error in SecurityOption 
+  User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users
 - Bug fix - Issue 90 - Corrected value for Microsoft_network_server_Server_SPN_target_name_validation_level policy
 
 ## 2.5.0.0
@@ -82,7 +98,8 @@
 ## 2.1.0.0
 
 - Updated SecurityOption to handle multi-line logon messages
-- SecurityOption: Added logic and example to handle scenario when using Interactive_logon_Message_text_for_users_attempting_to_log_on
+- SecurityOption: Added logic and example to handle scenario when using 
+  Interactive_logon_Message_text_for_users_attempting_to_log_on
 
 ## 2.0.0.0
 
