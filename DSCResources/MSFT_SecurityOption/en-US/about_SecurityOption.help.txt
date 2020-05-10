@@ -1,0 +1,590 @@
+.NAME
+    SecurityOption
+
+.DESCRIPTION
+    This resource can be used to manage the policies under the Security Options node
+    in local security policies.
+
+.PARAMETER Name
+    Key - String
+    Describes the security option to be managed. This could be anything as long as it is unique
+
+.PARAMETER Accounts_Administrator_account_status
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Accounts_Block_Microsoft_accounts
+    Write - String
+    Allowed values: This policy is disabled, Users cant add Microsoft accounts, Users cant add or log on with Microsoft accounts
+    
+
+.PARAMETER Accounts_Guest_account_status
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Accounts_Limit_local_account_use_of_blank_passwords_to_console_logon_only
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Accounts_Rename_administrator_account
+    Write - String
+    
+
+.PARAMETER Accounts_Rename_guest_account
+    Write - String
+    
+
+.PARAMETER Audit_Audit_the_access_of_global_system_objects
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Audit_Audit_the_use_of_Backup_and_Restore_privilege
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Audit_Force_audit_policy_subcategory_settings_Windows_Vista_or_later_to_override_audit_policy_category_settings
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Audit_Shut_down_system_immediately_if_unable_to_log_security_audits
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER DCOM_Machine_Access_Restrictions_in_Security_Descriptor_Definition_Language_SDDL_syntax
+    Write - String
+    
+
+.PARAMETER DCOM_Machine_Launch_Restrictions_in_Security_Descriptor_Definition_Language_SDDL_syntax
+    Write - String
+    
+
+.PARAMETER Devices_Allow_undock_without_having_to_log_on
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Devices_Allowed_to_format_and_eject_removable_media
+    Write - String
+    Allowed values: Administrators, Administrators and Power Users, Administrators and Interactive Users
+    
+
+.PARAMETER Devices_Prevent_users_from_installing_printer_drivers
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Devices_Restrict_CD_ROM_access_to_locally_logged_on_user_only
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Devices_Restrict_floppy_access_to_locally_logged_on_user_only
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Domain_controller_Allow_server_operators_to_schedule_tasks
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Domain_controller_LDAP_server_signing_requirements
+    Write - String
+    Allowed values: None, Require Signing
+    
+
+.PARAMETER Domain_controller_Refuse_machine_account_password_changes
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Domain_member_Digitally_encrypt_or_sign_secure_channel_data_always
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Domain_member_Digitally_encrypt_secure_channel_data_when_possible
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Domain_member_Digitally_sign_secure_channel_data_when_possible
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Domain_member_Disable_machine_account_password_changes
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Domain_member_Maximum_machine_account_password_age
+    Write - String
+    
+
+.PARAMETER Domain_member_Require_strong_Windows_2000_or_later_session_key
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Interactive_logon_Display_user_information_when_the_session_is_locked
+    Write - String
+    Allowed values: User displayname,  domain and user names, User display name only, Do not display user information
+    
+
+.PARAMETER Interactive_logon_Do_not_display_last_user_name
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Interactive_logon_Do_not_require_CTRL_ALT_DEL
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Interactive_logon_Machine_account_lockout_threshold
+    Write - String
+    
+
+.PARAMETER Interactive_logon_Machine_inactivity_limit
+    Write - String
+    
+
+.PARAMETER Interactive_logon_Message_text_for_users_attempting_to_log_on
+    Write - String
+    
+
+.PARAMETER Interactive_logon_Message_title_for_users_attempting_to_log_on
+    Write - String
+    
+
+.PARAMETER Interactive_logon_Number_of_previous_logons_to_cache_in_case_domain_controller_is_not_available
+    Write - String
+    
+
+.PARAMETER Interactive_logon_Prompt_user_to_change_password_before_expiration
+    Write - String
+    
+
+.PARAMETER Interactive_logon_Require_Domain_Controller_authentication_to_unlock_workstation
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Interactive_logon_Require_smart_card
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Interactive_logon_Smart_card_removal_behavior
+    Write - String
+    Allowed values: No Action, Lock workstation, Force logoff, Disconnect if a remote Remote Desktop Services session
+    
+
+.PARAMETER Microsoft_network_client_Digitally_sign_communications_always
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Microsoft_network_client_Digitally_sign_communications_if_server_agrees
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Microsoft_network_client_Send_unencrypted_password_to_third_party_SMB_servers
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Microsoft_network_server_Amount_of_idle_time_required_before_suspending_session
+    Write - String
+    
+
+.PARAMETER Microsoft_network_server_Attempt_S4U2Self_to_obtain_claim_information
+    Write - String
+    Allowed values: Default, Enabled, Disabled
+    
+
+.PARAMETER Microsoft_network_server_Digitally_sign_communications_always
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Microsoft_network_server_Digitally_sign_communications_if_client_agrees
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Microsoft_network_server_Disconnect_clients_when_logon_hours_expire
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Microsoft_network_server_Server_SPN_target_name_validation_level
+    Write - String
+    Allowed values: Off, Accept if provided by client, Required from client
+    
+
+.PARAMETER Network_access_Allow_anonymous_SID_Name_translation
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Network_access_Do_not_allow_anonymous_enumeration_of_SAM_accounts
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Network_access_Do_not_allow_anonymous_enumeration_of_SAM_accounts_and_shares
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Network_access_Do_not_allow_storage_of_passwords_and_credentials_for_network_authentication
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Network_access_Let_Everyone_permissions_apply_to_anonymous_users
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Network_access_Named_Pipes_that_can_be_accessed_anonymously
+    Write - String
+    
+
+.PARAMETER Network_access_Remotely_accessible_registry_paths
+    Write - String
+    
+
+.PARAMETER Network_access_Remotely_accessible_registry_paths_and_subpaths
+    Write - String
+    
+
+.PARAMETER Network_access_Restrict_anonymous_access_to_Named_Pipes_and_Shares
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM
+    Write - String
+    The Permission and Identity required for restricted remote Sam access
+
+.PARAMETER Network_access_Shares_that_can_be_accessed_anonymously
+    Write - String
+    
+
+.PARAMETER Network_access_Sharing_and_security_model_for_local_accounts
+    Write - String
+    Allowed values: Classic - Local users authenticate as themselves, Guest only - Local users authenticate as Guest
+    
+
+.PARAMETER Network_security_Allow_Local_System_to_use_computer_identity_for_NTLM
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Network_security_Allow_LocalSystem_NULL_session_fallback
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Network_Security_Allow_PKU2U_authentication_requests_to_this_computer_to_use_online_identities
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Network_security_Configure_encryption_types_allowed_for_Kerberos
+    Write - String
+    Allowed values: DES_CBC_CRC, DES_CBC_MD5, RC4_HMAC_MD5, AES128_HMAC_SHA1, AES256_HMAC_SHA1, FUTURE
+    
+
+.PARAMETER Network_security_Do_not_store_LAN_Manager_hash_value_on_next_password_change
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Network_security_Force_logoff_when_logon_hours_expire
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Network_security_LAN_Manager_authentication_level
+    Write - String
+    Allowed values: Send LM & NTLM responses, Send LM & NTLM - use NTLMv2 session security if negotiated, Send NTLM responses only, Send NTLMv2 responses only, Send NTLMv2 responses only. Refuse LM, Send NTLMv2 responses only. Refuse LM & NTLM
+    
+
+.PARAMETER Network_security_LDAP_client_signing_requirements
+    Write - String
+    Allowed values: None, Negotiate Signing, Require Signing
+    
+
+.PARAMETER Network_security_Minimum_session_security_for_NTLM_SSP_based_including_secure_RPC_clients
+    Write - String
+    Allowed values: Require NTLMv2 session security, Require 128-bit encryption, Both options checked
+    
+
+.PARAMETER Network_security_Minimum_session_security_for_NTLM_SSP_based_including_secure_RPC_servers
+    Write - String
+    Allowed values: Require NTLMv2 session security, Require 128-bit encryption, Both options checked
+    
+
+.PARAMETER Network_security_Restrict_NTLM_Add_remote_server_exceptions_for_NTLM_authentication
+    Write - String
+    
+
+.PARAMETER Network_security_Restrict_NTLM_Add_server_exceptions_in_this_domain
+    Write - String
+    
+
+.PARAMETER Network_Security_Restrict_NTLM_Incoming_NTLM_Traffic
+    Write - String
+    Allowed values: Allow all, Deny all domain accounts, Deny all accounts
+    
+
+.PARAMETER Network_Security_Restrict_NTLM_NTLM_authentication_in_this_domain
+    Write - String
+    Allowed values: Disable, Deny for domain accounts to domain servers, Deny for domain accounts, Deny for domain servers, Deny all
+    
+
+.PARAMETER Network_Security_Restrict_NTLM_Outgoing_NTLM_traffic_to_remote_servers
+    Write - String
+    Allowed values: Allow all, Audit all, Deny all
+    
+
+.PARAMETER Network_Security_Restrict_NTLM_Audit_Incoming_NTLM_Traffic
+    Write - String
+    Allowed values: Disabled, Enable auditing for domain accounts, Enable auditing for all accounts
+    
+
+.PARAMETER Network_Security_Restrict_NTLM_Audit_NTLM_authentication_in_this_domain
+    Write - String
+    Allowed values: Disable, Enable for domain accounts to domain servers, Enable for domain accounts, Enable for domain servers, Enable all
+    
+
+.PARAMETER Recovery_console_Allow_automatic_administrative_logon
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Recovery_console_Allow_floppy_copy_and_access_to_all_drives_and_folders
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Shutdown_Allow_system_to_be_shut_down_without_having_to_log_on
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER Shutdown_Clear_virtual_memory_pagefile
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER System_cryptography_Force_strong_key_protection_for_user_keys_stored_on_the_computer
+    Write - String
+    Allowed values: User input is not required when new keys are stored and used, User is prompted when the key is first used, User must enter a password each time they use a key
+    
+
+.PARAMETER System_cryptography_Use_FIPS_compliant_algorithms_for_encryption_hashing_and_signing
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER System_objects_Require_case_insensitivity_for_non_Windows_subsystems
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER System_objects_Strengthen_default_permissions_of_internal_system_objects_eg_Symbolic_Links
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER System_settings_Optional_subsystems
+    Write - String
+    
+
+.PARAMETER System_settings_Use_Certificate_Rules_on_Windows_Executables_for_Software_Restriction_Policies
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER User_Account_Control_Admin_Approval_Mode_for_the_Built_in_Administrator_account
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER User_Account_Control_Allow_UIAccess_applications_to_prompt_for_elevation_without_using_the_secure_desktop
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER User_Account_Control_Behavior_of_the_elevation_prompt_for_administrators_in_Admin_Approval_Mode
+    Write - String
+    Allowed values: Elevate without prompting, Prompt for credentials on the secure desktop, Prompt for consent on the secure desktop, Prompt for credentials, Prompt for consent, Prompt for consent for non-Windows binaries
+    
+
+.PARAMETER User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users
+    Write - String
+    Allowed values: Automatically deny elevation request, Prompt for credentials on the secure desktop, Prompt for credentials
+    
+
+.PARAMETER User_Account_Control_Detect_application_installations_and_prompt_for_elevation
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER User_Account_Control_Only_elevate_executables_that_are_signed_and_validated
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER User_Account_Control_Only_elevate_UIAccess_applications_that_are_installed_in_secure_locations
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER User_Account_Control_Run_all_administrators_in_Admin_Approval_Mode
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER User_Account_Control_Switch_to_the_secure_desktop_when_prompting_for_elevation
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.PARAMETER User_Account_Control_Virtualize_file_and_registry_write_failures_to_per_user_locations
+    Write - String
+    Allowed values: Enabled, Disabled
+    
+
+.EXAMPLE 1
+
+This configuration will manage a selection of account security options.
+
+configuration SecurityOption_Config
+{
+    Import-DscResource -ModuleName SecurityPolicyDsc
+
+    node localhost
+    {
+        SecurityOption AccountSecurityOptions
+        {
+            Name                                                           = 'AccountSecurityOptions'
+            Accounts_Guest_account_status                                  = 'Enabled'
+            Accounts_Rename_guest_account                                  = 'NewGuest'
+            Accounts_Block_Microsoft_accounts                              = 'This policy is disabled'
+            Network_access_Remotely_accessible_registry_paths_and_subpaths = (
+                'Software\Microsoft\Windows NT\CurrentVersion\Print,' +
+                'Software\Microsoft\Windows NT\CurrentVersion\Windows,' +
+                'System\CurrentControlSet\Control\Print\Printers,' +
+                'System\CurrentControlSet\Services\Eventlog,' +
+                'Software\Microsoft\OLAP Server,' +
+                'System\CurrentControlSet\Control\ContentIndex,' +
+                'System\CurrentControlSet\Control\Terminal Server,' +
+                'System\CurrentControlSet\Control\Terminal Server\UserConfig,' +
+                'System\CurrentControlSet\Control\Terminal Server\DefaultUserConfiguration,' +
+                'Software\Microsoft\Windows NT\CurrentVersion\Perflib,' +
+                'System\CurrentControlSet\Services\SysmonLog'
+            )
+        }
+    }
+}
+
+.EXAMPLE 2
+
+This configuration will manage the interactive logon message.
+In a scenario in which a multi-line message is used a new line is
+represented with a comma. If commas are used in the message and a
+new line is not intended they must be surrounded by double quotes.
+
+This example will result in the following logon message:
+
+Line 1 - Message for line 1.
+Line 2 - Message for line 2, words, separated, with, commas.
+Line 3 - Message for line 3.
+
+configuration SecurityOption_LogonMessage_Config
+{
+    Import-DscResource -ModuleName SecurityPolicyDsc
+
+    $message = 'Line 1 - Message for line 1.,Line 2 - Message for line 2"," words"," separated"," with"," commas.,Line 3 - Message for line 3.'
+
+    node localhost
+    {
+        SecurityOption LogonMessage
+        {
+            Name                                                          = "Message Test"
+            Interactive_logon_Message_text_for_users_attempting_to_log_on = $message
+        }
+    }
+}
+
+.EXAMPLE 3
+
+This configuration will manage the interactive logon message.
+
+configuration SecurityOption_LogonMessageMultiLine_Config
+{
+    Import-DscResource -ModuleName SecurityPolicyDsc
+
+    $multiLineMessage = @'
+Line 1 - Message for line 1.
+Line 2 - Message for line 2, words, seperated, with, commas.
+Line 3 - Message for line 3.
+'@
+
+    node localhost
+    {
+        SecurityOption LogonMessage
+        {
+            Name                                                          = "Message Test"
+            Interactive_logon_Message_text_for_users_attempting_to_log_on = $multiLineMessage
+        }
+    }
+}
+
+.EXAMPLE 4
+
+This configuration will manage two network access security options using the
+MSFT_RestrictedRemoteSamSecurityDescriptor class to specify the permission
+and identity for each option.
+
+configuration SecurityOption_Restricted_Remote_Call_To_Sam_Config
+{
+    Import-DscResource -ModuleName SecurityPolicyDsc
+
+    node localhost
+    {
+        SecurityOption RemoteSam
+        {
+            Name                                                                = 'test'
+            Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM = @(
+                MSFT_RestrictedRemoteSamSecurityDescriptor
+                {
+                    Permission = 'Deny'
+                    Identity   = 'ServerAdmin'
+                }
+                MSFT_RestrictedRemoteSamSecurityDescriptor
+                {
+                    Permission = 'Allow'
+                    Identity   = 'Administrators'
+                }
+            )
+            Network_access_Allow_anonymous_SID_Name_translation                 = 'Disabled'
+        }
+    }
+}
+
+
