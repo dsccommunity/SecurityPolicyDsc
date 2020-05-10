@@ -1,13 +1,32 @@
 # SecurityPolicyDsc
 
-A wrapper around secedit.exe to allow you to configure local security policies.  This resource requires a Windows OS with secedit.exe.
+[![Build Status](https://dev.azure.com/dsccommunity/SecurityPolicyDsc/_apis/build/status/dsccommunity.SecurityPolicyDsc?branchName=master)](https://dev.azure.com/dsccommunity/SecurityPolicyDsc/_build/latest?definitionId={definitionId}&branchName=master)
+![Azure DevOps coverage (branch)](https://img.shields.io/azure-devops/coverage/dsccommunity/SecurityPolicyDsc/{definitionId}/master)
+[![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/SecurityPolicyDsc/{definitionId}/master)](https://dsccommunity.visualstudio.com/SecurityPolicyDsc/_test/analytics?definitionId={definitionId}&contextType=build)
+[![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/SecurityPolicyDsc?label=SecurityPolicyDsc%20Preview)](https://www.powershellgallery.com/packages/SecurityPolicyDsc/)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/SecurityPolicyDsc?label=SecurityPolicyDsc)](https://www.powershellgallery.com/packages/SecurityPolicyDsc/)
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+A wrapper around secedit.exe to allow you to configure local security policies.  This resource requires a Windows OS
+with secedit.exe.
 
-## How to Contribute
+## Code of Conduct
 
-If you would like to contribute to this repository, please read the DSC Resource Kit [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
+This project has adopted this [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Releases
+
+For each merge to the branch `master` a preview release will be
+deployed to [PowerShell Gallery](https://www.powershellgallery.com/).
+Periodically a release version tag will be pushed which will deploy a
+full release to [PowerShell Gallery](https://www.powershellgallery.com/).
+
+## Contributing
+
+Please check out common DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing).
+
+## Change log
+
+A full list of changes in each version can be found in the [change log](CHANGELOG.md).
 
 ## Resources
 
@@ -162,27 +181,3 @@ If you would like to contribute to this repository, please read the DSC Resource
 | **Identity** | Required | String[] | The identity of the user or group to be added or removed from the user rights assignment. ||
 | **Force** | Write | Boolean | Specifies to explicitly assign only the identities defined ||
 | **Ensure** | Write | String | Desired state of resource. |Present, Absent|
-
-## Branches
-
-### master
-
-[![Build status](https://ci.appveyor.com/api/projects/status/github/PowerShell/SecurityPolicyDsc?branch=master&svg=true)](https://ci.appveyor.com/project/PowerShell/SecurityPolicyDsc/branch/master)
-[![codecov](https://codecov.io/gh/PowerShell/SecurityPolicyDsc/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/SecurityPolicyDsc/branch/master)
-
-This is the branch containing the latest release -
-no contributions should be made directly to this branch.
-
-### dev
-
-[![Build status](https://ci.appveyor.com/api/projects/status/github/PowerShell/SecurityPolicyDsc?branch=dev&svg=true)](https://ci.appveyor.com/project/PowerShell/SecurityPolicyDsc/branch/dev)
-[![codecov](https://codecov.io/gh/PowerShell/SecurityPolicyDsc/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/SecurityPolicyDsc/branch/dev)
-
-This is the development branch
-to which contributions should be proposed by contributors as pull requests.
-This development branch will periodically be merged to the master branch,
-and be released to [PowerShell Gallery](https://www.powershellgallery.com/).
-
-## Change log
-
-A full list of changes in each version can be found in the [change log](CHANGELOG.md).

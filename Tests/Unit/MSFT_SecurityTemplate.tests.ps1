@@ -1,25 +1,33 @@
+$script:dscModuleName = 'SecurityPolicyDsc'
+$script:dscResourceName = 'MSFT_SecurityTemplate'
 
-#region HEADER
-
-$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+function Invoke-TestSetup
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
+    try
+    {
+        Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+    }
+
+    $script:testEnvironment = Initialize-TestEnvironment `
+        -DSCModuleName $script:dscModuleName `
+        -DSCResourceName $script:dscResourceName `
+        -ResourceType 'Mof' `
+        -TestType 'Unit'
 }
 
-Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
+function Invoke-TestCleanup
+{
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+}
 
-$script:testEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName 'SecurityPolicyDsc' `
-    -DSCResourceName 'MSFT_SecurityTemplate' `
-    -TestType Unit 
+Invoke-TestSetup
 
-#endregion HEADER
-
-# Begin Testing
 try
-{ 
+{
     InModuleScope 'MSFT_SecurityTemplate' {
         $securityModulePresent = Get-Module -Name SecurityCmdlets -ListAvailable
         $testParameters = @{
@@ -45,8 +53,8 @@ try
         Describe 'The system is not in a desired state' {
 
             $securityModulePresent = Get-Module -Name SecurityCmdlets -ListAvailable
-            $mockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
-            $modifiedMockResults = Import-Clixml -Path "$PSScriptRoot...\..\..\Misc\MockObjects\MockResults.xml"
+            $mockResults = Import-Clixml -Path "$PSScriptRoot\..\TestHelpers\MockObjects\MockResults.xml"
+            $modifiedMockResults = Import-Clixml -Path "$PSScriptRoot\..\TestHelpers\MockObjects\MockResults.xml"
 
             Context 'Get and Test method tests' {
                 Mock -CommandName Get-SecurityTemplate -MockWith {}
@@ -116,7 +124,7 @@ try
 
         Describe 'The system is in a desired state' {
             Context 'Test for Test method' {
-                $mockResults = Import-Clixml -Path "$PSScriptRoot..\..\..\Misc\MockObjects\MockResults.xml"
+                $mockResults = Import-Clixml -Path "$PSScriptRoot..\TestHelpers\MockObjects\MockResults.xml"
 
                 It 'Should return true when in a desired state' {
                     Mock -CommandName Get-UserRightsAssignment -MockWith {$mockResults}
