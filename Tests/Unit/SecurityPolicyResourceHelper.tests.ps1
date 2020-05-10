@@ -25,8 +25,8 @@ InModuleScope $script:subModuleName {
         }
 
         write-warning (Get-LocalUser|fl|out-string)
-        It "Should return $env:COMPUTERNAME\administrator" {
-            ConvertTo-LocalFriendlyName -Identity 'administrator' -Verbose | Should be "$env:COMPUTERNAME\administrator"
+        It "Should return $env:COMPUTERNAME\Guest" {
+            ConvertTo-LocalFriendlyName -Identity 'Guest' -Verbose | Should be "$env:COMPUTERNAME\Guest"
         }
 
         It "Should not Throw when Scope is 'GET'" {
