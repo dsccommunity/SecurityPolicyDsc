@@ -5,7 +5,7 @@
 ### Added
 
 - SecurityPolicyDsc
-  - Added automatic release with a new CI pipeline.
+  - Added automatic release with a new CI pipeline
     [Issue #143](https://github.com/dsccommunity/SecurityPolicyDsc/issues/143).
 
 ### Changed
