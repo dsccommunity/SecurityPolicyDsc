@@ -81,7 +81,7 @@ CmdletsToExport = @()
 AliasesToExport = @()
 
 # DSC resources to export from this module
-DscResourcesToExport = 'AccountPolicy', 'SecurityOption', 'SecurityTemplate', 
+DscResourcesToExport = 'AccountPolicy', 'SecurityOption', 'SecurityTemplate',
                'UserRightsAssignment'
 
 # List of all modules packaged with this module
@@ -111,7 +111,7 @@ PrivateData = @{
         ReleaseNotes = ' '
 
         # Prerelease string of this module
-        # Prerelease = ''
+        Prerelease = ''
 
         # Flag to indicate whether the module requires explicit user acceptance for install/update/save
         # RequireLicenseAcceptance = $false
