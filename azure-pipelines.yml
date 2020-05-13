@@ -1,0 +1,225 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - source/*
+  tags:
+    include:
+    - "v*"
+    exclude:
+    - "*-*"
+variables:
+  buildArtifactName: output
+  codecovTestArtifactName: codecovTestResults
+
+stages:
+  - stage: Build
+    jobs:
+      - job: Package_Module
+        displayName: 'Package Module'
+        pool:
+          vmImage: 'ubuntu 16.04'
+
+        steps:
+          - task: GitVersion@5
+            displayName: 'Evaluate Next Version'
+            name: GitVersion
+            inputs:
+              runtime: 'core'
+              configFilePath: 'GitVersion.yml'
+
+          - task: PowerShell@2
+            displayName: 'Build & Package Module'
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-ResolveDependency -tasks pack'
+              pwsh: true
+            env:
+              ModuleVersion: $(GitVersion.Informationalversion)
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Pipeline Artifact'
+            inputs:
+              targetPath: 'output/'
+              artifact: $(buildArtifactName)
+              publishLocation: 'pipeline'
+              parallel: true
+
+  - stage: Test
+    dependsOn: Build
+    jobs:
+      - job: Test_HQRM
+        displayName: 'HQRM'
+        pool:
+          vmImage: 'windows-2019'
+        timeoutInMinutes: 0
+
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Pipeline Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+
+          - task: PowerShell@2
+            displayName: 'Run HQRM Test'
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-Tasks hqrmtest'
+              pwsh: true
+
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildArtifactName)/testResults/NUnit*.xml'
+              testRunTitle: 'HQRM'
+
+      - job: Test_Unit
+        displayName: 'Unit'
+        pool:
+          vmImage: 'windows-2019'
+        timeoutInMinutes: 0
+        steps:
+          - task: PowerShell@2
+            displayName: 'Set Environment Variables'
+            name: dscBuildVariable
+            inputs:
+              targetType: 'inline'
+              script: |
+                $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
+                echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
+                echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
+              pwsh: true
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Pipeline Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+
+          - task: PowerShell@2
+            displayName: 'Run Unit Test'
+            inputs:
+              filePath: './build.ps1'
+              arguments: "-Tasks test -PesterScript 'tests/Unit'"
+              pwsh: true
+
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildArtifactName)/testResults/NUnit*.xml'
+              testRunTitle: 'Unit (Windows Server Core)'
+
+          - task: PublishCodeCoverageResults@1
+            displayName: 'Publish Azure Code Coverage'
+            condition: succeededOrFailed()
+            inputs:
+              codeCoverageTool: 'JaCoCo'
+              summaryFileLocation: '$(buildArtifactName)/testResults/CodeCov*.xml'
+              pathToSources: '$(Build.SourcesDirectory)/$(buildArtifactName)/$(DscBuildVariable.RepositoryName)'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Codecov.io Test Artifact'
+            inputs:
+              targetPath: '$(buildArtifactName)/testResults/'
+              artifactName: $(codecovTestArtifactName)
+              parallel: true
+
+      - job: Codecov_Code_Coverage
+        displayName: 'Publish Codecov.io Code Coverage'
+        dependsOn: Test_Unit
+        pool:
+          vmImage: 'ubuntu 16.04'
+        timeoutInMinutes: 0
+
+        steps:
+          - task: PowerShell@2
+            displayName: 'Set Environment Variables'
+            name: dscBuildVariable
+            inputs:
+              targetType: 'inline'
+              script: |
+                  $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
+                  echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
+                  echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Pipeline Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Test Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(codecovTestArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)/$(codecovTestArtifactName)'
+
+          - task: PublishCodeCoverageResults@1
+            displayName: 'Publish Code Coverage'
+            condition: succeededOrFailed()
+            inputs:
+              codeCoverageTool: 'JaCoCo'
+              summaryFileLocation: '$(buildArtifactName)/$(codecovTestArtifactName)/JaCoCo_coverage.xml'
+              pathToSources: '$(Build.SourcesDirectory)/$(buildArtifactName)/$(dscBuildVariable.RepositoryName)'
+
+          - task: Bash@3
+            displayName: 'Upload to Codecov.io'
+            inputs:
+              targetType: 'inline'
+              script: 'bash <(curl -s https://codecov.io/bash) -f "./$(buildArtifactName)/$(codecovTestArtifactName)/JaCoCo_coverage.xml"'
+            condition: succeededOrFailed()
+
+  - stage: Deploy
+    dependsOn: Test
+    condition: |
+      and(
+        succeeded(),
+        or(
+          eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+          startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+        )
+      )
+
+    jobs:
+      - job: Deploy_Module
+        displayName: 'Deploy Module'
+        pool:
+          vmImage: 'ubuntu 16.04'
+
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Pipeline Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+
+          - task: PowerShell@2
+            displayName: 'Publish Release'
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-tasks publish'
+              pwsh: true
+            env:
+              GitHubToken: $(GitHubToken)
+              GalleryApiToken: $(GalleryApiToken)
+
+          - task: PowerShell@2
+            displayName: 'Send Changelog PR'
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-tasks Create_ChangeLog_GitHub_PR'
+              pwsh: true
+            env:
+              GitHubToken: $(GitHubToken)

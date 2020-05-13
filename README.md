@@ -1,268 +1,183 @@
 # SecurityPolicyDsc
 
-A wrapper around secedit.exe to allow you to configure local security policies.  This resource requires a Windows OS with secedit.exe.
+[![Build Status](https://dev.azure.com/dsccommunity/SecurityPolicyDsc/_apis/build/status/dsccommunity.SecurityPolicyDsc?branchName=master)](https://dev.azure.com/dsccommunity/SecurityPolicyDsc/_build/latest?definitionId={definitionId}&branchName=master)
+![Azure DevOps coverage (branch)](https://img.shields.io/azure-devops/coverage/dsccommunity/SecurityPolicyDsc/{definitionId}/master)
+[![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/SecurityPolicyDsc/{definitionId}/master)](https://dsccommunity.visualstudio.com/SecurityPolicyDsc/_test/analytics?definitionId={definitionId}&contextType=build)
+[![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/SecurityPolicyDsc?label=SecurityPolicyDsc%20Preview)](https://www.powershellgallery.com/packages/SecurityPolicyDsc/)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/SecurityPolicyDsc?label=SecurityPolicyDsc)](https://www.powershellgallery.com/packages/SecurityPolicyDsc/)
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+A wrapper around secedit.exe to allow you to configure local security policies.  This resource requires a Windows OS
+with secedit.exe.
 
-## How to Contribute
+## Code of Conduct
 
-If you would like to contribute to this repository, please read the DSC Resource Kit [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
+This project has adopted this [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Releases
+
+For each merge to the branch `master` a preview release will be
+deployed to [PowerShell Gallery](https://www.powershellgallery.com/).
+Periodically a release version tag will be pushed which will deploy a
+full release to [PowerShell Gallery](https://www.powershellgallery.com/).
+
+## Contributing
+
+Please check out common DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing).
+
+## Change log
+
+A full list of changes in each version can be found in the [change log](CHANGELOG.md).
 
 ## Resources
 
-* **UserRightsAssignment**: Configures user rights assignments in local security policies.
-* **SecurityTemplate**: Configures user rights assignments that are defined in an INF file.
 * **AccountPolicy**: Configures the policies under the Account Policy node in local security policies.
 * **SecurityOption**: Configures the policies under the Security Options node in local security policies.
+* **SecurityTemplate**: Configures user rights assignments that are defined in an INF file.
+* **UserRightsAssignment**: Configures user rights assignments in local security policies.
 
-## UserRightsAssignment
+### AccountPolicy
 
-* **Policy**: The policy name of the user rights assignment to be configured.
-* **Identity**: The identity of the user or group to be added or removed from the user rights assignment.
-* **Force**: Specifies to explicitly assign only the identities defined.
+**For further explanation of these settings, please consult [Account Policies Reference](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/account-policies).**
 
-## SecurityTemplate
+| Parameter | Attribute | DataType | Description | Allowed Values |
+| --- | --- | --- | --- | --- |
+| **Name** | Key | String | A unique name of the AccountPolicy resource instance. This is not used during configuration. ||
+| **Enforce_password_history** | Write | Uint32 | Specifies the number of unique new passwords that must be associated with a user account before an old password can be reused. A number from 0 through 24 can be specified ||
+| **Maximum_Password_Age** | Write | Uint32 | Specifies the period of time (in days) that a password can be used before the system requires the user to change it. A number from 0 through 999 can be specified, with 0 meaning the password will never expire ||
+| **Minimum_Password_Age** | Write | Uint32 | Specifies the period of time (in days) that a password must be used before the user can change it. A number from 0 to 998 can be specified ||
+| **Minimum_Password_Length** | Write | Uint32 | Specifies the least number of characters that can make up a password for a user account. A number from 0 to 14 can be specified ||
+| **Password_must_meet_ complexity_requirements** | Write | String | Specifies whether passwords must meet a series of guidelines that are considered important for a strong password |Enabled, Disabled|
+| **Store_passwords_using_ reversible_encryption** | Write | String | Specifies whether passwords are stored in a way that is reversible to provides support for applications that use protocols that require the user's password for authentication  |Enabled, Disabled|
+| **Account_lockout_duration** | Write | Uint32 | Specifies the number of minutes that a locked-out account remains locked out before automatically becoming unlocked. A number from 1 through 99,999 can be specified ||
+| **Account_lockout_threshold** | Write | Uint32 | Specifies the number of failed sign-in attempts that will cause a user account to be locked ||
+| **Reset_account_lockout_ counter_after** | Write | Uint32 | Specifies the number of minutes that must elapse from the time a user fails to log on before the failed logon attempt counter is reset to 0 ||
 
-* **Path**: Path to an INF file that defines the desired security policies.
+**Note:** The below settings pertain to Kerberos policies and must be set by a member in the domain admins group.
 
-## AccountPolicy
+| Parameter | Attribute | DataType | Description | Allowed Values |
+| --- | --- | --- | --- | --- |
+| **Enforce_user_logon_ restrictions** | Write | String | Specifies whether the Kerberos V5 Key Distribution Center (KDC) validates every request for a session ticket against the user rights policy of the user account |Enabled, Disabled|
+| **Maximum_lifetime_ for_service_ticket** | Write | Uint32 | Specifies the maximum number of minutes that a granted session ticket can be used to access a particular service. A number from 10 to the value of the 'Maximum lifetime for service ticket' policy setting can be specified ||
+| **Maximum_lifetime_ for_user_ticket** | Write | Uint32 | Specifies the maximum amount of time (in hours) that a user's ticket-granting ticket can be used. A number from 0 to 99,999 can be specified ||
+| **Maximum_lifetime_ for_user_ticket_ renewal** | Write | Uint32 | Specifies the period of time (in days) during which a user's ticket-granting ticket can be renewed. A number from 0 to 99,999 can be specified ||
+| **Maximum_tolerance_ for_computer_clock_ synchronization** | Write | Uint32 | Specifies the maximum time difference (in minutes) that Kerberos V5 tolerates between the time on the client clock and the time on the domain controller that provides Kerberos authentication ||
 
-* **Name**: A unique name of the AccountPolicy resource instance. This is not used during configuration but needed
-to ensure the resource configuration is unique.
+### SecurityOption
 
-## For explanation of below settings, please consult [Account Policies Reference](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/jj852214(v%3dws.11))
+**For further explanation of these settings, please consult [Security Options Reference](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-options).**
 
-* **`[String]` Enforce\_password\_history** (Write) : Please see the link above for a full description. { Passwords Remembered }
-* **`[String]` Maximum\_Password\_Age** (Write) : Please see the link above for a full description. { days }
-* **`[String]` Minimum\_Password\_Age** (Write) : Please see the link above for a full description. { days }
-* **`[String]` Minimum\_Password\_Length** (Write) : Please see the link above for a full description. { Character Count }
-* **`[String]` Password\_must\_meet\_complexity\_requirements** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Store\_passwords\_using\_reversible\_encryption** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Account\_lockout\_duration** (Write) : Please see the link above for a full description. { minutes }
-* **`[String]` Account\_lockout\_threshold** (Write) : Please see the link above for a full description. { invalid logon attempts}
-* **`[String]` Reset\_account\_lockout\_counter\_after** (Write) : Please see the link above for a full description. { minutes }
+| Parameter | Attribute | DataType | Description | Allowed Values |
+| --- | --- | --- | --- | --- |
+| **Name** | Key | String | Describes the security option to be managed. This could be anything as long as it is unique ||
+| **Accounts_Administrator_ account_status** | Write | String | Determines whether the local Administrator account is enabled or disabled |Enabled, Disabled|
+| **Accounts_Block_ Microsoft_accounts** | Write | String | Prevents using the Settings app to add a Microsoft account for single sign-on (SSO) authentication for Microsoft services and some background services, or using a Microsoft account for single sign-on to other applications or services. |This policy is disabled, Users cant add Microsoft accounts, Users cant add or log on with Microsoft accounts|
+| **Accounts_Guest_ account_status** | Write | String | Determines whether the Guest account is enabled or disabled |Enabled, Disabled|
+| **Accounts_Limit_local_ account_use_of_blank_ passwords_to_console_ logon_only** | Write | String | Determines whether remote interactive logons by network services such as Remote Desktop Services, Telnet, and File Transfer Protocol (FTP) are allowed for local accounts that have blank passwords |Enabled, Disabled|
+| **Accounts_Rename_ administrator_account** | Write | String | Determines whether a different account name is associated with the security identifier (SID) for the administrator account ||
+| **Accounts_Rename_ guest_account** | Write | String | Determines whether a different account name is associated with the security identifier (SID) for the Guest account ||
+| **Audit_Audit_the_ access_of_global_ system_objects** | Write | String | If you enable this policy setting, a default system access control list (SACL) is applied when the device creates system objects such as mutexes, events, semaphores, and MS-DOS devices. If you also enable the Audit object access audit setting, access to these system objects is audited |Enabled, Disabled|
+| **Audit_Audit_the_ use_of_Backup_and_ Restore_privilege** | Write | String | Determines whether to audit the use of all user rights, including Backup and Restore, when the Audit privilege use policy setting is configured |Enabled, Disabled|
+| **Audit_Force_audit_ policy_subcategory_ settings_Windows_ Vista_or_later_to_ override_audit_policy_ category_settings** | Write | String | Allows you to manage your audit policy in a more precise way by using audit policy subcategories |Enabled, Disabled|
+| **Audit_Shut_down_ system_immediately_ if_unable_to_log_ security_audits** | Write | String | Determines whether the system shuts down if it is unable to log security events |Enabled, Disabled|
+| **DCOM_Machine_Access_ Restrictions_in_ Security_Descriptor_ Definition_Language_ SDDL_syntax** | Write | String | Allows you to define additional computer-wide controls that govern access to all Distributed Component Object Model (DCOM) based applications on a device ||
+| **DCOM_Machine_Launch_ Restrictions_in_ Security_Descriptor_ Definition_Language_ SDDL_syntax** | Write | String | Allows you to define additional computer-wide controls that govern access to all DCOM based applications on a device. However, the ACLs that are specified in this policy setting control local and remote COM launch requests (not access requests) on the device ||
+| **Devices_Allow_undock_ without_having_to_ log_on** | Write | String | Enables or disables the ability of a user to remove a portable device from a docking station without logging on |Enabled, Disabled|
+| **Devices_Allowed_to_ format_and_eject_ removable_media** | Write | String | Determines who is allowed to format and eject removable media. |Administrators, Administrators and Power Users, Administrators and Interactive Users|
+| **Devices_Prevent_ users_from_installing_ printer_drivers** | Write | String | Determines who can install a printer driver as part of adding a network printer |Enabled, Disabled|
+| **Devices_Restrict_ CD_ROM_access_to_ locally_logged_on_ user_only** | Write | String | Determines whether a CD is accessible to local and remote users simultaneously |Enabled, Disabled|
+| **Devices_Restrict_ floppy_access_to_ locally_logged_on_ user_only** | Write | String | Determines whether removable floppy disks are accessible to local and remote users simultaneously |Enabled, Disabled|
+| **Domain_controller_ Allow_server_operators_ to_schedule_tasks** | Write | String | Determines whether server operators can use the 'at' command to submit jobs.  |Enabled, Disabled|
+| **Domain_controller_ LDAP_server_ signing_requirements** | Write | String | Determines whether the Lightweight Directory Access Protocol (LDAP) server requires LDAP clients to negotiate data signing |None, Require Signing|
+| **Domain_controller_ Refuse_machine_ account_password_ changes** | Write | String | Enables or disables blocking a domain controller from accepting password change requests for machine accounts |Enabled, Disabled|
+| **Domain_member_ Digitally_encrypt_ or_sign_secure_ channel_data_always** | Write | String | Determines whether all secure channel traffic that is initiated by the domain member must be signed or encrypted |Enabled, Disabled|
+| **Domain_member_ Digitally_encrypt_ secure_channel_data_ when_possible** | Write | String | Determines whether all secure channel traffic that is initiated by the domain member must be encrypted |Enabled, Disabled|
+| **Domain_member_ Digitally_sign_ secure_channel_data_ when_possible** | Write | String | Determines whether all secure channel traffic that is initiated by the domain member must be signed |Enabled, Disabled|
+| **Domain_member_ Disable_machine_ account_password_ changes** | Write | String | Determines whether a domain member periodically changes its machine account password |Enabled, Disabled|
+| **Domain_member_ Maximum_machine_ account_password_age** | Write | String | Determines when a domain member submits a password change ||
+| **Domain_member_ Require_strong_ Windows_2000_or_ later_session_key** | Write | String | Determines whether a secure channel can be established with a domain controller that is not capable of encrypting secure channel traffic with a strong, 128-bit session key |Enabled, Disabled|
+| **Interactive_logon_ Display_user_ information_when_ the_session_is_locked** | Write | String | Controls whether details such as email address or domain\username appear with the username on the sign-in screen |User displayname,  domain and user names, User display name only, Do not display user information|
+| **Interactive_logon_ Do_not_display_ last_user_name** | Write | String | Determines whether the name of the last user to log on to the device is displayed on the Secure Desktop |Enabled, Disabled|
+| **Interactive_logon_ Do_not_require_ CTRL_ALT_DEL** | Write | String | Determines whether pressing CTRL+ALT+DEL is required before a user can log on |Enabled, Disabled|
+| **Interactive_logon_ Machine_account_ lockout_threshold** | Write | String | Allows you to set a threshold for the number of failed logon attempts that causes the device to be locked by using BitLocker ||
+| **Interactive_logon_ Machine_inactivity_limit** | Write | String | Specifies the amount of inactive time before the user's session locks by invoking the screen saver ||
+| **Interactive_logon_ Message_text_for_ users_attempting_ to_log_on** | Write | String | Specifies a text message to be displayed to users when they log on ||
+| **Interactive_logon_ Message_title_for_ users_attempting_ to_log_on** | Write | String | Specifies a message title to be displayed to users when they log on ||
+| **Interactive_logon_ Number_of_previous_ logons_to_cache_in_ case_domain_controller_  is_not_available** | Write | String | Determines whether a user can log on to a Windows domain by using cached account information ||
+| **Interactive_logon_ Prompt_user_to_ change_password_ before_expiration** | Write | String | Determines how many days in advance users are warned that their passwords are about to expire ||
+| **Interactive_logon_ Require_Domain_ Controller_ authentication_to_ unlock_workstation** | Write | String | Determines whether it is necessary to contact a domain controller to unlock a device |Enabled, Disabled|
+| **Interactive_logon_ Require_smart_card** | Write | String | Requires users to log on to a device by using a smart card |Enabled, Disabled|
+| **Interactive_logon_ Smart_card_removal_ behavior** | Write | String | Determines what happens when the smart card for a logged-on user is removed from the smart card reader |No Action, Lock workstation, Force logoff, Disconnect if a remote Remote Desktop Services session|
+| **Microsoft_network_ client_Digitally_ sign_communications_ always** | Write | String | If this policy setting is enabled, SMBv2 clients will digitally sign all packets |Enabled, Disabled|
+| **Microsoft_network_ client_Digitally_sign_ communications_if_ server_agrees** | Write | String | If this policy setting is enabled, SMBv2 clients will digitally sign all packets if the server agrees |Enabled, Disabled|
+| **Microsoft_network_ client_Send_ unencrypted_ password_to_third_ party_SMB_servers** | Write | String | Allows or prevents the SMB redirector to send plaintext passwords to a non-Microsoft server service that does not support password encryption during authentication |Enabled, Disabled|
+| **Microsoft_network_ server_Amount_ of_idle_time_ required_before_ suspending_session** | Write | String | Determines the amount of continuous idle time that must pass in an SMB session before the session is suspended due to inactivity ||
+| **Microsoft_network_ server_Attempt_ S4U2Self_to_obtain_ claim_information** | Write | String | Specifies whether a Windows file server will attempt to use the Kerberos S4U2Self feature to obtain a claim-enabled access token for the client prinicipal if required. |Default, Enabled, Disabled|
+| **Microsoft_network_ server_Digitally_ sign_communications_ always** | Write | String | Specifies whether an SMB server requires SMB network packets to be digitally signed |Enabled, Disabled|
+| **Microsoft_network_ server_Digitally_ sign_communications_ if_client_agrees** | Write | String | Specifies whether an SMB server will negotaite to digitally sign SMB network packets with a client |Enabled, Disabled|
+| **Microsoft_network_ server_Disconnect_ clients_when_logon_ hours_expire** | Write | String | Enables or disables the forced disconnection of users who are connected to the local device using SMB outside their user account's valid logon hours |Enabled, Disabled|
+| **Microsoft_network_ server_Server_SPN_ target_name_ validation_level** | Write | String | Controls the level of validation that a server with shared folders or printers performs on the service principal name (SPN) that is provided by the client device when the client device establishes a session by using the Server Message Block (SMB) protocol |Off, Accept if provided by client, Required from client|
+| **Network_access _Allow_anonymous_ SID_Name_translation** | Write | String | Enables or disables the ability of an anonymous user to request security identifier (SID) attributes for another user |Enabled, Disabled|
+| **Network_access_ Do_not_allow_ anonymous_ enumeration_ of_SAM_accounts** | Write | String | Determines which additional permissions will be assigned for anonymous connections to the device. Windows allows anonymous users to perform certain activities, such as enumerating the names of domain accounts and network shares |Enabled, Disabled|
+| **Network_access_ Do_not_allow_ anonymous_ enumeration_ of_SAM_accounts_ and_shares** | Write | String | Determines which additional permissions will be assigned for anonymous connections to the device. Windows allows anonymous users to perform certain activities, such as enumerating the names of domain accounts and network shares |Enabled, Disabled|
+| **Network_access_ Do_not_allow_storage_ of_passwords_and_ credentials_for_ network_authentication** | Write | String | Determines whether Credential Manager saves passwords and credentials for later use when it gains domain authentication |Enabled, Disabled|
+| **Network_access_ Let_Everyone_ permissions_apply_ to_anonymous_users** | Write | String | Determines what additional permissions are granted for anonymous connections to the device. If you enable this policy setting, anonymous users can enumerate the names of domain accounts and shared folders and perform certain other activities |Enabled, Disabled|
+| **Network_access_ Named_Pipes_that_ can_be_accessed_ anonymously** | Write | String | Determines which communication sessions, or pipes, have attributes and permissions that allow anonymous access ||
+| **Network_access_ Remotely_accessible_ registry_paths** | Write | String | Determines which registry paths are accessible when an application or process references the WinReg key to determine access permissions ||
+| **Network_access_ Remotely_accessible_ registry_paths_and_ subpaths** | Write | String | Determines which registry paths and subpaths are accessible when an application or process references the WinReg key to determine access permissions ||
+| **Network_access_ Restrict_anonymous_ access_to_Named_ Pipes_and_Shares** | Write | String | Enables or disables the restriction of anonymous access to only those shared folders and pipes that are named in the 'Network access: Named pipes that can be accessed anonymously' and 'Network access: Shares that can be accessed anonymously' settings |Enabled, Disabled|
+| **Network_access_ Restrict_clients_ allowed_to_make_ remote_calls_to_SAM** | Write | String[] | The Permission and Identity required for restricted remote Sam access ||
+| **Network_access_ Shares_that_can_be_ accessed_anonymously** | Write | String | Determines which shared folders can be accessed by anonymous users ||
+| **Network_access_ Sharing_and_security_ model_for_local_ accounts** | Write | String | Determines how network logons that use local accounts are authenticated |Classic - Local users authenticate as themselves, Guest only - Local users authenticate as Guest|
+| **Network_security_ Allow_Local_System_ to_use_computer_ identity_for_NTLM** | Write | String | Determines what identity to use for services running as Local System when NTLM is used |Enabled, Disabled|
+| **Network_security_ Allow_LocalSystem_ NULL_session_fallback** | Write | String | Determines whether services that request the use of session security are allowed to perform signature or encryption functions with a well-known key for application compatibility |Enabled, Disabled|
+| **Network_Security_ Allow_PKU2U_ authentication_requests_ to_this_computer_ to_use_online_identities** | Write | String | Determines whether authentication is allowed between two or more computers that have established a peer relationship through the use of online IDs |Enabled, Disabled|
+| **Network_security_ Configure_encryption_ types_allowed_for_ Kerberos** | Write | String[] | Allows you to set the encryption types that the Kerberos protocol is allowed to use |DES_CBC_CRC, DES_CBC_MD5, RC4_HMAC_MD5, AES128_HMAC_SHA1, AES256_HMAC_SHA1, FUTURE|
+| **Network_security_ Do_not_store_LAN_ Manager_hash_value_ on_next_password_ change** | Write | String | Determines whether LAN Manager is prevented from storing hash values for the new password the next time the password is changed |Enabled, Disabled|
+| **Network_security_ Force_logoff_when_ logon_hours_expire** | Write | String | Determines whether to disconnect users who are connected to the local device using SMB outside their user account's valid logon hours |Enabled, Disabled|
+| **Network_security_ LAN_Manager_ authentication_level** | Write | String | Determines which challenge or response authentication protocol is used for network logons |Send LM & NTLM responses, Send LM & NTLM - use NTLMv2 session security if negotiated, Send NTLM responses only, Send NTLMv2 responses only, Send NTLMv2 responses only. Refuse LM, Send NTLMv2 responses only. Refuse LM & NTLM|
+| **Network_security_ LDAP_client_ signing_requirements** | Write | String | Determines the level of data signing that is requested on behalf of client devices that issue LDAP BIND requests |None, Negotiate Signing, Require Signing|
+| **Network_security_ Minimum_session_ security_for_NTLM_ SSP_based_including_ secure_RPC_clients** | Write | String | Allows a client device to require the negotiation of 128-bit encryption or NTLMv2 session security |Require NTLMv2 session security, Require 128-bit encryption, Both options checked|
+| **Network_security_ Minimum_session_ security_for_NTLM_ SSP_based_including_ secure_RPC_servers** | Write | String | Allows a client device to require the negotiation of 128-bit encryption or NTLMv2 session security |Require NTLMv2 session security, Require 128-bit encryption, Both options checked|
+| **Network_security_ Restrict_NTLM_ Add_remote_server_ exceptions_for_ NTLM_authentication** | Write | String | Allows you to create an exception list of remote servers to which client devices are allowed to use NTLM authentication if the 'Network security: Restrict NTLM: Outgoing NTLM traffic to remote servers' policy setting is configured ||
+| **Network_security_ Restrict_NTLM_ Add_server_exceptions_ in_this_domain** | Write | String | Allows you to create an exception list of servers in this domain to which client device are allowed to use NTLM pass-through authentication if any of the deny options are set in the 'Network Security: Restrict NTLM: NTLM authentication in this domain' policy setting ||
+ | **Network_Security_ Restrict_NTLM_ Incoming_NTLM_Traffic** | Write | String | Allows you to deny or allow incoming NTLM traffic from client computers, other member servers, or a domain controller |Allow all, Deny all domain accounts, Deny all accounts|
+| **Network_Security_ Restrict_NTLM_ NTLM_authentication_ in_this_domain** | Write | String | Allows you to deny or allow NTLM authentication within a domain from this domain controller |Disable, Deny for domain accounts to domain servers, Deny for domain accounts, Deny for domain servers, Deny all|
+| **Network_Security_ Restrict_NTLM_ Outgoing_NTLM_traffic_ to_remote_servers** | Write | String | Allows you to deny or audit outgoing NTLM traffic from a computer running Windows 7, Windows Server 2008, or later to any remote server running the Windows operating system |Allow all, Audit all, Deny all|
+| **Network_Security_ Restrict_NTLM_ Audit_Incoming_ NTLM_Traffic** | Write | String | Allows you to audit incoming NTLM traffic |Disabled, Enable auditing for domain accounts, Enable auditing for all accounts|
+| **Network_Security_ Restrict_NTLM_ Audit_NTLM_ authentication_ in_this_domain** | Write | String | Allows you to audit on the domain controller NTLM authentication in that domain |Disable, Enable for domain accounts to domain servers, Enable for domain accounts, Enable for domain servers, Enable all|
+| **Recovery_console_ Allow_automatic_ administrative_logon** | Write | String | Determines whether the built-in Administrator account password must be provided before access to the Recovery Console on the device is granted |Enabled, Disabled|
+| **Recovery_console_ Allow_floppy_ copy_and_access_ to_all_drives_and_ folders** | Write | String | Enables or disables the Recovery Console SET command |Enabled, Disabled|
+| **Shutdown_Allow_ system_to_be_shut_ down_without_having_ to_log_on** | Write | String | Determines whether a device can be shut down without having to log on to Windows |Enabled, Disabled|
+| **Shutdown_Clear_ virtual_memory_ pagefile** | Write | String | Determines whether the virtual memory paging file is cleared when the device is shut down |Enabled, Disabled|
+| **System_cryptography_ Force_strong_ key_ protection_for_user_ keys_stored_on_the_ computer** | Write | String | Determines whether users can use private keys, such as their Secure/Multipurpose Internet Mail Extensions (S/MIME) key, without a password |User input is not required when new keys are stored and used, User is prompted when the key is first used, User must enter a password each time they use a key|
+| **System_cryptography_ Use_FIPS_compliant_ algorithms_for_ encryption_hashing_ and_signing** | Write | String | Determines whether the TLS/SSL security provider supports only the FIPS-compliant strong cipher suite |Enabled, Disabled|
+| **System_objects_ Require_case_ insensitivity_for_ non_Windows_ subsystems** | Write | String | Determines whether case insensitivity is enforced for all subsystems |Enabled, Disabled|
+| **System_objects_ Strengthen_default_ permissions_of_ internal_system_objects_ eg_Symbolic_Links** | Write | String | Determines the strength of the default discretionary access control list (DACL) for objects |Enabled, Disabled|
+| **System_settings_ Optional_subsystems** | Write | String | Determines which subsystems support your applications ||
+| **System_settings_ Use_Certificate_ Rules_on_Windows_ Executables_for_ Software_Restriction_ Policies** | Write | String | Determines whether digital certificates are processed when software restriction policies are enabled and a user or process attempts to run software with an .exe file name extension |Enabled, Disabled|
+| **User_Account_Control_ Admin_Approval_ Mode_for_the_Built_in_ Administrator_account** | Write | String | Determines the behavior of Admin Approval Mode for the built-in administrator account |Enabled, Disabled|
+| **User_Account_Control_ Allow_UIAccess_ applications_to_prompt_ for_elevation_without_ using_the_secure_ desktop** | Write | String | Controls whether User Interface Accessibility (UIAccess or UIA) programs can automatically disable the secure desktop for elevation prompts that are used by a standard user |Enabled, Disabled|
+| **User_Account_Control_ Behavior_of_the_ elevation_prompt_for_ administrators_ in_Admin_Approval_ Mode** | Write | String | Determines the behavior of the elevation prompt for accounts that have administrative credentials |Elevate without prompting, Prompt for credentials on the secure desktop, Prompt for consent on the secure desktop, Prompt for credentials, Prompt for consent, Prompt for consent for non-Windows binaries|
+| **User_Account_Control_ Behavior_of_the_ elevation_prompt_for_ standard_users** | Write | String | Determines the behavior of the elevation prompt for standard users |Automatically deny elevation request, Prompt for credentials on the secure desktop, Prompt for credentials|
+| **User_Account_Control_ Detect_application_ installations_and_ prompt_for_elevation** | Write | String | Determines the behavior of application installation detection for the entire system |Enabled, Disabled|
+| **User_Account_Control_ Only_elevate_ executables_that_are_ signed_and_validated** | Write | String | Enforces public key infrastructure (PKI) signature checks on any interactive application that requests elevation of privilege |Enabled, Disabled|
+| **User_Account_Control_ Only_elevate_UIAccess_ applications_that_are_ installed_in_secure_ locations** | Write | String | Enforces the requirement that apps that request running with a UIAccess integrity level (by means of a marking of UIAccess=true in their app manifest), must reside in a secure location on the file system |Enabled, Disabled|
+| **User_Account_Control_ Run_all_administrators_ in_Admin_Approval_ Mode** | Write | String | Determines the behavior of all User Account Control (UAC) policies for the entire system |Enabled, Disabled|
+| **User_Account_Control_ Switch_to_the_secure_ desktop_when_ prompting_for_elevation** | Write | String | Determines whether the elevation request prompts on the interactive user desktop or on the secure desktop |Enabled, Disabled|
+| **User_Account_Control_ Virtualize_file_and_ registry_write_failures_ to_per_user_locations** | Write | String | Enables or disables the redirection of the write failures of earlier applications to defined locations in the registry and the file system |Enabled, Disabled|
 
-(Note: The below settings pertain to Kerberos policies and must be set by a member in the domain admins group.
+### SecurityTemplate
 
-* **`[String]` Enforce\_user\_logon\_restrictions** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Maximum\_lifetime\_for\_service\_ticket** (Write) : Please see the link above for a full description. { minutes }
-* **`[String]` Maximum\_lifetime\_for\_user\_ticket\_renewal** (Write) : Please see the link above for a full description. { days }
-* **`[String]` Maximum\_lifetime\_for\_user\_ticket** (Write) : Please see the link above for a full description. { hours }
-* **`[String]` Maximum\_tolerance\_for\_computer\_clock\_synchronization** (Write) : Please see the link above for a full description. { minutes }
+| Parameter | Attribute | DataType | Description | Allowed Values |
+| --- | --- | --- | --- | --- |
+| **IsSingleInstance** | Key | String | Specifies the resource is a single instance, the value must be 'Yes' |Yes|
+| **Path** | Required | String | The path to the desired security policy template (.inf) ||
 
-## SecurityOption
+### UserRightsAssignment
 
-* **Name**: Name of security option configuration. This is not used during the configuration process but needed
-to ensure the resource configuration instance is unique.
-
-## For explanation of below settings, please consult [Security Options Reference](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/jj852268(v%3dws.11))
-
-* **`[String]` Accounts\_Administrator\_account\_status** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Accounts\_Block\_Microsoft\_accounts** (Write) : Please see the link above for a full description. { This policy is disabled | Users cant add Microsoft accounts | Users cant add or log on with Microsoft accounts }
-* **`[String]` Accounts\_Guest\_account\_status** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Accounts\_Limit\_local\_account\_use\_of\_blank\_passwords\_to\_console\_logon\_only** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Accounts\_Rename\_administrator\_account** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Accounts\_Rename\_guest\_account** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Audit\_Audit\_the\_access\_of\_global\_system\_objects** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Audit\_Audit\_the\_use\_of\_Backup\_and\_Restore\_privilege** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Audit\_Force\_audit\_policy\_subcategory\_settings\_Windows\_Vista\_or\_later\_to\_override\_audit\_policy\_category\_settings** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Audit\_Shut\_down\_system\_immediately\_if\_unable\_to\_log\_security\_audits** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` DCOM\_Machine\_Access\_Restrictions\_in\_Security\_Descriptor\_Definition\_Language\_SDDL\_syntax** (Write) : Please see the link above for a full description. { String }
-* **`[String]` DCOM\_Machine\_Launch\_Restrictions\_in\_Security\_Descriptor\_Definition\_Language\_SDDL\_syntax** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Devices\_Allow\_undock\_without\_having\_to\_log\_on** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Devices\_Allowed\_to\_format\_and\_eject\_removable\_media** (Write) : Please see the link above for a full description. { Administrators and Interactive Users | Administrators | Administrators and Power Users }
-* **`[String]` Devices\_Prevent\_users\_from\_installing\_printer\_drivers** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Devices\_Restrict\_CD\_ROM\_access\_to\_locally\_logged\_on\_user\_only** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Devices\_Restrict\_floppy\_access\_to\_locally\_logged\_on\_user\_only** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Domain\_controller\_Allow\_server\_operators\_to\_schedule\_tasks** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Domain\_controller\_LDAP\_server\_signing\_requirements** (Write) : Please see the link above for a full description. { None | Require Signing }
-* **`[String]` Domain\_controller\_Refuse\_machine\_account\_password\_changes** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Domain\_member\_Digitally\_encrypt\_or\_sign\_secure\_channel\_data\_always** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Domain\_member\_Digitally\_encrypt\_secure\_channel\_data\_when\_possible** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Domain\_member\_Digitally\_sign\_secure\_channel\_data\_when\_possible** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Domain\_member\_Disable\_machine\_account\_password\_changes** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Domain\_member\_Maximum\_machine\_account\_password\_age** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Domain\_member\_Require\_strong\_Windows\_2000\_or\_later\_session\_key** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Interactive\_logon\_Display\_user\_information\_when\_the\_session\_is\_locked** (Write) : Please see the link above for a full description. { User displayname, domain and user names | Do not display user information | User display name only }
-* **`[String]` Interactive\_logon\_Do\_not\_display\_last\_user\_name** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Interactive\_logon\_Do\_not\_require\_CTRL\_ALT\_DEL** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Interactive\_logon\_Machine\_account\_lockout\_threshold** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Interactive\_logon\_Machine\_inactivity\_limit** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Interactive\_logon\_Message\_text\_for\_users\_attempting\_to\_log\_on** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Interactive\_logon\_Message\_title\_for\_users\_attempting\_to\_log\_on** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Interactive\_logon\_Number\_of\_previous\_logons\_to\_cache\_in\_case\_domain\_controller\_is\_not\_available** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Interactive\_logon\_Prompt\_user\_to\_change\_password\_before\_expiration** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Interactive\_logon\_Require\_Domain\_Controller\_authentication\_to\_unlock\_workstation** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Interactive\_logon\_Require\_smart\_card** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Interactive\_logon\_Smart\_card\_removal\_behavior** (Write) : Please see the link above for a full description. { Lock workstation | Force logoff | Disconnect if a remote Remote Desktop Services session | No Action }
-* **`[String]` Microsoft\_network\_client\_Digitally\_sign\_communications\_always** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Microsoft\_network\_client\_Digitally\_sign\_communications\_if\_server\_agrees** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Microsoft\_network\_client\_Send\_unencrypted\_password\_to\_third\_party\_SMB\_servers** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Microsoft\_network\_server\_Amount\_of\_idle\_time\_required\_before\_suspending\_session** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Microsoft\_network\_server\_Attempt\_S4U2Self\_to\_obtain\_claim\_information** (Write) : Please see the link above for a full description. { Default | Disabled | Enabled }
-* **`[String]` Microsoft\_network\_server\_Digitally\_sign\_communications\_always** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Microsoft\_network\_server\_Digitally\_sign\_communications\_if\_client\_agrees** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Microsoft\_network\_server\_Disconnect\_clients\_when\_logon\_hours\_expire** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Microsoft\_network\_server\_Server\_SPN\_target\_name\_validation\_level** (Write) : Please see the link above for a full description. { Off | Required from client | Accept if provided by the client }
-* **`[String]` Network\_access\_Allow\_anonymous\_SID\_Name\_translation** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Network\_access\_Do\_not\_allow\_anonymous\_enumeration\_of\_SAM\_accounts** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Network\_access\_Do\_not\_allow\_anonymous\_enumeration\_of\_SAM\_accounts\_and\_shares** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Network\_access\_Do\_not\_allow\_storage\_of\_passwords\_and\_credentials\_for\_network\_authentication** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Network\_access\_Let\_Everyone\_permissions\_apply\_to\_anonymous\_users** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Network\_access\_Named\_Pipes\_that\_can\_be\_accessed\_anonymously** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Network\_access\_Remotely\_accessible\_registry\_paths** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Network\_access\_Remotely\_accessible\_registry\_paths\_and\_subpaths** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Network\_access\_Restrict\_anonymous\_access\_to\_Named\_Pipes\_and\_Shares** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String[]]` Network\_access\_Restrict\_clients\_allowed\_to\_make\_remote\_calls\_to\_SAM** (Write) : Please see the link above for a full description.
-* **`[String]` Network\_access\_Shares\_that\_can\_be\_accessed\_anonymously** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Network\_access\_Sharing\_and\_security\_model\_for\_local\_accounts** (Write) : Please see the link above for a full description. { Guest only - Local users authenticate as Guest | Classic - Local users authenticate as themselves }
-* **`[String]` Network\_security\_Allow\_Local\_System\_to\_use\_computer\_identity\_for\_NTLM** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Network\_security\_Allow\_LocalSystem\_NULL\_session\_fallback** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Network\_Security\_Allow\_PKU2U\_authentication\_requests\_to\_this\_computer\_to\_use\_online\_identities** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Network\_security\_Configure\_encryption\_types\_allowed\_for\_Kerberos** (Write) : Please see the link above for a full description. { AES256\_HMAC\_SHA1 | DES\_CBC\_MD5 | FUTURE | AES128\_HMAC\_SHA1 | DES\_CBC\_CRC | RC4\_HMAC\_MD5 | FUTURE }
-* **`[String]` Network\_security\_Do\_not\_store\_LAN\_Manager\_hash\_value\_on\_next\_password\_change** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Network\_security\_Force\_logoff\_when\_logon\_hours\_expire** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Network\_security\_LAN\_Manager\_authentication\_level** (Write) : Please see the link above for a full description. { Send NTLMv2 responses only. Refuse LM | Send NTLMv2 responses only. Refuse LM & NTLM | Send LM & NTLM responses | Send LM & NTLM - use NTLMv2 session security if negotiated | Send NTLMv2 responses only | Send NTLM responses only }
-* **`[String]` Network\_security\_LDAP\_client\_signing\_requirements** (Write) : Please see the link above for a full description. { Negotiate Signing | Require Signing | None }
-* **`[String]` Network\_security\_Minimum\_session\_security\_for\_NTLM\_SSP\_based\_including\_secure\_RPC\_clients** (Write) : Please see the link above for a full description. { Require 128-bit encryption | Require NTLMv2 session security | Both options checked }
-* **`[String]` Network\_security\_Minimum\_session\_security\_for\_NTLM\_SSP\_based\_including\_secure\_RPC\_servers** (Write) : Please see the link above for a full description. { Require 128-bit encryption | Require NTLMv2 session security | Both options checked }
-* **`[String]` Network\_security\_Restrict\_NTLM\_Add\_remote\_server\_exceptions\_for\_NTLM\_authentication** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Network\_security\_Restrict\_NTLM\_Add\_server\_exceptions\_in\_this\_domain** (Write) : Please see the link above for a full description. { String }
-* **`[String]` Network\_Security\_Restrict\_NTLM\_Audit\_Incoming\_NTLM\_Traffic** (Write) : Please see the link above for a full description. { Deny all | Deny for domain accounts | Deny for domain servers | Disable | Deny for domain accounts to domain servers }
-* **`[String]` Network\_Security\_Restrict\_NTLM\_Audit\_NTLM\_authentication\_in\_this\_domain** (Write) : Please see the link above for a full description. { Deny all | Audit all | Allow all }
-* **`[String]` Network\_Security\_Restrict\_NTLM\_Incoming\_NTLM\_Traffic** (Write) : Please see the link above for a full description. { Enable auditing for domain accounts | Enable auditing for all accounts | Disabled }
-* **`[String]` Network\_Security\_Restrict\_NTLM\_NTLM\_authentication\_in\_this\_domain** (Write) : Please see the link above for a full description. { Enable all | Enable for domain accounts | Enable for domain servers | Disable | Enable for domain accounts to domain servers }
-* **`[String]` Network\_Security\_Restrict\_NTLM\_Outgoing\_NTLM\_traffic\_to\_remote\_servers** (Write) : Please see the link above for a full description. { Deny all accounts | Deny all domain accounts | Allow all }
-* **`[String]` Recovery\_console\_Allow\_automatic\_administrative\_logon** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Recovery\_console\_Allow\_floppy\_copy\_and\_access\_to\_all\_drives\_and\_folders** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Shutdown\_Allow\_system\_to\_be\_shut\_down\_without\_having\_to\_log\_on** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` Shutdown\_Clear\_virtual\_memory\_pagefile** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` System\_cryptography\_Force\_strong\_key\_protection\_for\_user\_keys\_stored\_on\_the\_computer** (Write) : Please see the link above for a full description. { User input is not required when new keys are stored and used | User must enter a password each time they use a key | User is prompted when the key is first used }
-* **`[String]` System\_cryptography\_Use\_FIPS\_compliant\_algorithms\_for\_encryption\_hashing\_and\_signing** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` System\_objects\_Require\_case\_insensitivity\_for\_non\_Windows\_subsystems** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` System\_objects\_Strengthen\_default\_permissions\_of\_internal\_system\_objects\_eg\_Symbolic\_Links** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` System\_settings\_Optional\_subsystems** (Write) : Please see the link above for a full description. { String }
-* **`[String]` System\_settings\_Use\_Certificate\_Rules\_on\_Windows\_Executables\_for\_Software\_Restriction\_Policies** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` User\_Account\_Control\_Admin\_Approval\_Mode\_for\_the\_Built\_in\_Administrator\_account** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` User\_Account\_Control\_Allow\_UIAccess\_applications\_to\_prompt\_for\_elevation\_without\_using\_the\_secure\_desktop** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` User\_Account\_Control\_Behavior\_of\_the\_elevation\_prompt\_for\_administrators\_in\_Admin\_Approval\_Mode** (Write) : Please see the link above for a full description. { Elevate without prompting | Prompt for consent | Prompt for credentials on the secure desktop | Prompt for credentials | Prompt for consent for non-Windows binaries | Prompt for consent on the secure desktop }
-* **`[String]` User\_Account\_Control\_Behavior\_of\_the\_elevation\_prompt\_for\_standard\_users** (Write) : Please see the link above for a full description. { Prompt for crendentials | Prompt for credentials on the secure desktop | Automatically deny elevation request }
-* **`[String]` User\_Account\_Control\_Detect\_application\_installations\_and\_prompt\_for\_elevation** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` User\_Account\_Control\_Only\_elevate\_executables\_that\_are\_signed\_and\_validated** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` User\_Account\_Control\_Only\_elevate\_UIAccess\_applications\_that\_are\_installed\_in\_secure\_locations** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` User\_Account\_Control\_Run\_all\_administrators\_in\_Admin\_Approval\_Mode** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` User\_Account\_Control\_Switch\_to\_the\_secure\_desktop\_when\_prompting\_for\_elevation** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-* **`[String]` User\_Account\_Control\_Virtualize\_file\_and\_registry\_write\_failures\_to\_per\_user\_locations** (Write) : Please see the link above for a full description. { Disabled | Enabled }
-
-## Versions
-
-### Unreleased
-
-### 2.10.0.0
-
-* Changes to SecurityPolicyDsc
-  * Opt-in to the following DSC Resource Common Meta Tests:
-    * Common Tests - Validate Module Files
-    * Common Tests - Validate Script Files
-    * Common Tests - Validate Markdown Files
-    * Common Tests - Required Script Analyzer Rules
-    * Common Tests - Flagged Script Analyzer Rules
-    * Common Tests - New Error-Level Script Analyzer Rules
-    * Common Tests - Custom Script Analyzer Rules
-    * Common Tests - Validate Markdown Links
-    * Common Tests - Relative Path Length
-    * Common Tests - Validate Example Files
-    * Common Tests - Validate Example Files To Be Published
-  * Fix keywords to lower-case to align with guideline.
-
-### 2.9.0.0
-
-* Bug fix - Max password age fails when setting to 0. Fixes [Issue #121](https://github.com/PowerShell/SecurityPolicyDsc/issues/121)
-* Bug fix - Domain_controller_LDAP_server_signing_requirements - Require Signing.  Fixes [Issue #122](https://github.com/PowerShell/SecurityPolicyDsc/issues/122)
-* Bug fix - Network_security_Restrict_NTLM security options correct parameter validation. This fix could impact your systems.
-
-### 2.8.0.0
-
-* Bug fix - Issue 71 - Issue Added Validation Attributes to AccountPolicy & SecurityOption
-* Bug fix - Network_security_Restrict_NTLM security option names now maps to correct keys. This fix could impact your systems.
-* Updated LICENSE file to match the Microsoft Open Source Team standard. Fixes [Issue #108](https://github.com/PowerShell/SecurityPolicyDsc/issues/108)
-* Refactored the SID translation process to not throw a terminating error when called from Test-TargetResource
-* Updated verbose message during the SID translation process to identify the policy where an orphaned SID exists
-* Added the EType "FUTURE" to the security option "Network\_security\_Configure\_encryption\_types\_allowed\_for\_Kerberos"
-* Documentation update to include all valid settings for security options and account policies
-
-### 2.7.0.0
-
-* Bug fix - Issue 83 - Network_access_Remotely_accessible_registry_paths_and_subpaths correctly applies multiple paths
-* Update LICENSE file to match the Microsoft Open Source Team standard
-
-### 2.6.0.0
-
-* Added SecurityOption - Network_access_Restrict_clients_allowed_to_make_remote_calls_to_SAM
-* Bug fix - Issue 105 - Spelling error in SecurityOption User_Account_Control_Behavior_of_the_elevation_prompt_for_standard_users
-* Bug fix - Issue 90 - Corrected value for Microsoft_network_server_Server_SPN_target_name_validation_level policy
-
-### 2.5.0.0
-
-* Added handler for null value in SecurityOption
-* Moved the helper module out from DSCResource folder to the Modules folder.
-* Fixed SecurityPolicyResourceHelper.Tests.ps1 so it possible to run the tests
-  locally.
-* Fixed minor typos.
-
-### 2.4.0.0
-
-* Added additional error handling to ConvertTo-Sid helper function.
-
-### 2.3.0.0
-
-* Updated documentation.
-  * Add example of applying Kerberos policies
-  * Added hyper links to readme
-
-### 2.2.0.0
-
-* Fixed bug in UserRightAssignment where Get-DscConfiguration would fail if it returns $Identity as single string
-
-### 2.1.0.0
-
-* Updated SecurityOption to handle multi-line logon messages
-* SecurityOption: Added logic and example to handle scenario when using Interactive_logon_Message_text_for_users_attempting_to_log_on
-
-### 2.0.0.0
-
-* Added SecurityOption and AccountPolicy
-* Removed SecuritySetting
-
-### 1.5.0.0
-
-* Refactored user rights assignment to read and test easier.
-
-### 1.4.0.0
-
-* Fixed bug in which friendly name translation may fail if user or group contains 'S-'.
-* Fixed bug identified in issue 33 and 34 where Test-TargetResource would return false but was true
-
-### 1.3.0.0
-
-* Added functionality to support BaselineManagement Module.
-* Updated UserRightsAssignment resource to respect dynamic local accounts.
-* Added SecuritySetting resource to process additional INF settings.
-
-### 1.2.0.0
-
-* SecurityTemplate: Remove [ValidateNotNullOrEmpty()] attribute for IsSingleInstance parameter
-* Fixed typos
-
-### 1.1.0.0
-
-* SecurityTemplate:
-  * Made SecurityTemplate compatible with Nano Server
-  * Fixed bug in which Path parameter failed when no User section was present
-
-### 1.0.0.0
-
-* Initial release with the following resources:
-  * UserRightsAssignment
-  * SecurityTemplate
+| Parameter | Attribute | DataType | Description | Allowed Values |
+| --- | --- | --- | --- | --- |
+| **Policy** | Key | String | The policy name of the user rights assignment to be configured. |Create_a_token_object, Access_this_computer_from_the_network, Change_the_system_time, Deny_log_on_as_a_batch_job, Deny_log_on_through_Remote_Desktop_Services, Create_global_objects, Remove_computer_from_docking_station, Deny_access_to_this_computer_from_the_network, Act_as_part_of_the_operating_system, Modify_firmware_environment_values, Deny_log_on_locally, Access_Credential_Manager_ as_a_trusted_caller, Restore_files_and_directories, Change_the_time_zone, Replace_a_process_level_token, Manage_auditing_and_security_log, Create_symbolic_links, Modify_an_object_label, Enable_computer_and_user_accounts_ to_be_trusted_for_delegation, Generate_security_audits, Increase_a_process_working_set, Take_ownership_of_files_ or_other_objects, Bypass_traverse_checking, Log_on_as_a_service, Shut_down_the_system, Lock_pages_in_memory, Impersonate_a_client_ after_authentication, Profile_system_performance, Debug_programs, Profile_single_process, Allow_log_on_through_ Remote_Desktop_Services, Allow_log_on_locally, Increase_scheduling_priority, Synchronize_directory_service_data, Add_workstations_to_domain, Adjust_memory_quotas_for_a_process, Obtain_an_impersonation_token_for_ another_user_in_the_same_session, Perform_volume_maintenance_tasks, Load_and_unload_device_drivers, Force_shutdown_from_a_remote_system, Back_up_files_and_directories, Create_a_pagefile, Deny_log_on_as_a_service, Log_on_as_a_batch_job, Create_permanent_shared_objects|
+| **Identity** | Required | String[] | The identity of the user or group to be added or removed from the user rights assignment. ||
+| **Force** | Write | Boolean | Specifies to explicitly assign only the identities defined ||
+| **Ensure** | Write | String | Desired state of resource. |Present, Absent|
