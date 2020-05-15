@@ -22,6 +22,12 @@
   - Add schema descriptions for all properties and update README.
   - Added PowerShell Dsc Resource Help Files.
 
+### Fixed
+
+- AccountPolicy
+  - Fix applying Account_lockout_duration to zero
+    [Issue #140](https://github.com/dsccommunity/SecurityPolicyDsc/issues/140).
+
 ## [2.10.0.0] - 2019-09-19
 
 - Changes to SecurityPolicyDsc:

@@ -43,7 +43,8 @@ function Get-TargetResource
             $stringValue = ($currentValue -split ',')[-1]
             $resultValue = ($stringValue -replace '"').Trim()
 
-            if ($resultValue -eq -1 -and $accountPolicy -eq 'Maximum_Password_Age')
+            if ($resultValue -eq -1 -and
+                ($accountPolicy -eq 'Maximum_Password_Age' -or $accountPolicy -eq 'Account_Lockout_Duration'))
             {
                 $resultValue = 0
             }
@@ -185,7 +186,7 @@ function Set-TargetResource
             {
                 if ([String]::IsNullOrWhiteSpace($policyData.Option.String))
                 {
-                    if ($policy.Key -eq 'Maximum_Password_Age' -and $policy.Value -eq 0)
+                    if ($policy.Key -eq 'Maximum_Password_Age' -or 'Account_Lockout_Duration' -and $policy.Value -eq 0)
                     {
                         <#
                             This addresses the scenario when the desired value of Maximum_Password_Age is 0.

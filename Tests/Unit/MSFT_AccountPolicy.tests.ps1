@@ -101,14 +101,25 @@ try
                 }
             }
 
-            Context 'Functional tests' {
+            Context 'When MaximumPasswordAge is -1' {
                 $securityPolicyMock = @{
                     'System Access' = @{ MaximumPasswordAge = -1}
                 }
                 Mock -CommandName 'Get-SecurityPolicy' -MockWith {$securityPolicyMock}
-                It 'Should return -1 for Max password age' {
+                It 'Should return 0' {
                     $getResult = Get-TargetResource -Name Test
                     $getResult.Maximum_Password_Age | Should Be 0
+                }
+            }
+
+            Context 'When AccountLockoutDuration is -1' {
+                $securityPolicyMock = @{
+                    'System Access' = @{ AccountLockoutDuration = -1}
+                }
+                Mock -CommandName 'Get-SecurityPolicy' -MockWith {$securityPolicyMock}
+                It 'Should return 0' {
+                    $getResult = Get-TargetResource -Name Test
+                    $getResult.Account_lockout_duration | Should Be 0
                 }
             }
         }
@@ -140,7 +151,7 @@ try
             }
         }
         Describe 'Set-TargetResource' {
-            Mock -CommandName Invoke-Secedit -MockWith {}
+            Mock -CommandName Invoke-Secedit
             
             Context 'Successfully applied account policy' {
                 Mock -CommandName Test-TargetResource -MockWith { $true }
