@@ -231,7 +231,8 @@ function Set-TargetResource
 
     if ($successResult -eq $false)
     {
-        throw "$($script:localizedData.SetFailed -f $($nonComplaintPolicies -join ','))"
+        $nonComplaintPolicies = $nonComplaintPolicies | Sort-Object
+        throw ($script:localizedData.SetFailed -f ($nonComplaintPolicies -join ','))
     }
     else
     {

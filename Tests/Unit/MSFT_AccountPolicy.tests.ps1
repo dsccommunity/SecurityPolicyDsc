@@ -29,35 +29,38 @@ Invoke-TestSetup
 try
 {
     InModuleScope 'MSFT_AccountPolicy' {
+        Set-StrictMode -Version 1.0
         
         $dscResourceInfo = Get-DscResource -Name AccountPolicy -Module SecurityPolicyDsc
         $testParameters = @{
-            Name = 'Test'
-            Maximum_Password_Age = '15'
+            Name                                        = 'Test'
+            Maximum_Password_Age                        = '15'
+            Account_lockout_duration                    = '30'
             Store_passwords_using_reversible_encryption = 'Enabled'
         }
 
         Describe 'SecurityOptionHelperTests' {
             Context 'Get-AccountPolicyData' {
-                $dataFilePath = Join-Path -Path $dscResourceInfo.ParentPath -ChildPath AccountPolicyData.psd1
-                $accountPolicyData = Get-PolicyOptionData -FilePath $dataFilePath.Normalize()
-                $accountPolicyPropertyList = $dscResourceInfo.Properties | Where-Object -FilterScript { $PSItem.Name -match '_' }
+                BeforeAll {
+                    $dataFilePath = Join-Path -Path $dscResourceInfo.ParentPath -ChildPath AccountPolicyData.psd1
+                    $accountPolicyData = Get-PolicyOptionData -FilePath $dataFilePath.Normalize()
+                    $accountPolicyPropertyList = $dscResourceInfo.Properties |
+                        Where-Object -FilterScript { $PSItem.Name -match '_' }
+                }
 
                 It 'Should have the same count as property count' {
                     $accountPolicyDataPropertyCount = $accountPolicyData.Count                    
-                    $accountPolicyDataPropertyCount | Should Be $accountPolicyPropertyList.Name.Count
+                    $accountPolicyDataPropertyCount | Should -Be $accountPolicyPropertyList.Name.Count
                 }
 
-                foreach ( $name in $accountPolicyData.Keys )
+                foreach ($name in $accountPolicyData.Keys)
                 {
                     It "Should contain property name: $name" {                        
-                        $accountPolicyPropertyList.Name -contains $name | Should Be $true                        
+                        $accountPolicyPropertyList.Name -contains $name | Should -BeTrue                        
                     }
                 }
                 
-                $optionData = Get-PolicyOptionData -FilePath $dataFilePath.Normalize()
-                
-                foreach ($option in $optionData.GetEnumerator())
+                foreach ($option in $accountPolicyData.GetEnumerator())
                 {
                     Context "$($option.Name)"{
                         $options = $option.Value.Option
@@ -65,7 +68,7 @@ try
                         foreach ($entry in $options.GetEnumerator())
                         {
                             It "$($entry.Name) Should have string as Option type" {
-                                $entry.value.GetType().Name -is [string] | Should Be $true
+                                $entry.value | Should -BeOfType System.String
                             }
                         }
                     }
@@ -90,93 +93,160 @@ try
         Describe 'Get-TargetResource' {
             Context 'General operation tests' {
                 It 'Should not throw' {
-                    { Get-TargetResource -Name Test } | Should Not throw
+                    { Get-TargetResource -Name Test } | Should -Not -Throw
                 }
 
                 It 'Should return one hashTable' {
                     $getTargetResult = Get-TargetResource -Name Test
 
-                    $getTargetResult.GetType().BaseType.Name | Should Not Be 'Array'
-                    $getTargetResult.GetType().Name | Should Be 'Hashtable'
+                    $getTargetResult | Should -Not -BeOfType System.Array
+                    $getTargetResult | Should -BeOfType System.Collections.Hashtable
                 }
             }
 
             Context 'When MaximumPasswordAge is -1' {
-                $securityPolicyMock = @{
-                    'System Access' = @{ MaximumPasswordAge = -1}
+                BeforeAll {
+                    $securityPolicyMock = @{
+                        'System Access' = @{
+                            MaximumPasswordAge = -1
+                        }
+                    }
+                    Mock -CommandName 'Get-SecurityPolicy' -MockWith {$securityPolicyMock}
                 }
-                Mock -CommandName 'Get-SecurityPolicy' -MockWith {$securityPolicyMock}
+
                 It 'Should return 0' {
                     $getResult = Get-TargetResource -Name Test
-                    $getResult.Maximum_Password_Age | Should Be 0
+                    $getResult.Maximum_Password_Age | Should -Be 0
                 }
             }
 
             Context 'When AccountLockoutDuration is -1' {
-                $securityPolicyMock = @{
-                    'System Access' = @{ AccountLockoutDuration = -1}
+                BeforeAll {
+                    $securityPolicyMock = @{
+                        'System Access' = @{
+                            AccountLockoutDuration = -1
+                        }
+                    }
+                    Mock -CommandName 'Get-SecurityPolicy' -MockWith {$securityPolicyMock}
                 }
-                Mock -CommandName 'Get-SecurityPolicy' -MockWith {$securityPolicyMock}
+
                 It 'Should return 0' {
                     $getResult = Get-TargetResource -Name Test
-                    $getResult.Account_lockout_duration | Should Be 0
+                    $getResult.Account_lockout_duration | Should -Be 0
                 }
             }
         }
         Describe 'Test-TargetResource' {
-            $falseMockResult = @{
-                Store_passwords_using_reversible_encryption = 'Disabled'
+            BeforeAll {
+                $falseMockResult = @{
+                    Store_passwords_using_reversible_encryption = 'Disabled'
+                }
             }
+
             Context 'General operation tests' {
                 It 'Should return a bool' {
                     $testResult = Test-TargetResource @testParameters
-                    $testResult -is [bool] | Should Be $true
+                    $testResult | Should -BeOfType System.Boolean
                 }
             }
-            Context 'Not in a desired state' {
-                It 'Should return false when NOT in desired state' {
+
+            Context 'When the resource is not in the desired state' {
+                BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith { $falseMockResult }
+                }
+
+                It 'Should return false' {
                     $testResult = Test-TargetResource @testParameters
-                    $testResult | Should Be $false
+                    $testResult | Should -BeFalse
                 }
             }
-            Context 'In a desired State' {
-                $trueMockResult = $testParameters.Clone()
-                $trueMockResult.Remove('Name')
-                It 'Should return true when in desired state' {
+
+            Context 'When the resource is in the desired State' {
+                BeforeAll {
+                    $trueMockResult = $testParameters.Clone()
+                    $trueMockResult.Remove('Name')
+
                     Mock -CommandName Get-TargetResource -MockWith { $trueMockResult }
+                }
+
+                It 'Should return true' {
                     $testResult = Test-TargetResource @testParameters
-                    $testResult | Should Be $true
+                    $testResult | Should -BeTrue
                 }
             }
         }
+
         Describe 'Set-TargetResource' {
-            Mock -CommandName Invoke-Secedit
+            BeforeAll {
+                Mock -CommandName Invoke-Secedit
+            }
             
-            Context 'Successfully applied account policy' {
-                Mock -CommandName Test-TargetResource -MockWith { $true }
-                It 'Should not throw when successfully updated account policy' {
-                    { Set-TargetResource @testParameters } | Should Not throw
+            Context 'When successfully applying the account policy' {
+                BeforeAll {
+                    Mock -CommandName Test-TargetResource -MockWith { $true }
+                }
+
+                It 'Should not throw' {
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
                 }
                 
-                It 'Should call Test-TargetResource 2 times' {
-                    Assert-MockCalled -CommandName Test-TargetResource -Times 2
-                }
-            }
-            Context 'Failed to apply account policy' {
-                Mock -CommandName Test-TargetResource -MockWith { $false }
-                It 'Should throw when failed to apply account policy' {
-                    { Set-TargetResource @testParameters } | Should throw
+                It 'Should call the expected mocks' {
+                    Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times $testParameters.Count
+                    Assert-MockCalled -CommandName Invoke-Secedit -Exactly -Times 1                
                 }
 
-                It 'Should call Test-TargetResource 2 times' {
-                    Assert-MockCalled -CommandName Test-TargetResource -Times 2
+                Context 'When Maximum_password_age is Zero' {
+                    BeforeAll {
+                        $testMaxPasswordAgeParameters=$testParameters.Clone()
+                        $testMaxPasswordAgeParameters.Maximum_password_age = 0
+                    }
+
+                    It 'Should not throw' {
+                        { Set-TargetResource @testMaxPasswordAgeParameters } | Should -Not -Throw
+                    }
+
+                    It 'Should call the expected mocks' {
+                        Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times $testParameters.Count
+                        Assert-MockCalled -CommandName Invoke-Secedit -Exactly -Times 1                
+                    }
+                }
+
+                Context 'When Account_lockout_duration is Zero' {
+                    BeforeAll {
+                        $testAccountLockoutDurationParameters=$testParameters.Clone()
+                        $testAccountLockoutDurationParameters.Account_lockout_duration = 0
+                    }
+
+                    It 'Should not throw' {
+                        { Set-TargetResource @testAccountLockoutDurationParameters } | Should -Not -Throw
+                    }
+
+                    It 'Should call the expected mocks' {
+                        Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times $testParameters.Count
+                        Assert-MockCalled -CommandName Invoke-Secedit -Exactly -Times 1                
+                    }
                 }
             }
 
-            It "Should call Invoke-Secedit 2 times" {
-                Assert-MockCalled -CommandName Invoke-Secedit -Times 2                
-            }            
+            Context 'When failing to apply the account policy' {
+                BeforeAll {
+                    $testFailedParameters=$testParameters.Clone()
+                    $testFailedParameters.Remove('Name')
+                    $testFailedParameterKeys=$testFailedParameters.Keys | Sort-Object
+
+                    Mock -CommandName Test-TargetResource -MockWith { $false }
+                }
+
+                It 'Should throw' {
+                    { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.SetFailed -f
+                        ($testFailedParameterkeys -join ','))
+                }
+
+                It 'Should call the expected mocks' {
+                    Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times $testParameters.Count
+                    Assert-MockCalled -CommandName Invoke-Secedit -Exactly -Times 1
+                }
+            }
         }
     }
 }
