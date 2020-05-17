@@ -12,15 +12,23 @@
 
 - SecurityPolicyDsc:
   - Resolved custom Script Analyzer rules that was added to the test framework.
-  - Move change log to CHANGELOG.md.
+  - Moved change log to CHANGELOG.md.
   - Added support for more SDDL SID constants
     [Issue #126](https://github.com/dsccommunity/SecurityPolicyDsc/issues/126).
     - Added functions to convert identity to and from SDDL SID constants.
     - Changed Format-RestrictedRemoteSAM to use new function to create strings with additional SDDL SID constants.
     - Changed ConvertTo-CimRestrictedRemoteSam to use new function to accept more possible SDDL SID constants.
     - Changed ConvertTo-CimRestrictedRemoteSam to skip CimInstance creation if no valid Identity was found.
-  - Add schema descriptions for all properties and update README.
+  - Added schema descriptions for all properties and update README.
   - Added PowerShell Dsc Resource Help Files.
+- AccountPolicy:
+  - Improved and updated unit tests to Pester v4 format.
+
+### Fixed
+
+- AccountPolicy:
+  - Fix applying Account_lockout_duration to zero
+    [Issue #140](https://github.com/dsccommunity/SecurityPolicyDsc/issues/140).
 
 ## [2.10.0.0] - 2019-09-19
 
