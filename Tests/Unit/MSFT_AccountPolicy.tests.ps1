@@ -1,8 +1,6 @@
 $script:dscModuleName = 'SecurityPolicyDsc'
 $script:dscResourceName = 'MSFT_AccountPolicy'
 
-Write-Verbose -Message "PowerShell Version: $($PSVersionTable.PSVersion)" -Verbose
-
 function Invoke-TestSetup
 {
     try
@@ -182,7 +180,7 @@ try
         Describe 'Set-TargetResource' {
             BeforeAll {
                 Mock -CommandName Invoke-Secedit
-#                Mock -CommandName Out-File
+                Mock -CommandName Out-File -RemoveParameterType Encoding
                 Mock -CommandName Remove-Item
             }
 
@@ -207,13 +205,13 @@ try
                     Assert-MockCalled -CommandName Test-TargetResource `
                         -ParameterFilter { $Name -eq $resourceName } `
                          -Exactly -Times 1
-#                     Assert-MockCalled -CommandName Out-File `
-#                        -ParameterFilter {
-#                            $InputObject -contains "MaximumPasswordAge=$($testParameters.Maximum_Password_Age)" -and
-#                            $InputObject -contains "LockoutDuration=$($testParameters.Account_lockout_duration)" -and
-#                            $InputObject -contains "ClearTextPassword=1"
-#                        } `
-#                        -Exactly -Times 1
+                     Assert-MockCalled -CommandName Out-File `
+                        -ParameterFilter {
+                            $InputObject -contains "MaximumPasswordAge=$($testParameters.Maximum_Password_Age)" -and
+                            $InputObject -contains "LockoutDuration=$($testParameters.Account_lockout_duration)" -and
+                            $InputObject -contains "ClearTextPassword=1"
+                        } `
+                        -Exactly -Times 1
                     Assert-MockCalled -CommandName Invoke-Secedit -Exactly -Times 1
                     Assert-MockCalled -CommandName Remove-Item -Exactly -Times 1
         }
