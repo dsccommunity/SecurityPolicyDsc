@@ -31,9 +31,10 @@ try
     InModuleScope 'MSFT_AccountPolicy' {
         Set-StrictMode -Version 1.0
         
+        $resourceName='AccountPolicy'
         $dscResourceInfo = Get-DscResource -Name AccountPolicy -Module SecurityPolicyDsc
         $testParameters = @{
-            Name                                        = 'Test'
+            Name                                        = $resourceName
             Maximum_Password_Age                        = '15'
             Account_lockout_duration                    = '30'
             Store_passwords_using_reversible_encryption = 'Enabled'
@@ -179,11 +180,18 @@ try
         Describe 'Set-TargetResource' {
             BeforeAll {
                 Mock -CommandName Invoke-Secedit
+                Mock -CommandName Out-File
+                Mock -CommandName Remove-Item
             }
             
             Context 'When successfully applying the account policy' {
                 BeforeAll {
-                    Mock -CommandName Test-TargetResource -MockWith { $true }
+                    Mock -CommandName Test-TargetResource `
+                        -ParameterFilter { $Name -eq 'Test' } `
+                        -MockWith { $false }
+                    Mock -CommandName Test-TargetResource `
+                        -ParameterFilter { $Name -eq $ResourceName } `
+                        -MockWith { $true }
                 }
 
                 It 'Should not throw' {
@@ -191,9 +199,22 @@ try
                 }
                 
                 It 'Should call the expected mocks' {
-                    Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times $testParameters.Count
+                    Assert-MockCalled -CommandName Test-TargetResource `
+                       -ParameterFilter { $Name -eq 'Test' } `
+                        -Exactly -Times ($testParameters.Count-1)
+                    Assert-MockCalled -CommandName Test-TargetResource `
+                        -ParameterFilter { $Name -eq $resourceName } `
+                         -Exactly -Times 1
+                     Assert-MockCalled -CommandName Out-File `
+                        -ParameterFilter {
+                            $InputObject -contains "MaximumPasswordAge=$($testParameters.Maximum_Password_Age)" -and
+                            $InputObject -contains "LockoutDuration=$($testParameters.Account_lockout_duration)" -and
+                            $InputObject -contains "ClearTextPassword=1"
+                        } `
+                        -Exactly -Times 1 
                     Assert-MockCalled -CommandName Invoke-Secedit -Exactly -Times 1                
-                }
+                    Assert-MockCalled -CommandName Remove-Item -Exactly -Times 1                
+        }
 
                 Context 'When Maximum_password_age is Zero' {
                     BeforeAll {
@@ -206,8 +227,17 @@ try
                     }
 
                     It 'Should call the expected mocks' {
-                        Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times $testParameters.Count
+                        Assert-MockCalled -CommandName Test-TargetResource `
+                           -ParameterFilter { $Name -eq 'Test' } `
+                            -Exactly -Times ($testParameters.Count-1)
+                        Assert-MockCalled -CommandName Test-TargetResource `
+                            -ParameterFilter { $Name -eq $resourceName } `
+                             -Exactly -Times 1
+                        Assert-MockCalled -CommandName Out-File `
+                            -ParameterFilter { $InputObject -contains 'MaximumPasswordAge=-1' } `
+                            -Exactly -Times 1 
                         Assert-MockCalled -CommandName Invoke-Secedit -Exactly -Times 1                
+                        Assert-MockCalled -CommandName Remove-Item -Exactly -Times 1                
                     }
                 }
 
@@ -222,8 +252,17 @@ try
                     }
 
                     It 'Should call the expected mocks' {
-                        Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times $testParameters.Count
+                        Assert-MockCalled -CommandName Test-TargetResource `
+                            -ParameterFilter { $Name -eq 'Test' } `
+                            -Exactly -Times ($testParameters.Count-1)
+                        Assert-MockCalled -CommandName Test-TargetResource `
+                            -ParameterFilter { $Name -eq $resourceName } `
+                             -Exactly -Times 1
+                        Assert-MockCalled -CommandName Out-File `
+                            -ParameterFilter { $InputObject -contains 'LockoutDuration=-1' } `
+                            -Exactly -Times 1 
                         Assert-MockCalled -CommandName Invoke-Secedit -Exactly -Times 1                
+                        Assert-MockCalled -CommandName Remove-Item -Exactly -Times 1                
                     }
                 }
             }
@@ -234,17 +273,29 @@ try
                     $testFailedParameters.Remove('Name')
                     $testFailedParameterKeys=$testFailedParameters.Keys | Sort-Object
 
-                    Mock -CommandName Test-TargetResource -MockWith { $false }
+                    Mock -CommandName Test-TargetResource `
+                        -ParameterFilter { $Name -eq 'Test' } `
+                        -MockWith { $false }
+                    Mock -CommandName Test-TargetResource `
+                        -ParameterFilter { $Name -eq $ResourceName } `
+                        -MockWith { $false }
                 }
 
-                It 'Should throw' {
+                It 'Should throw the correct exception' {
                     { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.SetFailed -f
                         ($testFailedParameterkeys -join ','))
                 }
 
                 It 'Should call the expected mocks' {
-                    Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times $testParameters.Count
+                    Assert-MockCalled -CommandName Test-TargetResource `
+                        -ParameterFilter { $Name -eq 'Test' } `
+                        -Exactly -Times ($testParameters.Count-1)
+                    Assert-MockCalled -CommandName Test-TargetResource `
+                        -ParameterFilter { $Name -eq $resourceName } `
+                         -Exactly -Times 1
+                    Assert-MockCalled -CommandName Out-File -Exactly -Times 1
                     Assert-MockCalled -CommandName Invoke-Secedit -Exactly -Times 1
+                    Assert-MockCalled -CommandName Remove-Item -Exactly -Times 1                
                 }
             }
         }
