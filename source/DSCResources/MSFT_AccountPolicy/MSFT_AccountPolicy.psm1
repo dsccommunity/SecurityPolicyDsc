@@ -171,7 +171,7 @@ function Set-TargetResource
             Verbose     = $false
         }
 
-        <# 
+        <#
             Define what policies are not in a desired state so we only add those policies
             that need to be changed to the INF.
          #>
@@ -189,10 +189,11 @@ function Set-TargetResource
                     if ($policy.Key -eq 'Maximum_Password_Age' -or 'Account_Lockout_Duration' -and $policy.Value -eq 0)
                     {
                         <#
-                            This addresses the scenario when the desired value of Maximum_Password_Age is 0.
-                            The INF file consumed by secedit.exe requires the value to be -1.
+                            This addresses the scenario when the desired value of Maximum_Password_Age or
+                            Account_Lockout_Duration is 0. The INF file consumed by secedit.exe requires the value to
+                            be -1.
                         #>
-                        $newValue = -1                        
+                        $newValue = -1
                     }
                     else
                     {
