@@ -27,6 +27,7 @@
 ### Fixed
 
 - AccountPolicy:
+  - Ensure `Get` method returns the specified `Name` property.
   - Fix applying Account_lockout_duration to zero
     [Issue #140](https://github.com/dsccommunity/SecurityPolicyDsc/issues/140).
 
