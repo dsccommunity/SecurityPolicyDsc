@@ -21,7 +21,10 @@ function Get-TargetResource
         $Name
     )
 
-    $returnValue = @{}
+    $returnValue = @{
+        Name = $Name
+    }
+
     $currentSecurityPolicy = Get-SecurityPolicy -Area SECURITYPOLICY
     $accountPolicyData = Get-PolicyOptionData -FilePath $("$PSScriptRoot\AccountPolicyData.psd1").Normalize()
     $accountPolicyList = Get-PolicyOptionList -ModuleName MSFT_AccountPolicy
