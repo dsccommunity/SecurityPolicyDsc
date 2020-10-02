@@ -699,3 +699,22 @@ function ConvertTo-SDDLDescriptor
 
     return $result
 }
+
+function Format-SecPolMultiString
+{
+    [OutputType([string[]])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [String[]]
+        $MultiStringValue
+    )
+
+    $return = @()
+    Foreach ($string in $MultiStringValue) {
+        $formattedString = $string + "`0`n"
+        $return += $formattedString
+    }
+    return $return
+}

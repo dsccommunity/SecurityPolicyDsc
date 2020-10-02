@@ -364,11 +364,11 @@ function Set-TargetResource
         $Network_access_Named_Pipes_that_can_be_accessed_anonymously,
 
         [Parameter()]
-        [System.String]
+        [System.String[]]
         $Network_access_Remotely_accessible_registry_paths,
 
         [Parameter()]
-        [System.String]
+        [System.String[]]
         $Network_access_Remotely_accessible_registry_paths_and_subpaths,
 
         [Parameter()]
@@ -617,6 +617,11 @@ function Set-TargetResource
                     {
                         $message = Format-RestrictedRemoteSam -SecurityDescriptor $policy.Value
                         $newValue = "$($policyData.Option.String)" + $message
+                    }
+                    elseif ($policy.Key -eq 'Network_access_Remotely_accessible_registry_paths' -OR $policy.Key -eq 'Network_access_Remotely_accessible_registry_paths_and_subpaths')
+                    {
+                        $nullCharValue = Format-SecPolMultiString $policy.Value
+                        $newValue = "$($policyData.Option.String)" + $nullCharValue
                     }
                     else
                     {
@@ -1346,7 +1351,7 @@ function Format-RestrictedRemoteSam
     foreach ($descriptor in $SecurityDescriptor)
     {
         $resolvedIdentity = ConvertTo-LocalFriendlyName -Identity $descriptor.Identity -Scope Set
-        
+
         # If possible, Identity to SDDL SID constant
         $sddl_identity = ConvertTo-SDDLDescriptor $resolvedIdentity
 
