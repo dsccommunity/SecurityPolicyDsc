@@ -940,11 +940,11 @@ function Test-TargetResource
         $Network_access_Named_Pipes_that_can_be_accessed_anonymously,
 
         [Parameter()]
-        [System.String]
+        [System.String[]]
         $Network_access_Remotely_accessible_registry_paths,
 
         [Parameter()]
-        [System.String]
+        [System.String[]]
         $Network_access_Remotely_accessible_registry_paths_and_subpaths,
 
         [Parameter()]
