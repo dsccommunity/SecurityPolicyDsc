@@ -618,6 +618,10 @@ function Set-TargetResource
                         $message = Format-RestrictedRemoteSam -SecurityDescriptor $policy.Value
                         $newValue = "$($policyData.Option.String)" + $message
                     }
+                    elseif ($policy.Key -eq 'Network_access_Remotely_accessible_registry_paths' -OR $policy.Key -eq 'Network_access_Remotely_accessible_registry_paths_and_subpaths')
+                    {
+                        $newValue = $policy.Value.replace(',',"`0")
+                    }
                     else
                     {
                         $newValue = "$($policyData.Option.String)" + "$($policy.Value)"
@@ -1346,7 +1350,7 @@ function Format-RestrictedRemoteSam
     foreach ($descriptor in $SecurityDescriptor)
     {
         $resolvedIdentity = ConvertTo-LocalFriendlyName -Identity $descriptor.Identity -Scope Set
-        
+
         # If possible, Identity to SDDL SID constant
         $sddl_identity = ConvertTo-SDDLDescriptor $resolvedIdentity
 
