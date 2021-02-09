@@ -180,7 +180,7 @@ function Get-SecurityPolicy
 
             continue
         }
-        Default
+        default
         {
             $returnValue = $policyConfiguration
         }
