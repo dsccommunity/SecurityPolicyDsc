@@ -30,6 +30,9 @@
   - Ensure `Get` method returns the specified `Name` property.
   - Fix applying Account_lockout_duration to zero
     [Issue #140](https://github.com/dsccommunity/SecurityPolicyDsc/issues/140).
+- UserRightsAssignment:
+  - Allow unresolvable SIDs found in local security policy
+    [Issue #158](https://github.com/dsccommunity/SecurityPolicyDsc/issues/158)
 
 ## [2.10.0.0] - 2019-09-19
 
