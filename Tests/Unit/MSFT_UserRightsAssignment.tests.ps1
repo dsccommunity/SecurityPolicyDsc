@@ -188,15 +188,11 @@ try
                 }
                 Mock -CommandName Get-UserRightPolicy -MockWith {$mockUnresolvableSID}
                 Mock -CommandName Invoke-Secedit -MockWith {}
+                Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {'contoso\testUser1'}
 
                 It 'Should not throw' {
                     Mock -CommandName Test-TargetResource -MockWith {$true}
                     {Set-TargetResource @setParameters} | Should Not Throw
-                }
-
-                It 'Should call expected mocks' {
-                    Assert-MockCalled -CommandName Invoke-Secedit -Exactly 2
-                    Assert-MockCalled -CommandName Test-TargetResource -Exactly 2
                 }
             }
 
