@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- SecurityPolicyDsc:
+  - AccountPolicy/SecurityOption:
+    - BREAKING: Introduced support for PowerShell v7 (Invoke-DscResource). With this change, Import-PowerShellData file is being used, which is only available in PowerShell v5.
+
 ### Added
 
 - SecurityPolicyDsc:
