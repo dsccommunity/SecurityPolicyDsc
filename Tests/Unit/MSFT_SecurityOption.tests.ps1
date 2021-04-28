@@ -47,38 +47,6 @@ try
         }
 
         Describe 'SecurityOptionHelperTests' {
-            Context 'Get-PolicyOptionData' {
-                $dataFilePath = Join-Path -Path $dscResourceInfo.ParentPath -ChildPath SecurityOptionData.psd1
-                $securityOptionData = Get-PolicyOptionData -FilePath $dataFilePath.Normalize()
-                $securityOptionPropertyList = $dscResourceInfo.Properties | Where-Object -FilterScript { $PSItem.Name -match '_' }
-
-                It 'Should have the same count as property count' {
-                    $securityOptionDataPropertyCount = $securityOptionData.Count
-                    $securityOptionDataPropertyCount | Should Be $securityOptionPropertyList.Name.Count
-                }
-
-                foreach ( $name in $securityOptionData.Keys ) {
-                    It "Should contain property name: $name" {
-                        $securityOptionPropertyList.Name -contains $name | Should Be $true
-                    }
-                }
-
-                $optionData = Get-PolicyOptionData -FilePath $dataFilePath.Normalize()
-
-                foreach ($option in $optionData.GetEnumerator()) {
-                    Context "$($option.Name)" {
-                        $options = $option.Value.Option
-
-                        foreach ($entry in $options.GetEnumerator())
-                        {
-                            It "$($entry.Name) Should have string as Option type" {
-                                $entry.value.GetType().Name -is [string] | Should Be $true
-                            }
-                        }
-                    }
-                }
-            }
-
             Context 'Add-PolicyOption' {
                 It 'Should have [Registry Values]' {
                     [string[]]$testString = "Registry\path"
@@ -199,7 +167,7 @@ try
 
                     $result | Should Be '"O:BAG:BAD:(A;;RC;;;SY)"'
                 }
-                
+
                 It 'Should Create the BEST SDDL string' {
                     $result = Format-RestrictedRemoteSam -SecurityDescriptor $fullDescriptorTestParameters
 
