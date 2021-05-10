@@ -4,7 +4,7 @@
 
 - SecurityPolicyDsc:
   - AccountPolicy/SecurityOption:
-    - BREAKING: Introduced support for PowerShell v7 (Invoke-DscResource). With this change, Import-PowerShellData file is being used, which is only available in PowerShell v5.
+    - BREAKING: Introduced support for PowerShell v7 (Invoke-DscResource). With this change, we start using Import-PowerShellDataFile, which is only available from PowerShell v5. This means Windows PowerShell 4 (WMF 4) is no longer supported.
 
 ### Added
 
