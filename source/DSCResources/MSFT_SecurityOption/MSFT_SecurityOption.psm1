@@ -1,9 +1,11 @@
 $resourceModuleRootPath = Split-Path -Path (Split-Path $PSScriptRoot -Parent) -Parent
 $modulesRootPath = Join-Path -Path $resourceModuleRootPath -ChildPath 'Modules'
-Import-Module -Name (Join-Path -Path $modulesRootPath `
-              -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
-              -Force
-
+$secPolResourceHelperPath = Join-Path -Path $modulesRootPath -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1'
+$importModuleParams = @{
+    Name  = $secPolResourceHelperPath
+    Force = $true
+}
+Import-Module @importModuleParams
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SecurityOption'
 
 <#
