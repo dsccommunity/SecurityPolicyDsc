@@ -27,7 +27,10 @@ function Get-TargetResource
         $Name
     )
 
-    $returnValue = @{}
+    $returnValue = @{
+        Name = $Name
+    }
+
     $currentSecurityPolicy = Get-SecurityPolicy -Area SECURITYPOLICY
     $secOptionDataFilePath = Join-Path -Path $PSScriptRoot -ChildPath 'SecurityOptionData.psd1'
     $securityOptionData = Import-PowerShellDataFile -Path $secOptionDataFilePath
