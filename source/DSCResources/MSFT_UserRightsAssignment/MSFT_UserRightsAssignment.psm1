@@ -204,7 +204,8 @@ function Set-TargetResource
                 $users += $usersList | Where-Object {$_ -match $env:COMPUTERNAME}
                 $accounts += $users | ForEach-Object {(Get-CimInstance win32_useraccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
             }
-            Default
+
+            default
             {
                 $accounts += ConvertTo-LocalFriendlyName -Identity $PSItem -Policy $Policy -Scope 'Set'
             }
@@ -381,7 +382,8 @@ function Test-TargetResource
             $users += $usersList | Where-Object {$_ -match $env:COMPUTERNAME}
             $accounts += $users | ForEach-Object {(Get-CimInstance Win32_UserAccount -Filter "Caption='$($_.Replace("\", "\\"))'").SID}
         }
-        Default
+
+        default
         {
             $accounts += ConvertTo-LocalFriendlyName -Identity $PSItem -Policy $Policy
         }

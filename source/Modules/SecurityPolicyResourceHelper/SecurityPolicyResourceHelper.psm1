@@ -180,7 +180,8 @@ function Get-SecurityPolicy
 
             continue
         }
-        Default
+
+        default
         {
             $returnValue = $policyConfiguration
         }
@@ -427,53 +428,6 @@ function ConvertTo-Sid
     return $result
 }
 
-
-<#
-    .SYNOPSIS
-        Retrieves the Security Option Data to map the policy name and values as they appear in the Security Template
-        Snap-in.
-
-    .PARAMETER FilePath
-        Path to the file containing the Security Option Data
-#>
-function Get-PolicyOptionData
-{
-    [OutputType([hashtable])]
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformation()]
-        [System.Collections.Hashtable]
-        $FilePath
-    )
-    return $FilePath
-}
-
-<#
-    .SYNOPSIS
-        Returns all the set-able parameters in the SecurityOption resource
-#>
-function Get-PolicyOptionList
-{
-    [OutputType([array])]
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [string]
-        $ModuleName
-    )
-
-    $commonParameters = @( 'Name' )
-    $commonParameters += [System.Management.Automation.PSCmdlet]::CommonParameters
-    $commonParameters += [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
-    $moduleParameters = ( Get-Command -Name "Set-TargetResource" -Module $ModuleName ).Parameters.Keys |
-        Where-Object -FilterScript { $PSItem -notin $commonParameters }
-
-    return $moduleParameters
-}
-
 <#
     .SYNOPSIS
         Creates the INF file content that contains the security option configurations
@@ -504,17 +458,17 @@ function Add-PolicyOption
     )
 
     # insert the appropriate INI section
-    if ( [string]::IsNullOrWhiteSpace( $RegistryPolicies ) -eq $false )
+    if ([string]::IsNullOrWhiteSpace($RegistryPolicies) -eq $false)
     {
         $RegistryPolicies.Insert(0, '[Registry Values]')
     }
 
-    if ( [string]::IsNullOrWhiteSpace( $SystemAccessPolicies ) -eq $false )
+    if ([string]::IsNullOrWhiteSpace($SystemAccessPolicies) -eq $false)
     {
         $SystemAccessPolicies.Insert(0, '[System Access]')
     }
 
-    if ( [string]::IsNullOrWhiteSpace( $KerberosPolicies ) -eq $false )
+    if ([string]::IsNullOrWhiteSpace( $KerberosPolicies ) -eq $false)
     {
         $KerberosPolicies.Insert(0, '[Kerberos Policy]')
     }
@@ -554,12 +508,12 @@ function Get-UserRightConstant
         $Inverse
     )
 
-    $friendlyNames = Get-Content -Path $PSScriptRoot\UserRightsFriendlyNameConversions.psd1 -Raw |
-        ConvertFrom-StringData
+    $userRightsFriendlyNameFilePath = Join-Path -Path $PSScriptRoot -ChildPath 'UserRightsFriendlyNameConversions.psd1'
+    $friendlyNames = Get-Content -Path $userRightsFriendlyNameFilePath -Raw | ConvertFrom-StringData
 
     if ($Inverse)
     {
-        $result = $friendlyNames.GetEnumerator() | Where-Object -FilterScript { $_.Value -eq $Policy }
+        $result = $friendlyNames.GetEnumerator() | Where-Object -FilterScript {$_.Value -eq $Policy}
         return $result.Key
     }
 
@@ -623,7 +577,7 @@ function ConvertFrom-SDDLDescriptor
 
     $result = $descriptors[$Identity]
 
-    if ( [string]::IsNullOrWhiteSpace( $result ) -eq $true )
+    if ([string]::IsNullOrWhiteSpace($result) -eq $true)
     {
         $result = $Identity
     }
