@@ -99,7 +99,7 @@ InModuleScope $script:subModuleName {
         BeforeAll {
             $ini = "$PSScriptRoot\..\TestHelpers\sample.inf"
             $iniPath = Get-Item -Path $ini
-            Mock -CommandName Join-Path -MockWith {$iniPath.FullName}
+            Mock -CommandName Join-Path -MockWith {$iniPath.FullName} -ParameterFilter {$Path -eq "$env:temp"}
             Mock -CommandName Remove-Item
             $securityPolicy = Get-SecurityPolicy -Area 'USER_RIGHTS'
         }
