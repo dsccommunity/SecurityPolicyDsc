@@ -31,7 +31,7 @@ try
     InModuleScope 'MSFT_AccountPolicy' {
         Set-StrictMode -Version 1.0
 
-        $resourceName='AccountPolicy'
+        $resourceName = 'AccountPolicy'
         $dscResourceInfo = Get-DscResource -Name AccountPolicy -Module SecurityPolicyDsc
         $testParameters = @{
             Name                                        = $resourceName
@@ -41,41 +41,6 @@ try
         }
 
         Describe 'SecurityOptionHelperTests' {
-            Context 'Get-AccountPolicyData' {
-                BeforeAll {
-                    $dataFilePath = Join-Path -Path $dscResourceInfo.ParentPath -ChildPath AccountPolicyData.psd1
-                    $accountPolicyData = Get-PolicyOptionData -FilePath $dataFilePath.Normalize()
-                    $accountPolicyPropertyList = $dscResourceInfo.Properties |
-                        Where-Object -FilterScript { $PSItem.Name -match '_' }
-                }
-
-                It 'Should have the same count as property count' {
-                    $accountPolicyDataPropertyCount = $accountPolicyData.Count
-                    $accountPolicyDataPropertyCount | Should -Be $accountPolicyPropertyList.Name.Count
-                }
-
-                foreach ($name in $accountPolicyData.Keys)
-                {
-                    It "Should contain property name: $name" {
-                        $accountPolicyPropertyList.Name -contains $name | Should -BeTrue
-                    }
-                }
-
-                foreach ($option in $accountPolicyData.GetEnumerator())
-                {
-                    Context "$($option.Name)"{
-                        $options = $option.Value.Option
-
-                        foreach ($entry in $options.GetEnumerator())
-                        {
-                            It "$($entry.Name) Should have string as Option type" {
-                                $entry.value | Should -BeOfType System.String
-                            }
-                        }
-                    }
-                }
-            }
-
             Context 'Add-PolicyOption' {
                 It 'Should have [System Access]' {
                     [string[]]$testString = "EnableAdminAccount=1"

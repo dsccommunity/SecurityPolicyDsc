@@ -10,7 +10,12 @@
 
 ### Changed
 
+- Updated pipeline with `Sampler.GitHubTasks` tasks.
 - SecurityPolicyDsc:
+  - AccountPolicy/SecurityOption:
+    - BREAKING: Introduced support for PowerShell v7 (Invoke-DscResource).
+      With this change, we start using Import-PowerShellDataFile, which is only available from PowerShell v5. 
+      This means Windows PowerShell 4 (WMF 4) is no longer supported.
   - Resolved custom Script Analyzer rules that was added to the test framework.
   - Moved change log to CHANGELOG.md.
   - Added support for more SDDL SID constants
@@ -33,6 +38,10 @@
 - UserRightsAssignment:
   - Allow unresolvable SIDs found in local security policy
     [Issue #158](https://github.com/dsccommunity/SecurityPolicyDsc/issues/158)
+- SecurityPolicy:
+  - Ensure `Get` method returns the specified `Name` property.
+- SecurityOption
+  - 'Network_access_Remotely_accessible_registry_paths' and 'Network_access_Remotely_accessible_registry_paths_and_subpaths' use null char as a delimiter
 
 ## [2.10.0.0] - 2019-09-19
 

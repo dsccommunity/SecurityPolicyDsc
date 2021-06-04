@@ -1,9 +1,11 @@
 $resourceModuleRootPath = Split-Path -Path (Split-Path $PSScriptRoot -Parent) -Parent
 $modulesRootPath = Join-Path -Path $resourceModuleRootPath -ChildPath 'Modules'
-Import-Module -Name (Join-Path -Path $modulesRootPath  `
-        -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1') `
-    -Force
-
+$secPolResourceHelperPath = Join-Path -Path $modulesRootPath -ChildPath 'SecurityPolicyResourceHelper\SecurityPolicyResourceHelper.psm1'
+$importModuleParams = @{
+    Name  = $secPolResourceHelperPath
+    Force = $true
+}
+Import-Module @importModuleParams
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_SecurityOption'
 
 <#
@@ -25,18 +27,21 @@ function Get-TargetResource
         $Name
     )
 
-    $returnValue = @{}
-    $currentSecurityPolicy = Get-SecurityPolicy -Area SECURITYPOLICY
-    $securityOptionData = Get-PolicyOptionData -FilePath $("$PSScriptRoot\SecurityOptionData.psd1").Normalize()
-    $securityOptionList = Get-PolicyOptionList -ModuleName MSFT_SecurityOption
+    $returnValue = @{
+        Name = $Name
+    }
 
-    foreach ($securityOption in $securityOptionList)
+    $currentSecurityPolicy = Get-SecurityPolicy -Area SECURITYPOLICY
+    $secOptionDataFilePath = Join-Path -Path $PSScriptRoot -ChildPath 'SecurityOptionData.psd1'
+    $securityOptionData = Import-PowerShellDataFile -Path $secOptionDataFilePath
+
+    foreach ($securityOption in $securityOptionData.Keys)
     {
-        $section = $securityOptionData.$securityOption.Section
+        $section = $securityOptionData[$securityOption].Section
         Write-Verbose -Message ($script:localizedData.Section -f $section)
-        $valueName = $securityOptionData.$securityOption.Value
+        $valueName = $securityOptionData[$securityOption].Value
         Write-Verbose -Message ($script:localizedData.Value -f $valueName)
-        $options = $securityOptionData.$securityOption.Option
+        $options = $securityOptionData[$securityOption].Option
         Write-Verbose -Message ($script:localizedData.Option -f $($options -join ','))
         $currentValue = $currentSecurityPolicy.$section.$valueName
         Write-Verbose -Message ($script:localizedData.RawValue -f $($currentValue -join ','))
@@ -574,12 +579,12 @@ function Set-TargetResource
     $registryPolicies = @()
     $systemAccessPolicies = @()
     $nonComplaintPolicies = @()
-    $securityOptionList = Get-PolicyOptionList -ModuleName MSFT_SecurityOption
-    $securityOptionData = Get-PolicyOptionData -FilePath $("$PSScriptRoot\SecurityOptionData.psd1").Normalize()
+    $secOptionDataFilePath = Join-Path -Path $PSScriptRoot -ChildPath 'SecurityOptionData.psd1'
+    $securityOptionData = Import-PowerShellDataFile -Path $secOptionDataFilePath
     $script:seceditOutput = "$env:TEMP\Secedit-OutPut.txt"
     $securityOptionsToAddInf = "$env:TEMP\securityOptionsToAdd.inf"
 
-    $desiredPolicies = $PSBoundParameters.GetEnumerator() | Where-Object -FilterScript { $PSItem.key -in $securityOptionList }
+    $desiredPolicies = $PSBoundParameters.GetEnumerator() | Where-Object -FilterScript {$PSItem.key -in $securityOptionData.Keys}
 
     foreach ($policy in $desiredPolicies)
     {
@@ -617,6 +622,10 @@ function Set-TargetResource
                     {
                         $message = Format-RestrictedRemoteSam -SecurityDescriptor $policy.Value
                         $newValue = "$($policyData.Option.String)" + $message
+                    }
+                    elseif ($policy.Key -eq 'Network_access_Remotely_accessible_registry_paths' -OR $policy.Key -eq 'Network_access_Remotely_accessible_registry_paths_and_subpaths')
+                    {
+                        $newValue = $policy.Value.replace(',',"`0")
                     }
                     else
                     {
@@ -1212,7 +1221,8 @@ function ConvertTo-KerberosEncryptionOption
 
     $reverseOptions = @{}
     $kerberosSecurityOptionName = "Network_security_Configure_encryption_types_allowed_for_Kerberos"
-    $securityOptionData = Get-PolicyOptionData -FilePath $("$PSScriptRoot\SecurityOptionData.psd1").Normalize()
+    $secOptionDataFilePath = Join-Path -Path $PSScriptRoot -ChildPath 'SecurityOptionData.psd1'
+    $securityOptionData = Import-PowerShellDataFile -Path $secOptionDataFilePath
     $kerberosOptionValues = $securityOptionData[$kerberosSecurityOptionName].Option
 
     $newValue = $(($EncryptionValue -split ',')[-1])
@@ -1223,7 +1233,7 @@ function ConvertTo-KerberosEncryptionOption
         $reverseOptions.Add($value, $entry.Name)
     }
 
-    $result = $reverseOptions.Keys | Where-Object -FilterScript { $PSItem -band $newValue } | ForEach-Object -Process { $reverseOptions.Get_Item($PSItem) }
+    $result = $reverseOptions.Keys | Where-Object -FilterScript {$PSItem -band $newValue} | ForEach-Object -Process {$reverseOptions.Get_Item($PSItem)}
     return $result
 }
 
@@ -1253,7 +1263,8 @@ function ConvertTo-KerberosEncryptionValue
 
     $sumResult = 0
     $kerberosSecurityOptionName = "Network_security_Configure_encryption_types_allowed_for_Kerberos"
-    $securityOptionData = Get-PolicyOptionData -FilePath $("$PSScriptRoot\SecurityOptionData.psd1").Normalize()
+    $secOptionDataFilePath = Join-Path -Path $PSScriptRoot -ChildPath 'SecurityOptionData.psd1'
+    $securityOptionData = Import-PowerShellDataFile -Path $secOptionDataFilePath
     $kerberosOptionValues = $securityOptionData[$kerberosSecurityOptionName].Option
 
     foreach ($type in $EncryptionType)
@@ -1346,7 +1357,7 @@ function Format-RestrictedRemoteSam
     foreach ($descriptor in $SecurityDescriptor)
     {
         $resolvedIdentity = ConvertTo-LocalFriendlyName -Identity $descriptor.Identity -Scope Set
-        
+
         # If possible, Identity to SDDL SID constant
         $sddl_identity = ConvertTo-SDDLDescriptor $resolvedIdentity
 
