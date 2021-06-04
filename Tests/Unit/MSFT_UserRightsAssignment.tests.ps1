@@ -60,10 +60,15 @@ try
                 Identity = $null
             }
 
+            $mockUnresolvableSID = [PSObject] @{
+                Policy   = 'SeBatchLogonRight'
+                Identity = '*S-1-5-21-577511119-1435111626-1914111595-3711104'
+            }
+
         #endregion
 
         #region Function Get-TargetResource
-        Describe "Get-TargetResource" {  
+        Describe "Get-TargetResource" {
             Context 'Identity should match on Policy' {
                 Mock -CommandName Get-UserRightPolicy -MockWith {return @($testParameters)}
                 Mock -CommandName Test-TargetResource -MockWith {$false}
@@ -119,7 +124,7 @@ try
 
                 It 'Should call expected mocks' {
                     Assert-MockCalled -CommandName Get-UserRightPolicy -Exactly 1
-                } 
+                }
             }
 
             Context 'Identity is NULL and should be' {
@@ -137,7 +142,7 @@ try
             }
 
             Context 'Tests for when Identity is a local account or SID' {
-                $mockGetUSRPolicyResult = $mockGetUSRPolicyResult.Clone()          
+                $mockGetUSRPolicyResult = $mockGetUSRPolicyResult.Clone()
 
                 It 'Should return True when a SID is used for Identity' {
 
@@ -154,15 +159,15 @@ try
             Context 'Identity does not exist but should' {
                 Mock -CommandName Invoke-Secedit -MockWith {}
                 Mock -CommandName Test-TargetResource -MockWith {$true}
-                Mock -CommandName Get-Content -ParameterFilter {$Path -match "Secedit-OutPut.txt"} -MockWith {"Tasked Failed"}             
+                Mock -CommandName Get-Content -ParameterFilter {$Path -match "Secedit-OutPut.txt"} -MockWith {"Tasked Failed"}
                 Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {'contoso\testuser1'}
-                
-                It 'Should not throw' { 
+
+                It 'Should not throw' {
                     {Set-TargetResource @testParameters} | Should Not Throw
                 }
 
                 It 'Should throw when set fails' {
-                    Mock Test-TargetResource -MockWith {$false}  
+                    Mock Test-TargetResource -MockWith {$false}
                     {Set-TargetResource @testParameters} | Should Throw $script:localizedData.TaskFail
                 }
 
@@ -172,20 +177,39 @@ try
                 }
             }
 
+            Context 'Unresolvable SID exists' {
+                $mockUnresolvableSID = @{
+                    Policy   = 'SeBatchLogonRight'
+                    Identity = '*S-1-5-21-577511119-1435111626-1914111595-3711104'
+                }
+                $setParameters = @{
+                    Policy = 'Log_on_as_a_batch_job'
+                    Identity = 'contoso\TestUser1'
+                }
+                Mock -CommandName Get-UserRightPolicy -MockWith {$mockUnresolvableSID}
+                Mock -CommandName Invoke-Secedit -MockWith {}
+                Mock -CommandName ConvertTo-LocalFriendlyName -MockWith {'contoso\testUser1'}
+
+                It 'Should not throw' {
+                    Mock -CommandName Test-TargetResource -MockWith {$true}
+                    {Set-TargetResource @setParameters} | Should Not Throw
+                }
+            }
+
             Context 'Identity is NULL' {
                 It 'Should not throw' {
                     Mock -CommandName Invoke-Secedit -MockWith {}
-                    Mock -CommandName Test-TargetResource -MockWith {$true}            
+                    Mock -CommandName Test-TargetResource -MockWith {$true}
                     $setParameters = @{
                         Policy = 'Access_Credential_Manager_as_a_trusted_caller'
                         Identity = ""
-                    }               
+                    }
                     {Set-TargetResource @setParameters} | Should Not Throw
                 }
 
                 It 'Should call expected mocks' {
                     Assert-MockCalled -CommandName Invoke-Secedit
-                    Assert-MockCalled -CommandName Test-TargetResource                    
+                    Assert-MockCalled -CommandName Test-TargetResource
                 }
             }
         }
@@ -219,7 +243,7 @@ try
                 $constant | Should Be 'SeTrustedCredManAccessPrivilege'
             }
         }
-        #endregion    
+        #endregion
     }
     #endregion
 }

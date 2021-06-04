@@ -219,7 +219,12 @@ function Set-TargetResource
                 {
                     if ($id -notin $accounts)
                     {
-                        $accounts += ConvertTo-LocalFriendlyName -Identity $id -Policy $Policy -Scope 'Set'
+                        # SID entries start with asterisk in user rights INF
+                        if ($id -match '^(S-[0-9-]{3,})')
+                        {
+                            $id = "*$id"
+                        }
+                        $accounts += $id
                     }
                 }
             }

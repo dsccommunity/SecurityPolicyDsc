@@ -35,9 +35,12 @@
   - Ensure `Get` method returns the specified `Name` property.
   - Fix applying Account_lockout_duration to zero
     [Issue #140](https://github.com/dsccommunity/SecurityPolicyDsc/issues/140).
+- UserRightsAssignment:
+  - Allow unresolvable SIDs found in local security policy
+    [Issue #158](https://github.com/dsccommunity/SecurityPolicyDsc/issues/158)
 - SecurityPolicy:
   - Ensure `Get` method returns the specified `Name` property.
--SecurityOption
+- SecurityOption
   - 'Network_access_Remotely_accessible_registry_paths' and 'Network_access_Remotely_accessible_registry_paths_and_subpaths' use null char as a delimiter
 
 ## [2.10.0.0] - 2019-09-19
