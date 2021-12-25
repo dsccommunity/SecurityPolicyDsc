@@ -97,8 +97,10 @@ function Invoke-Secedit
         $arguments = $arguments + " /overwrite /quiet"
     }
 
+    $secEditCmd = Get-Command 'secedit.exe'
+
     Write-Verbose "secedit arguments: $arguments"
-    Start-Process -FilePath secedit.exe -ArgumentList $arguments -RedirectStandardOutput $seceditOutput `
+    Start-Process -FilePath $secEditCmd.Path -ArgumentList $arguments -RedirectStandardOutput $seceditOutput `
         -NoNewWindow -Wait
 }
 
