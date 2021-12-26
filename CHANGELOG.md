@@ -7,6 +7,8 @@
 - SecurityPolicyDsc:
   - Added automatic release with a new CI pipeline.
     [Issue #143](https://github.com/dsccommunity/SecurityPolicyDsc/issues/143).
+  - Updated SecurityPolicyResourceHelper functions to use the full path to the secedit program when invoked.
+    [Issue #116](https://github.com/dsccommunity/SecurityPolicyDsc/issues/116).
 
 ### Changed
 
