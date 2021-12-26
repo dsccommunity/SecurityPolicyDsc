@@ -43,6 +43,7 @@ InModuleScope $script:subModuleName {
             { ConvertTo-LocalFriendlyName -Identity 'S-1-5-32-600' -Scope 'Set' } | Should throw
         }
     }
+
     Describe 'SecurityPolicyResourceHelper\Invoke-Secedit' {
         Mock Start-Process
 
@@ -60,6 +61,7 @@ InModuleScope $script:subModuleName {
             Assert-MockCalled -CommandName Start-Process -Exactly 1
         }
     }
+
     Describe 'SecurityPolicyResourceHelper\Get-UserRightsAssignment' {
         BeforeAll {
             $ini = "$PSScriptRoot\..\TestHelpers\TestIni.txt"
@@ -80,6 +82,7 @@ InModuleScope $script:subModuleName {
             $result.section.Key1 | Should be 'Value1'
         }
     }
+
     Describe 'SecurityPolicyResourceHelper\Test-IdentityIsNull' {
         It 'Should return true when Identity is null' {
             $IdentityIsNull = Test-IdentityIsNull -Identity $null
@@ -95,6 +98,7 @@ InModuleScope $script:subModuleName {
             $IdentityIsNull | Should Be $false
         }
     }
+
     Describe 'SecurityPolicyResourceHelper\Get-SecurityPolicy' {
         BeforeAll {
             $ini = "$PSScriptRoot\..\TestHelpers\sample.inf"
@@ -146,6 +150,7 @@ InModuleScope $script:subModuleName {
         }
 
     }
+
     Describe 'SecurityPolicyResourceHelper\Test ConvertTo-SDDLDescriptor' {
         It 'Should be BA' {
             $identity = "BUILTIN\Administrators"

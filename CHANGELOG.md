@@ -28,6 +28,8 @@
   - Added PowerShell Dsc Resource Help Files.
 - AccountPolicy:
   - Improved and updated unit tests to Pester v4 format.
+- Updated SecurityPolicyResourceHelper functions to use the full path to the secedit program when invoked.
+  [Issue #116](https://github.com/dsccommunity/SecurityPolicyDsc/issues/116).
 
 ### Fixed
 
