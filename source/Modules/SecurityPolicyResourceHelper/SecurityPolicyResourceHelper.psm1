@@ -140,7 +140,8 @@ function Get-SecurityPolicy
 
         Write-Debug -Message ($localizedData.EchoDebugInf -f $currentSecurityPolicyFilePath)
 
-        secedit.exe /export /cfg $currentSecurityPolicyFilePath /areas $Area | Out-Null
+        $secEditCmd = Get-Command 'secedit.exe'
+        & $secEditCmd.Path /export /cfg $currentSecurityPolicyFilePath /areas $Area | Out-Null
     }
 
     $policyConfiguration = @{}
