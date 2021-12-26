@@ -97,7 +97,7 @@ function Invoke-Secedit
         $arguments = $arguments + " /overwrite /quiet"
     }
 
-    $secEditCmd = Get-Command 'secedit.exe'
+    $secEditCmd = Get-Command -Name 'secedit.exe'
 
     Write-Verbose "secedit arguments: $arguments"
     Start-Process -FilePath $secEditCmd.Path -ArgumentList $arguments -RedirectStandardOutput $seceditOutput `
@@ -140,7 +140,7 @@ function Get-SecurityPolicy
 
         Write-Debug -Message ($localizedData.EchoDebugInf -f $currentSecurityPolicyFilePath)
 
-        $secEditCmd = Get-Command 'secedit.exe'
+        $secEditCmd = Get-Command -Name 'secedit.exe'
         & $secEditCmd.Path /export /cfg $currentSecurityPolicyFilePath /areas $Area | Out-Null
     }
 
