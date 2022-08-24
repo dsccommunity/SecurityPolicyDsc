@@ -100,7 +100,7 @@ function Set-TargetResource
         $Minimum_Password_Age,
 
         [Parameter()]
-        [ValidateRange(0, 14)]
+        [ValidateRange(0, 30)]
         [System.UInt32]
         $Minimum_Password_Length,
 
@@ -153,6 +153,7 @@ function Set-TargetResource
         [ValidateRange(0, 99999)]
         [System.UInt32]
         $Maximum_tolerance_for_computer_clock_synchronization
+
     )
 
     $kerberosPolicies = @()

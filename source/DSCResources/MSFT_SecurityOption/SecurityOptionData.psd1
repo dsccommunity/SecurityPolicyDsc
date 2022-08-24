@@ -875,4 +875,22 @@
             Disabled = '4,0'
         }
     }
+
+    "Minimum_length_password_audit" = @{
+        Value   = "MACHINE\System\CurrentControlSet\Control\SAM\MinimumPasswordLengthAudit"
+        Section = 'Registry Values'
+        Option  = @{
+            String = '4,' # + <Length
+        }
+    }
+
+    "Relax_minimum_password_length_limits" = @{
+        Value   = "MACHINE\System\CurrentControlSet\Control\SAM\RelaxMinimumPasswordLengthLimits"
+        Section = 'Registry Values'
+        Option  = @{
+            Enabled  = '4,1'
+            Disabled = '4,0'
+        }
+    }
+
 }
