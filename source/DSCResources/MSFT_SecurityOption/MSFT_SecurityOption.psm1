@@ -571,9 +571,21 @@ function Set-TargetResource
         [System.String]
         $User_Account_Control_Switch_to_the_secure_desktop_when_prompting_for_elevation,
 
-        [Parameter()][ValidateSet("Enabled", "Disabled")]
+        [Parameter()]
+        [ValidateSet("Enabled", "Disabled")]
         [System.String]
-        $User_Account_Control_Virtualize_file_and_registry_write_failures_to_per_user_locations
+        $User_Account_Control_Virtualize_file_and_registry_write_failures_to_per_user_locations,
+
+        [Parameter()]
+        [ValidateRange(0, 50)]
+        [System.String]
+        $Minimum_length_password_audit,
+
+        [Parameter()]
+        [ValidateSet("Enabled", "Disabled")]
+        [System.String]
+        $Relax_minimum_password_length_limits
+
     )
 
     $registryPolicies = @()

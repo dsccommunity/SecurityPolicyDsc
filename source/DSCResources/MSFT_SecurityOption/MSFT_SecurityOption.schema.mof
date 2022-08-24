@@ -105,4 +105,7 @@ class MSFT_SecurityOption : OMI_BaseResource
     [Write, Description("Determines the behavior of all User Account Control (UAC) policies for the entire system"), ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String User_Account_Control_Run_all_administrators_in_Admin_Approval_Mode;
     [Write, Description("Determines whether the elevation request prompts on the interactive user desktop or on the secure desktop"), ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String User_Account_Control_Switch_to_the_secure_desktop_when_prompting_for_elevation;
     [Write, Description("Enables or disables the redirection of the write failures of earlier applications to defined locations in the registry and the file system"), ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String User_Account_Control_Virtualize_file_and_registry_write_failures_to_per_user_locations;
+    [Write, Description("This security setting determines the minimum password length for which password length audit warning events are issued. This setting may be configured from 1 to 50.")] String Minimum_length_password_audit;
+    [Write, Description("This setting controls whether the minimum password length setting can be increased beyond the legacy limit of 14."), ValueMap{"Enabled","Disabled"}, Values{"Enabled","Disabled"}] String Relax_minimum_password_length_limits;
+
 };
